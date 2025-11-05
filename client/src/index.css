@@ -1,0 +1,22 @@
+/* Global resets and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Primary: `#1F57C3` (deep blue)
+- Secondary: `#108A00` (success green for buttons)
+- Background: `#F7F8FA` (light gray-blue)
+- Navbar: `#FFFFFF` (white) with shadow
+- Text: `#001E00` (dark) */
+body {
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* You can add your global color variables here later */
+:root {
+  --primary-color: #0066ff;
+  --text-color: #2c3e50;
+  /* etc */
+}

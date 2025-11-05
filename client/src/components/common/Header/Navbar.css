@@ -1,0 +1,303 @@
+/* ========================================
+   NAVBAR CONTAINER & BASE STYLES
+   ======================================== */
+
+.navbar {
+  position: fixed; /* Stays at top when scrolling */
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Above all other content */
+}
+
+.navbar__container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ========================================
+   LOGO
+   ======================================== */
+
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.navbar__logo-image {
+  height: 40px; /* Adjust based on your logo size */
+  width: auto;
+  cursor: pointer;
+}
+
+/* ========================================
+   NAVIGATION MENU (Middle Section)
+   ======================================== */
+
+.navbar__menu {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navbar__item {
+  position: relative; /* For dropdown positioning */
+}
+
+.navbar__link {
+  color: #1a1a1a;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color 0.3s ease;
+}
+
+.navbar__link:hover {
+  color: #6ba5a8; /* Teal hover color */
+}
+
+/* ========================================
+   DROPDOWN ARROW
+   ======================================== */
+
+.navbar__arrow {
+  font-size: 0.7rem;
+  transition: transform 0.3s ease; /* Smooth rotation */
+}
+
+/* Rotate arrow when dropdown is active */
+.navbar__arrow--rotate {
+  transform: rotate(180deg); /* Flip arrow upside down */
+}
+
+/* ========================================
+   DROPDOWN MENU
+   ======================================== */
+
+.navbar__dropdown-menu {
+  position: absolute;
+  top: 100%; /* Position below the parent item */
+  left: 0;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  min-width: 200px;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  list-style: none;
+
+  /* Hidden by default */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+/* Show dropdown on hover (Desktop only) */
+.navbar__item--dropdown:hover .navbar__dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Rotate arrow on hover (Desktop only) */
+.navbar__item--dropdown:hover .navbar__arrow {
+  transform: rotate(180deg);
+}
+
+.navbar__dropdown-link {
+  display: block;
+  padding: 0.7rem 1.2rem;
+  color: #1a1a1a;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.navbar__dropdown-link:hover {
+  background-color: #f7f9fc;
+  color: #6ba5a8;
+}
+
+/* ========================================
+   ACTION BUTTONS (Right Side)
+   ======================================== */
+
+.navbar__actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.navbar__button {
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+/* Login Button - Outlined Style */
+.navbar__button--login {
+  background-color: transparent;
+  border: 2px solid #1a1a1a;
+  color: #1a1a1a;
+}
+
+.navbar__button--login:hover {
+  background-color: #4a6b7c;
+  border-color: #4a6b7c;
+  color: #ffffff;
+}
+
+/* Sign Up Button - Filled Style */
+.navbar__button--signup {
+  background-color: #4a6b7c;
+  color: #ffffff;
+  border: 2px solid #4a6b7c;
+}
+
+.navbar__button--signup:hover {
+  background-color: #3a5a6a;
+  border-color: #3a5a6a;
+}
+
+/* Hide Sign Up in mobile menu by default */
+.navbar__item--mobile-only {
+  display: none;
+}
+
+/* ========================================
+   HAMBURGER MENU (Mobile Only)
+   ======================================== */
+
+.navbar__hamburger {
+  display: none; /* Hidden on desktop */
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  gap: 4px;
+}
+
+.navbar__hamburger-line {
+  width: 25px;
+  height: 3px;
+  background-color: #1a1a1a;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* ========================================
+   RESPONSIVE - MOBILE STYLES
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Show hamburger icon on mobile */
+  .navbar__hamburger {
+    display: flex;
+  }
+
+  /* Hide desktop Sign Up button on mobile */
+  .navbar__signup-desktop {
+    display: none;
+  }
+
+  /* Show Sign Up inside mobile menu */
+  .navbar__item--mobile-only {
+    display: block;
+    width: 100%;
+  }
+
+  .navbar__item--mobile-only .navbar__button {
+    width: 100%;
+  }
+
+  /* Navigation menu - hidden by default on mobile */
+  .navbar__menu {
+    position: absolute;
+    top: 70px; /* Below navbar */
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    flex-direction: column;
+    padding: 1rem 2rem;
+    gap: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    /* Hidden by default */
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+  }
+
+  /* Show menu when active */
+  .navbar__menu--active {
+    max-height: 500px; /* Large enough for content */
+    opacity: 1;
+  }
+
+  /* Menu items full width on mobile */
+  .navbar__item {
+    width: 100%;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid #e1e8ed;
+  }
+
+  .navbar__link {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Dropdown behavior on mobile - click instead of hover */
+  .navbar__dropdown-menu {
+    position: static; /* Not absolute on mobile */
+    box-shadow: none;
+    margin-top: 0.5rem;
+    transform: none;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+
+  /* Show dropdown when arrow is rotated (clicked) */
+  .navbar__arrow--rotate ~ .navbar__dropdown-menu {
+    max-height: 300px;
+    opacity: 1;
+  }
+
+  /* Don't trigger hover effects on mobile */
+  .navbar__item--dropdown:hover .navbar__dropdown-menu {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* Login button stays visible on mobile */
+  .navbar__actions {
+    gap: 0.5rem;
+  }
+
+  .navbar__button--login {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
