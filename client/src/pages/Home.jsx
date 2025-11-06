@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import {
   FileText,
   Users,
@@ -6,10 +7,61 @@ import {
   UserPlus,
   Briefcase,
   DollarSign,
+  Code,
+  Smartphone,
+  Palette,
+  Server,
+  Cloud,
+  Database,
+  Wrench,
+  TestTube,
 } from "lucide-react";
 import StepCard from "../components/common/StepCard/StepCard";
+import CategoryCard from "../components/common/CategoryCard/CategoryCard";
 import "./Home.css";
 
+const categories = [
+  {
+    icon: Code,
+    title: "Web Development",
+    link: "", // Keep empty for now, add later like "/categories/web-development"
+  },
+  {
+    icon: Smartphone,
+    title: "Mobile App Development",
+    link: "",
+  },
+  {
+    icon: Palette,
+    title: "UI/UX Design",
+    link: "",
+  },
+  {
+    icon: Server,
+    title: "Backend Development",
+    link: "",
+  },
+  {
+    icon: Cloud,
+    title: "DevOps & Cloud",
+    link: "",
+  },
+  {
+    icon: Database,
+    title: "Database Management",
+    link: "",
+  },
+  {
+    icon: Wrench,
+    title: "API Development",
+    link: "",
+  },
+  {
+    icon: TestTube,
+    title: "Software Testing",
+    link: "",
+  },
+];
 const Home = () => {
   // State to track which toggle is active (true = "For hiring", false = "For finding work")
   const [isHiringActive, setIsHiringActive] = useState(true);
@@ -126,6 +178,20 @@ const Home = () => {
                 title={step.title}
                 description={step.description}
               />
+            ))}
+          </div>
+        </div>
+      </section>
+      {/* Categories/Services Section */}
+      <section className="categories-section">
+        <div className="categories-section__container">
+          {/* Section Heading */}
+          <h2 className="categories-section__heading">Explore Services</h2>
+
+          {/* Categories Grid */}
+          <div className="categories-section__grid">
+            {categories.map((category, index) => (
+              <CategoryCard key={index} category={category} />
             ))}
           </div>
         </div>

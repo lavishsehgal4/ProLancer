@@ -124,6 +124,35 @@
 }
 
 /* ========================================
+   CATEGORIES/SERVICES SECTION
+   ======================================== */
+
+.categories-section {
+  padding: 4rem 2rem;
+  background-color: #ffffff; /* White background - alternates from cyan "How It Works" */
+}
+
+.categories-section__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Section Heading */
+.categories-section__heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* Categories Grid */
+.categories-section__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns on desktop */
+  gap: 2rem;
+}
+/* ========================================
    RESPONSIVE DESIGN
    ======================================== */
 
@@ -160,5 +189,32 @@
   .how-it-works__steps {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 968px) {
+  .categories-section__grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns on tablets */
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .categories-section {
+    padding: 3rem 1.5rem;
+  }
+
+  .categories-section__heading {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .categories-section__grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+    gap: 1rem;
   }
 }

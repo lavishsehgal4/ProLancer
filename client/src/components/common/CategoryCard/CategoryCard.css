@@ -1,0 +1,84 @@
+/* ========================================
+   CATEGORY CARD COMPONENT
+   ======================================== */
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border: 2px solid transparent; /* Transparent border for smooth transition */
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 200px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover Effect - Border Glow */
+.category-card:hover {
+  border-color: #6ba5a8; /* Teal glow */
+  box-shadow: 0 0 20px rgba(107, 165, 168, 0.3); /* Soft glow effect */
+  transform: translateY(-3px); /* Subtle lift */
+}
+
+/* Icon Wrapper */
+.category-card__icon-wrapper {
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+/* Icon rotation on hover */
+.category-card:hover .category-card__icon-wrapper {
+  transform: scale(1.1); /* Slightly enlarge icon */
+}
+
+/* Icon Styling */
+.category-card__icon {
+  color: #4a6b7c; /* Dark blue */
+  transition: color 0.3s ease;
+}
+
+/* Icon color change on hover */
+.category-card:hover .category-card__icon {
+  color: #6ba5a8; /* Teal color */
+}
+
+/* Category Title */
+.category-card__title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+/* Title color change on hover */
+.category-card:hover .category-card__title {
+  color: #6ba5a8; /* Teal color */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .category-card {
+    padding: 2rem 1.5rem;
+    min-height: 180px;
+  }
+
+  .category-card__icon-wrapper {
+    margin-bottom: 1rem;
+  }
+
+  .category-card__icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .category-card__title {
+    font-size: 1rem;
+  }
+}
