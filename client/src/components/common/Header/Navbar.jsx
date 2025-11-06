@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
+import logo from "../../../assets/images/logo.png";
 
 const Navbar = () => {
   // State to control mobile menu open/close
@@ -38,11 +39,7 @@ const Navbar = () => {
         </button>
         {/* LEFT SIDE - Logo */}
         <Link to="/" className="navbar__logo">
-          <img
-            src="../../assets/react.svg"
-            alt="Prolancer Logo"
-            className="navbar__logo-image"
-          />
+          <img src={logo} alt="Prolancer Logo" className="navbar__logo-image" />
         </Link>
 
         {/* MIDDLE - Navigation Links (Desktop) */}

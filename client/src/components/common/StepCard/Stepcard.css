@@ -1,0 +1,105 @@
+/* ========================================
+   STEP CARD COMPONENT
+   ======================================== */
+
+.step-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+  cursor: pointer;
+}
+
+/* Hover Effect - Lift up with shadow */
+.step-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Icon Wrapper */
+.step-card__icon-wrapper {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, #d1e9eb 0%, #a8d5d8 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+/* Icon color change on hover */
+.step-card:hover .step-card__icon-wrapper {
+  background: linear-gradient(135deg, #6ba5a8 0%, #4a6b7c 100%);
+}
+
+.step-card__icon {
+  color: #4a6b7c;
+  transition: color 0.3s ease;
+}
+
+.step-card:hover .step-card__icon {
+  color: #ffffff;
+}
+
+/* Step Number */
+.step-card__number {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  background-color: #4a6b7c;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Step Title */
+.step-card__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+/* Step Description */
+.step-card__description {
+  font-size: 0.95rem;
+  color: #666666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .step-card {
+    padding: 1.5rem;
+  }
+
+  .step-card__icon-wrapper {
+    width: 60px;
+    height: 60px;
+  }
+
+  .step-card__icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .step-card__title {
+    font-size: 1.1rem;
+  }
+
+  .step-card__description {
+    font-size: 0.9rem;
+  }
+}

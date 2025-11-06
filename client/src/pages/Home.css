@@ -1,62 +1,164 @@
-/* Hero Section */
+/* ========================================
+   HOME PAGE
+   ======================================== */
+
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+
 .hero-section {
-  min-height: 100vh;
-  background-color: #d1e9eb;
+  background-image: url("../assets/images/backend.png");
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  padding-top: 80px; /* Space for fixed navbar */
 }
 
-.hero-content {
-  max-width: 1400px;
-  width: 100%;
+/* ========================================
+   HOW IT WORKS SECTION
+   ======================================== */
+
+.how-it-works {
+  padding: 4rem 2rem;
+  background-color: #d1e9eb; /* Light cyan background */
+}
+
+.how-it-works__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header with Heading and Toggle Buttons */
+.how-it-works__header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.how-it-works__heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+/* ========================================
+   TOGGLE BUTTONS
+   ======================================== */
+
+.how-it-works__toggle {
+  display: flex;
+  gap: 0;
+  border-radius: 50px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-button {
+  padding: 0.75rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 2px solid #4a6b7c;
+  background-color: #ffffff;
+  color: #4a6b7c;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.toggle-button:first-child {
+  border-radius: 50px 0 0 50px;
+  border-right: 1px solid #4a6b7c;
+}
+
+.toggle-button:last-child {
+  border-radius: 0 50px 50px 0;
+  border-left: 1px solid #4a6b7c;
+}
+
+/* Active toggle button */
+.toggle-button--active {
+  background-color: #4a6b7c;
+  color: #ffffff;
+  border-color: #4a6b7c;
+}
+
+/* Hover effect for inactive buttons */
+.toggle-button:not(.toggle-button--active):hover {
+  background-color: #e8f4f5;
+  border-color: #6ba5a8;
+  color: #6ba5a8;
+}
+
+/* ========================================
+   STEPS GRID
+   ======================================== */
+
+.how-it-works__steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Hero Image */
-.hero-image {
-  flex: 1;
-  max-width: 600px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-/* Loaded state - image fades in with slide up */
-.hero-image.loaded {
+/* Fade animations */
+.fade-in {
   opacity: 1;
   transform: translateY(0);
 }
 
-.hero-image img {
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+.fade-out {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
-/* Hero Text Area (for future content) */
-.hero-text {
-  flex: 1;
-  /* Add your text styles here later */
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 968px) {
+  .how-it-works__steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-  .hero-section {
-    padding-top: 100px;
+  .how-it-works {
+    padding: 3rem 1.5rem;
   }
 
-  .hero-content {
+  .how-it-works__header {
     flex-direction: column;
+    align-items: flex-start;
   }
 
-  .hero-image {
-    max-width: 100%;
+  .how-it-works__heading {
+    font-size: 1.5rem;
+  }
+
+  .how-it-works__toggle {
+    width: 100%;
+  }
+
+  .toggle-button {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .how-it-works__steps {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 }
