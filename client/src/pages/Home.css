@@ -218,3 +218,77 @@
     gap: 1rem;
   }
 }
+
+/* ========================================
+   BENEFITS SECTION
+   ======================================== */
+
+.benefits-section {
+  padding: 4rem 2rem;
+  background-color: #d1e9eb; /* Light cyan - alternates from white categories */
+}
+
+.benefits-section__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Section Header */
+.benefits-section__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.benefits-section__heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.benefits-section__subheading {
+  font-size: 1.1rem;
+  color: #666666;
+  margin: 0;
+}
+
+/* Benefits Grid */
+.benefits-section__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns = 2 rows for 6 items */
+  gap: 2rem;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 968px) {
+  .benefits-section__grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .benefits-section {
+    padding: 3rem 1.5rem;
+  }
+
+  .benefits-section__header {
+    margin-bottom: 2rem;
+  }
+
+  .benefits-section__heading {
+    font-size: 1.5rem;
+  }
+
+  .benefits-section__subheading {
+    font-size: 1rem;
+  }
+
+  .benefits-section__grid {
+    grid-template-columns: 1fr; /* 1 column on mobile */
+    gap: 1rem;
+  }
+}

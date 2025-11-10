@@ -18,6 +18,15 @@ import {
 } from "lucide-react";
 import StepCard from "../components/common/StepCard/StepCard";
 import CategoryCard from "../components/common/CategoryCard/CategoryCard";
+import {
+  ShieldCheck,
+  Lock,
+  Zap,
+  MessageCircle,
+  Target,
+  Star,
+} from "lucide-react";
+import BenefitCard from "../components/common/BenefitCard/BenefitCard";
 import "./Home.css";
 
 const categories = [
@@ -60,6 +69,38 @@ const categories = [
     icon: TestTube,
     title: "Software Testing",
     link: "",
+  },
+];
+const benefits = [
+  {
+    icon: ShieldCheck,
+    title: "Verified Freelancers",
+    description: "Vetted professionals you can trust",
+  },
+  {
+    icon: Lock,
+    title: "Secure Payments",
+    description: "Safe transactions with escrow protection",
+  },
+  {
+    icon: Zap,
+    title: "Fast Hiring",
+    description: "Find the perfect match in minutes",
+  },
+  {
+    icon: MessageCircle,
+    title: "24/7 Support",
+    description: "Always here to help you succeed",
+  },
+  {
+    icon: Target,
+    title: "Smart Matching",
+    description: "AI-powered talent recommendations",
+  },
+  {
+    icon: Star,
+    title: "Quality Guaranteed",
+    description: "Satisfaction or money-back",
   },
 ];
 const Home = () => {
@@ -192,6 +233,30 @@ const Home = () => {
           <div className="categories-section__grid">
             {categories.map((category, index) => (
               <CategoryCard key={index} category={category} />
+            ))}
+          </div>
+        </div>
+      </section>
+      {/* ============================================
+ ADD THIS SECTION IN YOUR RETURN STATEMENT
+(AFTER CATEGORIES SECTION)
+ ============================================ */}
+
+      {/* Benefits Section */}
+      <section className="benefits-section">
+        <div className="benefits-section__container">
+          {/* Section Header */}
+          <div className="benefits-section__header">
+            <h2 className="benefits-section__heading">Why Choose Prolancer</h2>
+            <p className="benefits-section__subheading">
+              Everything you need to succeed
+            </p>
+          </div>
+
+          {/* Benefits Grid */}
+          <div className="benefits-section__grid">
+            {benefits.map((benefit, index) => (
+              <BenefitCard key={index} benefit={benefit} />
             ))}
           </div>
         </div>
