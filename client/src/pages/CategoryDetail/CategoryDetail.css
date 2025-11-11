@@ -1,0 +1,149 @@
+/* ========================================
+   CATEGORY DETAIL PAGE
+   ======================================== */
+
+.category-detail {
+  min-height: 100vh;
+}
+
+/* Main Content Area */
+.category-detail__content {
+  background-color: #f7f9fc;
+  padding: 2rem;
+  min-height: calc(100vh - 400px); /* Adjust based on header/footer height */
+}
+
+.category-detail__container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 280px 1fr; /* Sidebar + Main content */
+  gap: 2rem;
+}
+
+/* Main Content Area (Right side) */
+.category-detail__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Results Header */
+.category-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.category-detail__results {
+  font-size: 1rem;
+  color: #666666;
+  margin: 0;
+}
+
+.category-detail__results strong {
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+/* Sort Dropdown */
+.category-detail__sort {
+  padding: 0.6rem 1rem;
+  border: 2px solid #d1e9eb;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #1a1a1a;
+  background-color: #ffffff;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.category-detail__sort:hover,
+.category-detail__sort:focus {
+  border-color: #6ba5a8;
+}
+
+/* Freelancer Cards Grid */
+.category-detail__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+  gap: 2rem;
+}
+
+/* Pagination */
+.category-detail__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.pagination__button {
+  padding: 0.6rem 1rem;
+  border: 2px solid #d1e9eb;
+  background-color: #ffffff;
+  color: #4a6b7c;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 40px;
+}
+
+.pagination__button:hover {
+  border-color: #6ba5a8;
+  background-color: #f7f9fc;
+}
+
+.pagination__button--active {
+  background-color: #4a6b7c;
+  color: #ffffff;
+  border-color: #4a6b7c;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .category-detail__grid {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); /* 2 cards per row on smaller screens */
+  }
+}
+
+@media (max-width: 968px) {
+  .category-detail__container {
+    grid-template-columns: 1fr; /* Stack sidebar and content on tablets */
+  }
+
+  .category-detail__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .category-detail__sort {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-detail__content {
+    padding: 1.5rem;
+  }
+
+  .category-detail__grid {
+    grid-template-columns: 1fr; /* 1 card per row on mobile */
+    gap: 1.5rem;
+  }
+
+  .pagination__button {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+    min-width: 35px;
+  }
+}

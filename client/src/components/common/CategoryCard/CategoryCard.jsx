@@ -14,9 +14,11 @@ import "./CategoryCard.css";
 
 const CategoryCard = ({ category }) => {
   const { icon: Icon, title, link } = category;
-
+  // Convert title to URL-friendly format
+  // "Web Development" -> "web-development"
+  const categorySlug = title.toLowerCase().replace(/\s+/g, "-");
   return (
-    <Link to={link || "#"} className="category-card">
+    <Link to={`/categories/${categorySlug}`} className="category-card">
       {/* Large Icon */}
       <div className="category-card__icon-wrapper">
         <Icon className="category-card__icon" size={64} strokeWidth={1.5} />

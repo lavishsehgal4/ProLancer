@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home";
+import CategoryDetail from "../pages/CategoryDetail/CategoryDetail";
 
 // Create router with routes
 const router = createBrowserRouter([
@@ -12,15 +13,10 @@ const router = createBrowserRouter([
         index: true, // Default route for "/"
         element: <Home />,
       },
-      // Add more routes here as you build pages
-      // {
-      //   path: 'jobs',
-      //   element: <JobList />
-      // },
-      // {
-      //   path: 'dashboard',
-      //   element: <Dashboard />
-      // },
+      {
+        path: "categories/:categoryName",
+        element: <CategoryDetail />,
+      },
     ],
   },
 ]);
