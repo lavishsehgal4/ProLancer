@@ -1,0 +1,67 @@
+/* ========================================
+   SIGNUP CHOICE PAGE
+   ======================================== */
+
+.signup-choice {
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+}
+
+/* Heading */
+.signup-choice__heading {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.signup-choice__subheading {
+  font-size: 1.15rem;
+  color: #666666;
+  margin: 0 0 3rem 0;
+}
+
+/* Cards Container */
+.signup-choice__cards {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* Login Link */
+.signup-choice__login-link {
+  font-size: 1rem;
+  color: #666666;
+  margin: 0;
+}
+
+.signup-choice__link {
+  color: #4a6b7c;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.signup-choice__link:hover {
+  color: #6ba5a8;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .signup-choice__heading {
+    font-size: 2rem;
+  }
+
+  .signup-choice__subheading {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .signup-choice__cards {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}

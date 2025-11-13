@@ -1,0 +1,65 @@
+/* ========================================
+   AUTH LAYOUT - Clean Authentication Pages
+   ======================================== */
+
+.auth-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #d1e9eb 0%, #a8d5d8 100%);
+}
+
+/* Header with Logo */
+.auth-layout__header {
+  padding: 2rem;
+  text-align: center;
+}
+
+.auth-layout__logo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  transition: color 0.3s ease;
+}
+
+.auth-layout__logo:hover {
+  color: #4a6b7c;
+}
+
+/* Main Content Area */
+.auth-layout__content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Simple Footer */
+.auth-layout__footer {
+  padding: 1.5rem;
+  text-align: center;
+  color: #666666;
+  font-size: 0.9rem;
+}
+
+.auth-layout__footer p {
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .auth-layout__header {
+    padding: 1.5rem;
+  }
+
+  .auth-layout__logo {
+    font-size: 1.5rem;
+  }
+
+  .auth-layout__content {
+    padding: 1rem;
+  }
+}

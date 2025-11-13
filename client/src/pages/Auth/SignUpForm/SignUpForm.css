@@ -1,0 +1,196 @@
+/* ========================================
+   SIGNUP FORM PAGE
+   ======================================== */
+
+.signup-form {
+  width: 100%;
+  max-width: 480px;
+}
+
+.signup-form__container {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Heading */
+.signup-form__heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.signup-form__subheading {
+  font-size: 1rem;
+  color: #666666;
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+/* Form */
+.signup-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Form Group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group__label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.required {
+  color: #ff4757;
+}
+
+.form-group__input {
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #d1e9eb;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  background-color: #ffffff;
+  color: #1a1a1a;
+}
+
+.form-group__input:focus {
+  border-color: #6ba5a8;
+}
+
+.form-group__input::placeholder {
+  color: #999999;
+}
+
+/* Error State */
+.form-group__input--error {
+  border-color: #ff4757;
+}
+
+.form-group__error {
+  font-size: 0.85rem;
+  color: #ff4757;
+  margin-top: -0.25rem;
+}
+
+/* Password Input Wrapper */
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666666;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: #4a6b7c;
+}
+
+/* Password Strength Indicator */
+.password-strength {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  margin-top: -0.25rem;
+}
+
+.password-strength--weak {
+  background-color: #ffe5e5;
+  color: #ff4757;
+}
+
+.password-strength--medium {
+  background-color: #fff4e5;
+  color: #ff8c00;
+}
+
+.password-strength--strong {
+  background-color: #e5f9f4;
+  color: #00c48c;
+}
+
+/* Submit Button */
+.signup-form__button {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #4a6b7c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.signup-form__button:hover {
+  background-color: #3a5a6a;
+  transform: translateY(-1px);
+}
+
+.signup-form__button:active {
+  transform: translateY(0);
+}
+
+/* Login Link */
+.signup-form__login-link {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #666666;
+  margin: 1.5rem 0 0 0;
+}
+
+.signup-form__link {
+  color: #4a6b7c;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.signup-form__link:hover {
+  color: #6ba5a8;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .signup-form {
+    max-width: 100%;
+  }
+
+  .signup-form__container {
+    padding: 2rem 1.5rem;
+  }
+
+  .signup-form__heading {
+    font-size: 1.75rem;
+  }
+
+  .signup-form__form {
+    gap: 1.25rem;
+  }
+}
