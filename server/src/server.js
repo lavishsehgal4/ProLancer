@@ -1,5 +1,4 @@
 const http = require("http");
-
 const connectDB = require("./services/mongo");
 
 const app = require("./app");

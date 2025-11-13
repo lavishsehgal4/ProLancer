@@ -3,7 +3,12 @@ const { addUser } = require("../../models/USER/user.model");
 async function httpSignUpUser(req, res) {
   try {
     const userData = req.body;
-    const response = await addUser(userData);
+    const role = req.params.role;
+    const newUser = Object.assign(userData, {
+      accountType: role,
+      isEmailVerified: true,
+    });
+    const response = await addUser(newUser);
 
     if (!response.success) {
       return res.status(400).json(response); // error case

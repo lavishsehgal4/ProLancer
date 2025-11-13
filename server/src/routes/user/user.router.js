@@ -3,6 +3,6 @@ const { httpInsertUser, httpSignUpUser } = require("./user.controller");
 
 const userRouter = express.Router();
 
-userRouter.post("/addUser", httpSignUpUser);
+userRouter.post("/signup/:role", httpSignUpUser);
 
 module.exports = userRouter;

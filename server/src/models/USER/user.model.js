@@ -11,9 +11,40 @@ async function addUser(userData) {
       data: newUser,
     };
   } catch (err) {
+    // 🟦 1. Handle Duplicate Key Errors (11000)
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyPattern)[0]; // e.g. email, username
+
+      return {
+        success: false,
+        type: "duplicate",
+        message: `${field} already exists`,
+        field: field,
+        value: err.keyValue[field],
+      };
+    }
+
+    // 🟧 2. Handle Mongoose Validation Errors (required, enum, min, etc.)
+    if (err.name === "ValidationError") {
+      const errors = {};
+
+      for (let field in err.errors) {
+        errors[field] = err.errors[field].message;
+      }
+
+      return {
+        success: false,
+        type: "validation",
+        message: "Validation failed",
+        errors: errors,
+      };
+    }
+
+    // 🔴 3. Any other server/database error
     return {
       success: false,
-      message: "Failed to create user",
+      type: "server",
+      message: "Internal server error",
       error: err.message,
     };
   }

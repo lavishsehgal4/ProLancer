@@ -11,5 +11,5 @@ app.use(express.json());
 app.get("/test", (req, res) => {
   res.status(200).send("connection was ok");
 });
-app.use("/signUp", userRouter);
+app.use("/", userRouter);
 module.exports = app;
