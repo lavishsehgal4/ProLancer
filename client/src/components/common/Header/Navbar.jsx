@@ -1,14 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { isAuthenticated } from "../../../utils/auth/token";
 import "./Navbar.css";
 import logo from "../../../assets/images/logo.png";
 
 const Navbar = () => {
+  // State to track if user is logged in
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   // State to control mobile menu open/close
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // State to track which dropdown is currently open (for mobile click behavior)
   const [activeDropdown, setActiveDropdown] = useState(null);
+
+  // Check authentication status on component mount and when it changes
+  useEffect(() => {
+    setIsLoggedIn(isAuthenticated());
+
+    // Listen for storage changes (when token is added/removed)
+    const handleStorageChange = () => {
+      setIsLoggedIn(isAuthenticated());
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // Also check periodically (in case token is removed in same tab)
+    const interval = setInterval(() => {
+      setIsLoggedIn(isAuthenticated());
+    }, 1000);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   // Toggle mobile hamburger menu
   const toggleMobileMenu = () => {
@@ -145,19 +171,30 @@ const Navbar = () => {
 
         {/* RIGHT SIDE - Action Buttons */}
         <div className="navbar__actions">
-          {/* Login Button - Always visible */}
-          <Link to="/login">
-            <button className="navbar__button navbar__button--login">
-              Login
-            </button>
-          </Link>
+          {/* Show Dashboard link if logged in, otherwise show Login/Sign Up */}
+          {isLoggedIn ? (
+            <Link to="/dashboard">
+              <button className="navbar__button navbar__button--dashboard">
+                Dashboard
+              </button>
+            </Link>
+          ) : (
+            <>
+              {/* Login Button - Only visible when not logged in */}
+              <Link to="/login">
+                <button className="navbar__button navbar__button--login">
+                  Login
+                </button>
+              </Link>
 
-          {/* Sign Up Button - Hidden on mobile */}
-          <Link to="/signup" className="navbar__signup-desktop">
-            <button className="navbar__button navbar__button--signup">
-              Sign Up
-            </button>
-          </Link>
+              {/* Sign Up Button - Hidden on mobile, only visible when not logged in */}
+              <Link to="/signup" className="navbar__signup-desktop">
+                <button className="navbar__button navbar__button--signup">
+                  Sign Up
+                </button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

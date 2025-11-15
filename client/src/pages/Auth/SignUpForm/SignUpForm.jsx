@@ -2,11 +2,22 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import "./SignUpForm.css";
+// Import API functions and token utilities
+import { signup } from "../../../services/api/authApi";
+import { saveToken } from "../../../utils/auth/token";
 
 /**
  * SignUpForm Component
  * Reusable form for both client and freelancer signup
  * Detects role from URL path
+ *
+ * Features:
+ * - Form validation
+ * - Password strength indicator
+ * - API integration for account creation
+ * - Token storage after successful signup
+ * - Success/error alerts
+ * - Redirects to home page on success
  */
 
 const SignUpForm = () => {
@@ -16,6 +27,7 @@ const SignUpForm = () => {
   // Determine role from URL path
   const isClient = location.pathname.includes("client");
   const role = isClient ? "Client" : "Freelancer";
+  const roleForApi = isClient ? "client" : "freelancer"; // Lowercase for API
 
   // Form state
   const [formData, setFormData] = useState({
@@ -33,6 +45,9 @@ const SignUpForm = () => {
 
   // Password strength
   const [passwordStrength, setPasswordStrength] = useState("");
+
+  // Loading state for API call
+  const [isLoading, setIsLoading] = useState(false);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -123,19 +138,52 @@ const SignUpForm = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      // TODO: API call to create account
-      console.log("Form submitted:", {
-        ...formData,
-        accountType: isClient ? "client" : "freelancer",
-      });
+    // Validate form before submitting
+    if (!validateForm()) {
+      return; // Stop if validation fails
+    }
 
-      // For now, just redirect to dashboard (replace with actual logic)
-      alert("Account created successfully!");
-      navigate("/dashboard");
+    // Set loading state to disable button and show loading indicator
+    setIsLoading(true);
+
+    try {
+      // Call signup API function
+      // This sends a POST request to: /api/users/signup/:role
+      const response = await signup(formData, roleForApi);
+
+      // Check if signup was successful
+      if (response.success) {
+        // Save the authentication token to localStorage
+        // This allows the user to stay logged in
+        // Note: Backend sends token at root level, not in data object
+        if (response.token) {
+          saveToken(response.token);
+        }
+
+        // Show success alert
+        alert(response.message || "Account created successfully!");
+
+        // Redirect to home page
+        navigate("/");
+      } else {
+        // Signup failed - show error message
+        alert(
+          response.message || "Failed to create account. Please try again."
+        );
+      }
+    } catch (error) {
+      // Handle unexpected errors (network issues, etc.)
+      console.error("Signup error:", error);
+      alert(
+        error.message ||
+          "An error occurred while creating your account. Please try again."
+      );
+    } finally {
+      // Always reset loading state, whether success or failure
+      setIsLoading(false);
     }
   };
 
@@ -250,8 +298,12 @@ const SignUpForm = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="signup-form__button">
-            Create Account
+          <button
+            type="submit"
+            className="signup-form__button"
+            disabled={isLoading} // Disable button while loading
+          >
+            {isLoading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 

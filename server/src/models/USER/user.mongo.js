@@ -43,14 +43,6 @@ const userSchema = new mongoose.Schema(
       default: "india",
     },
 
-    city: {
-      type: String,
-    },
-
-    timezone: {
-      type: String,
-    },
-
     isEmailVerified: {
       type: Boolean,
       default: false,
@@ -59,10 +51,6 @@ const userSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
-    },
-
-    lastLoginAt: {
-      type: Date,
     },
   },
   {

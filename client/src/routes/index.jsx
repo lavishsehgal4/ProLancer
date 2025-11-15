@@ -5,6 +5,9 @@ import Home from "../pages/Home";
 import CategoryDetail from "../pages/CategoryDetail/CategoryDetail";
 import SignUpChoice from "../pages/Auth/SignUpChoice/SignUpChoice";
 import SignUpForm from "../pages/Auth/SignUpForm/SignUpForm";
+import Login from "../pages/Auth/Login/Login";
+import Dashboard from "../pages/Dashboard/Dashboard";
+import EditAccount from "../pages/Dashboard/EditAccount/EditAccount";
 
 // Create router with routes
 const router = createBrowserRouter([
@@ -19,6 +22,14 @@ const router = createBrowserRouter([
       {
         path: "categories/:categoryName",
         element: <CategoryDetail />,
+      },
+      {
+        path: "dashboard",
+        element: <Dashboard />, // Dashboard page
+      },
+      {
+        path: "dashboard/edit-account",
+        element: <EditAccount />, // Edit account page
       },
     ],
   },
@@ -39,10 +50,10 @@ const router = createBrowserRouter([
         path: "signup/freelancer",
         element: <SignUpForm />, // Freelancer signup form (same component)
       },
-      // {
-      //   path: 'login',
-      //   element: <Login /> // Login page (create next)
-      // },
+      {
+        path: "login",
+        element: <Login />, // Login page
+      },
     ],
   },
 ]);
