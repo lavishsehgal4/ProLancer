@@ -27,17 +27,6 @@ const clientSchema = new mongoose.Schema(
       trim: true,
     },
 
-    companyWebsite: {
-      type: String,
-      trim: true,
-    },
-
-    companySize: {
-      type: String,
-      enum: ["1-10", "10-50", "50-200", "200+"],
-      default: "1-10",
-    },
-
     industry: {
       type: String,
       trim: true,
@@ -53,11 +42,6 @@ const clientSchema = new mongoose.Schema(
 
     // Ratings
     averageRating: {
-      type: Number,
-      default: 0,
-    },
-
-    totalReviews: {
       type: Number,
       default: 0,
     },

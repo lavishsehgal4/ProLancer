@@ -1,4 +1,8 @@
-const { addUser, doesUserExist } = require("../../models/USER/user.model");
+const {
+  addUser,
+  doesUserExist,
+  getUserDataById,
+} = require("../../models/USER/user.model");
 const {
   hashPassword,
   generateToken,
@@ -97,7 +101,32 @@ async function httpLoginUser(req, res) {
   }
 }
 
+async function httpGetUserData(req, res) {
+  try {
+    const { userId, email, role } = req.user;
+
+    const response = await getUserDataById(userId);
+    if (response.success) {
+      return res.status(200).json(response);
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (err) {
+    if (err.message === "Server error") {
+      return res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+}
+
 module.exports = {
   httpSignUpUser,
   httpLoginUser,
+  httpGetUserData,
 };

@@ -90,7 +90,46 @@ async function doesUserExist(email) {
   }
 }
 
+async function getUserDataById(id) {
+  try {
+    const user = await User.findById(id, {
+      email: 1,
+      firstName: 1,
+      lastName: 1,
+      accountType: 1,
+      phone: 1,
+      profilePicture: 1,
+      country: 1,
+    });
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+    return {
+      success: true,
+      message: "User found",
+      data: {
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName || "",
+        accountType: user.accountType,
+        phoneNumber: user.phone || "",
+        profilePicture: user.profilePicture || "",
+        country: user.country || "",
+      },
+    };
+  } catch (err) {
+    return {
+      success: false,
+      message: "Server error",
+    };
+  }
+}
+
 module.exports = {
   addUser,
   doesUserExist,
+  getUserDataById,
 };

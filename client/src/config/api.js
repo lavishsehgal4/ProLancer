@@ -14,10 +14,10 @@ export const API_BASE_URL = "http://localhost:8000";
 export const API_ENDPOINTS = {
   // User authentication endpoints
   SIGNUP: (role) => `/signup/${role}`, // role can be 'client' or 'freelancer'
-  LOGIN: "/api/users/login",
+  LOGIN: "users/login",
 
   // User profile endpoints
-  GET_PROFILE: "/api/users/profile", // GET request to fetch user profile data
+  GET_PROFILE: "users/basicprofile", // GET request to fetch user profile data
   UPDATE_PROFILE: "/api/users/profile", // PUT/PATCH request to update user profile
 
   // Add more endpoints here as needed
