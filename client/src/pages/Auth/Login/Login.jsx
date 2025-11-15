@@ -99,6 +99,17 @@ const Login = () => {
           saveToken(response.token);
         }
 
+        // Log user data received from login (optional - for debugging)
+        // Backend sends: id, email, name, accountType along with token
+        if (response.id && response.email && response.accountType) {
+          console.log("User logged in:", {
+            id: response.id,
+            email: response.email,
+            name: response.name,
+            accountType: response.accountType,
+          });
+        }
+
         // Show success alert
         alert(response.message || "Login successful!");
 

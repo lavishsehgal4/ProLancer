@@ -1,5 +1,9 @@
-const { addUser } = require("../../models/USER/user.model");
-const { hashPassword, generateToken } = require("../../auth/auth.utils");
+const { addUser, doesUserExist } = require("../../models/USER/user.model");
+const {
+  hashPassword,
+  generateToken,
+  comparePassword,
+} = require("../../auth/auth.utils");
 
 async function httpSignUpUser(req, res) {
   try {
@@ -10,10 +14,10 @@ async function httpSignUpUser(req, res) {
       isEmailVerified: true,
       isActive: true,
     });
-    console.log(newUser);
+
     // 2. Hash password
     newUser.passwordHash = await hashPassword(newUser.passwordHash);
-    console.log(newUser);
+
     const response = await addUser(newUser);
 
     if (!response.success) {
@@ -38,6 +42,62 @@ async function httpSignUpUser(req, res) {
   }
 }
 
+async function httpLoginUser(req, res) {
+  try {
+    const { email, password } = req.body;
+
+    // Step 1: Check if user exists
+    const response = await doesUserExist(email);
+
+    if (!response.success) {
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist",
+      });
+    }
+
+    // Step 2: Compare password correctly (bcrypt.compare)
+    const isMatch = await comparePassword(password, response.passwordHash);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // Step 3: Prepare user object
+    const userObj = {
+      success: true,
+      message: "Login successful",
+      userId: response.userId,
+      name: response.firstName + " " + (response.lastName || ""),
+      accountType: response.accountType,
+      email: response.email,
+    };
+
+    // Step 4: Generate Token
+    const payload = {
+      _id: response.userId,
+      email: response.email,
+      accountType: response.accountType,
+    };
+
+    userObj.token = generateToken(payload);
+
+    // Step 5: Return response
+    return res.status(200).json(userObj);
+  } catch (error) {
+    console.error(error);
+    console.log(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+}
+
 module.exports = {
   httpSignUpUser,
+  httpLoginUser,
 };

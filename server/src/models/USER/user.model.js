@@ -49,6 +49,48 @@ async function addUser(userData) {
   }
 }
 
+//check if user exist in db
+async function doesUserExist(email) {
+  try {
+    // Fetch only required fields (projection)
+    const user = await User.findOne(
+      { email },
+      {
+        passwordHash: 1,
+        firstName: 1,
+        lastName: 1,
+        email: 1,
+        accountType: 1,
+      }
+    );
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User does not exist",
+      };
+    }
+
+    return {
+      success: true,
+      message: "User found",
+      userId: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      accountType: user.accountType,
+      passwordHash: user.passwordHash, // used for password comparison
+    };
+  } catch (err) {
+    return {
+      success: false,
+      message: "Server error",
+      error: err.message,
+    };
+  }
+}
+
 module.exports = {
   addUser,
+  doesUserExist,
 };
