@@ -18,7 +18,7 @@ export const API_ENDPOINTS = {
 
   // User profile endpoints
   GET_PROFILE: "users/basicprofile", // GET request to fetch user profile data
-  UPDATE_PROFILE: "/api/users/profile", // PUT/PATCH request to update user profile
+  UPDATE_PROFILE: "users/basicprofile", // PUT/PATCH request to update user profile
 
   // Add more endpoints here as needed
   // LOGOUT: '/api/users/logout',

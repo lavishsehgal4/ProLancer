@@ -128,8 +128,66 @@ async function getUserDataById(id) {
   }
 }
 
+async function updateUserById(userId, updates) {
+  try {
+    // Fields allowed to update
+    const allowedFields = [
+      "firstName",
+      "lastName",
+      "phone",
+      "profilePicture",
+      "country",
+    ];
+
+    // Filter only allowed fields
+    const filteredUpdates = {};
+    for (let key of Object.keys(updates)) {
+      if (allowedFields.includes(key)) {
+        filteredUpdates[key] = updates[key];
+      } else if (key == "phoneNumber") {
+        filteredUpdates["phone"] = updates[key];
+      }
+    }
+
+    // If no valid fields provided
+    if (Object.keys(filteredUpdates).length === 0) {
+      return {
+        success: false,
+        message: "No valid fields to update",
+      };
+    }
+
+    // Update user
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: filteredUpdates },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+    updatedUser.phone = updatedUser.phoneNumber;
+    return {
+      success: true,
+      message: "Profile updated successfully",
+      data: updatedUser,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      message: "Server error",
+      error: err.message,
+    };
+  }
+}
+
 module.exports = {
   addUser,
   doesUserExist,
   getUserDataById,
+  updateUserById,
 };

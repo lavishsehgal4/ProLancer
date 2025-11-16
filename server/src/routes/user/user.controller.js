@@ -2,6 +2,7 @@ const {
   addUser,
   doesUserExist,
   getUserDataById,
+  updateUserById,
 } = require("../../models/USER/user.model");
 const {
   hashPassword,
@@ -125,8 +126,35 @@ async function httpGetUserData(req, res) {
   }
 }
 
+async function httpUpdateUserData(req, res) {
+  try {
+    const updates = req.body;
+
+    if (updates.firstName.trim() == "") {
+      return res.status(400).json({
+        success: false,
+        message: "firstName can't be empty",
+      });
+    }
+    const response = await updateUserById(req.user.userId, updates);
+
+    if (response.success === false) {
+      throw new Error(response.message);
+    }
+    return res.status(200).json(response);
+  } catch (err) {
+    if (err.message === "Server error") {
+      return res.status(500).json({ success: false, message: err.message });
+    }
+    return res
+      .status(400)
+      .json({ success: false, message: "Failed to update profile" });
+  }
+}
+
 module.exports = {
   httpSignUpUser,
   httpLoginUser,
   httpGetUserData,
+  httpUpdateUserData,
 };
