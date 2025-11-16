@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { getUserProfile } from "../../services/api/userApi";
 import { removeToken, isAuthenticated } from "../../utils/auth/token";
 import BasicProfile from "../../components/dashboard/BasicProfile/BasicProfile";
+import FreelancerProfile from "../../components/dashboard/FreelancerProfile/FreelancerProfile";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -177,10 +178,7 @@ const Dashboard = () => {
           )}
 
           {activeSection === "freelancer-profile" && isFreelancer && (
-            <div className="dashboard__section-placeholder">
-              <h2>Freelancer Profile</h2>
-              <p>This section will be implemented later.</p>
-            </div>
+            <FreelancerProfile userProfile={userProfile} />
           )}
 
           {activeSection === "projects" && (

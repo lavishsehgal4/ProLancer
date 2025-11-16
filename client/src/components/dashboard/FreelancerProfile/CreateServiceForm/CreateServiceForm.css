@@ -1,0 +1,174 @@
+/**
+ * CreateServiceForm Component Styles
+ */
+
+.create-service-form {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.create-service-form__header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.create-service-form__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.create-service-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.create-service-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.create-service-form__label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333333;
+}
+
+.required {
+  color: #ff4757;
+}
+
+.create-service-form__input,
+.create-service-form__textarea {
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.create-service-form__input:focus,
+.create-service-form__textarea:focus {
+  outline: none;
+  border-color: #6ba5a8;
+}
+
+.create-service-form__textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.create-service-form__error {
+  font-size: 0.85rem;
+  color: #ff4757;
+}
+
+/* Skills Input */
+.create-service-form__skills-input {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.create-service-form__skills-input .create-service-form__input {
+  flex: 1;
+}
+
+.create-service-form__add-skill-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: #6ba5a8;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-service-form__add-skill-btn:hover {
+  background-color: #5a9497;
+}
+
+.create-service-form__skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.create-service-form__skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #4a6b7c;
+  background-color: #f0f4f6;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.create-service-form__remove-skill {
+  background: none;
+  border: none;
+  color: #ff4757;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+.create-service-form__remove-skill:hover {
+  color: #e63946;
+}
+
+.create-service-form__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.create-service-form__button {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.create-service-form__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.create-service-form__button--cancel {
+  background-color: #f5f5f5;
+  color: #333333;
+}
+
+.create-service-form__button--cancel:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+.create-service-form__button--save {
+  background-color: #6ba5a8;
+  color: #ffffff;
+}
+
+.create-service-form__button--save:hover:not(:disabled) {
+  background-color: #5a9497;
+}

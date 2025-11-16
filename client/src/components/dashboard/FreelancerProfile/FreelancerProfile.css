@@ -1,0 +1,426 @@
+/* ========================================
+   FREELANCER PROFILE PAGE
+   ======================================== */
+
+.freelancer-profile {
+  padding: 2rem;
+  background-color: #f7f9fc;
+  min-height: 100vh;
+}
+
+/* ========================================
+     HEADER SECTION
+     ======================================== */
+
+.freelancer-profile__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.freelancer-profile__header-content {
+  flex: 1;
+}
+
+.freelancer-profile__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.freelancer-profile__subtitle {
+  font-size: 1rem;
+  color: #666666;
+  margin: 0;
+}
+
+/* Create Button */
+.freelancer-profile__create-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  background-color: #4a6b7c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(74, 107, 124, 0.2);
+}
+
+.freelancer-profile__create-btn:hover {
+  background-color: #3a5a6a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 107, 124, 0.3);
+}
+
+/* ========================================
+     FREELANCER INFO SECTION
+     ======================================== */
+
+.freelancer-profile__info {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.freelancer-profile__info-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.freelancer-profile__info-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.freelancer-profile__info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.freelancer-profile__info-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.freelancer-profile__info-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.freelancer-profile__info-value {
+  font-size: 1rem;
+  color: #555555;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0.75rem;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+.freelancer-profile__rating {
+  display: flex;
+  align-items: center;
+}
+
+.freelancer-profile__rating-stars {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffa500;
+  padding: 0.75rem;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+.freelancer-profile__info-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.freelancer-profile__edit-btn {
+  padding: 0.75rem 2rem;
+  background-color: #6ba5a8;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.freelancer-profile__edit-btn:hover {
+  background-color: #5a9497;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 165, 168, 0.3);
+}
+
+/* ========================================
+     SERVICES SECTION
+     ======================================== */
+
+.freelancer-profile__services {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.freelancer-profile__services-header {
+  margin-bottom: 1.5rem;
+}
+
+.freelancer-profile__services-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+/* Services Grid */
+.freelancer-profile__services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* Loading and Error States */
+.freelancer-profile__loading,
+.freelancer-profile__error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  font-size: 1.2rem;
+  color: #666666;
+}
+
+.freelancer-profile__error {
+  color: #dc3545;
+}
+
+/* ========================================
+     SERVICE CARD
+     ======================================== */
+
+.service-card {
+  background-color: #ffffff;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Border Glow Hover Effect */
+.service-card:hover {
+  border-color: #6ba5a8;
+  box-shadow: 0 0 20px rgba(107, 165, 168, 0.3);
+  transform: translateY(-5px);
+}
+
+/* Service Image */
+.service-card__image-wrapper {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background-color: #d1e9eb;
+}
+
+.service-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-card__image {
+  transform: scale(1.05);
+}
+
+/* Service Content */
+.service-card__content {
+  padding: 1.5rem;
+}
+
+/* Category */
+.service-card__category {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6ba5a8;
+  background-color: #e8f4f5;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Title */
+.service-card__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.4;
+}
+
+/* Description */
+.service-card__description {
+  font-size: 0.95rem;
+  color: #666666;
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Skills */
+.service-card__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.service-card__skill-tag {
+  background-color: #d1e9eb;
+  color: #4a6b7c;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 16px;
+}
+
+/* Footer */
+.service-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.service-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.service-card__rating {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.service-card__reviews {
+  font-size: 0.85rem;
+  color: #999999;
+}
+
+.service-card__pricing {
+  display: flex;
+  align-items: center;
+}
+
+.service-card__price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #4a6b7c;
+}
+
+/* ========================================
+     EMPTY STATE
+     ======================================== */
+
+.freelancer-profile__empty {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.freelancer-profile__empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.freelancer-profile__empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.freelancer-profile__empty-text {
+  font-size: 1rem;
+  color: #666666;
+  margin: 0 0 2rem 0;
+}
+
+.freelancer-profile__empty-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  background-color: #4a6b7c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.freelancer-profile__empty-btn:hover {
+  background-color: #3a5a6a;
+  transform: translateY(-2px);
+}
+
+/* ========================================
+     RESPONSIVE DESIGN
+     ======================================== */
+
+@media (max-width: 1200px) {
+  .freelancer-profile__services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .freelancer-profile {
+    padding: 1.5rem;
+  }
+
+  .freelancer-profile__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .freelancer-profile__create-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .freelancer-profile__title {
+    font-size: 1.5rem;
+  }
+
+  .freelancer-profile__services {
+    padding: 1.5rem;
+  }
+
+  .freelancer-profile__services-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .service-card__image-wrapper {
+    height: 180px;
+  }
+}

@@ -20,6 +20,15 @@ export const API_ENDPOINTS = {
   GET_PROFILE: "users/basicprofile", // GET request to fetch user profile data
   UPDATE_PROFILE: "users/basicprofile", // PUT/PATCH request to update user profile
 
+  // Freelancer profile endpoints
+  GET_FREELANCER_PROFILE: "/api/freelancer/profile", // GET request to fetch freelancer profile
+  UPDATE_FREELANCER_PROFILE: "/api/freelancer/profile", // PUT request to update freelancer profile
+
+  // Service endpoints
+  CREATE_SERVICE: "/api/freelancer/services", // POST request to create a service
+  UPDATE_SERVICE: "/api/freelancer/services", // PUT request to update a service
+  DELETE_SERVICE: "/api/freelancer/services", // DELETE request to delete a service
+
   // Add more endpoints here as needed
   // LOGOUT: '/api/users/logout',
 };

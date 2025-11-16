@@ -1,44 +1,69 @@
 const mongoose = require("mongoose");
 
-const profileSchema = new mongoose.Schema(
+// Service Schema - embedded in freelancer schema
+const serviceSchema = new mongoose.Schema(
   {
-    // Each profile has its own fields
-    title: { type: String, required: true, trim: true },
-    bio: { type: String, trim: true },
-    description: { type: String, trim: true },
-
-    skills: [{ type: String }],
-    primarySkills: [{ type: String }],
-    categories: [{ type: String }],
-
-    hourlyRate: { type: Number, required: true },
-    currency: { type: String, default: "USD" },
-
-    availability: {
+    title: {
       type: String,
-      enum: ["full-time", "part-time", "contract", "flexible"],
-      default: "flexible",
+      required: true,
+      trim: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    bio: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    rating: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 5,
+    },
+    reviewsCount: {
+      type: Number,
+      required: true,
+    },
+    category: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    skills: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    hourlyRate: {
+      type: Number,
+      default: 50,
+      required: true,
+      trim: true,
+    },
+    profilePicture: {
+      type: String,
+      default: "",
     },
 
-    availableFrom: { type: Date },
-
-    experienceLevel: {
-      type: String,
-      enum: ["entry", "intermediate", "expert"],
+    isActive: {
+      type: Boolean,
+      default: true,
     },
-
-    yearsOfExperience: { type: Number, default: 0 },
-
-    // ✔ Added profile picture for this specific role
-    profilePicture: { type: String, default: "" },
-
-    // Per-profile ratings (optional)
-    averageRating: { type: Number, default: 0 },
-    totalReviews: { type: Number, default: 0 },
   },
-  { timestamps: true } // timestamps for each profile
+  { timestamps: true }
 );
 
+// Freelancer Schema
 const freelancerSchema = new mongoose.Schema(
   {
     userId: {
@@ -49,11 +74,38 @@ const freelancerSchema = new mongoose.Schema(
       index: true,
     },
 
-    // Array of multiple independent profiles
-    profiles: [profileSchema],
+    // Freelancer profile fields
+    aboutMe: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    education: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    yearsOfExperience: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
 
-    // Global stats for freelancer (not per-profile)
-    totalEarnings: { type: Number, default: 0 },
+    // Services array - array of service schema
+    services: [serviceSchema],
+
+    // Profile completion status
+    isComplete: {
+      type: Boolean,
+      default: false,
+    },
+
     completedJobs: { type: Number, default: 0 },
     activeJobs: { type: Number, default: 0 },
     successRate: { type: Number, default: 0 },
