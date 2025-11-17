@@ -6,7 +6,6 @@ function verifyToken(req, res, next) {
   try {
     // 1. Read token from headers
     const authHeader = req.headers.authorization;
-    console.log("hello");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
@@ -18,6 +17,7 @@ function verifyToken(req, res, next) {
 
     // 2. Verify token
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log(decoded);
 
     // 3. Attach user details to req object
     req.user = decoded;

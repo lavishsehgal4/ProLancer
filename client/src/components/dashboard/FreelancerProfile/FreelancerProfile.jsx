@@ -6,7 +6,7 @@ import {
   createService,
   deleteService,
 } from "../../../services/api/freelancerApi";
-import ServiceCard from "./ServiceCard/ServiceCard";
+import FreelancerCard from "../../common/FreelancerCard/FreelancerCard";
 import EditProfileForm from "./EditProfileForm/EditProfileForm";
 import CreateServiceForm from "./CreateServiceForm/CreateServiceForm";
 import "./FreelancerProfile.css";
@@ -251,10 +251,19 @@ const FreelancerProfile = () => {
         {services.length > 0 ? (
           <div className="freelancer-profile__services-grid">
             {services.map((service) => (
-              <ServiceCard
+              <FreelancerCard
                 key={service._id || service.id}
-                service={service}
-                onDelete={handleDeleteService}
+                freelancer={{
+                  id: service._id || service.id,
+                  profilePicture: service.profilePicture || "/default-service.jpg",
+                  name: service.name || "Service",
+                  title: service.title || service.category,
+                  rating: 0, // Default since we removed rating from form
+                  reviewsCount: 0, // Default since we removed reviewsCount from form
+                  hourlyRate: service.hourlyRate || 0,
+                  skills: service.skills || [],
+                  bio: service.bio || service.description || "No description available"
+                }}
               />
             ))}
           </div>

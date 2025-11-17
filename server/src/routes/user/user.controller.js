@@ -1,3 +1,4 @@
+const { addNameAndUser } = require("../../models/FREELANCER/freelancer.model");
 const {
   addUser,
   doesUserExist,
@@ -33,10 +34,13 @@ async function httpSignUpUser(req, res) {
     const payload = {
       userId: newUser._id,
       email: newUser.email,
-      role: newUser.accountType,
+      accountType: newUser.accountType,
     };
     const token = generateToken(payload);
     response.token = token;
+    console.log(response.newUser._id.toString());
+    await addNameAndUser(response.newUser._id.toString());
+    delete response.newUser;
     return res.status(201).json(response); // success case
   } catch (err) {
     return res.status(500).json({
@@ -83,7 +87,7 @@ async function httpLoginUser(req, res) {
 
     // Step 4: Generate Token
     const payload = {
-      _id: response.userId,
+      userId: response.userId,
       email: response.email,
       accountType: response.accountType,
     };
@@ -104,7 +108,7 @@ async function httpLoginUser(req, res) {
 
 async function httpGetUserData(req, res) {
   try {
-    const { userId, email, role } = req.user;
+    const { userId, email, accountType } = req.user;
 
     const response = await getUserDataById(userId);
     if (response.success) {

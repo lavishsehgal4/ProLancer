@@ -5,49 +5,50 @@ const serviceSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      default: "",
       trim: true,
     },
     name: {
       type: String,
+      default: "",
       required: true,
       trim: true,
     },
     bio: {
       type: String,
-      required: true,
+      default: "",
       trim: true,
     },
     description: {
       type: String,
-      required: true,
+      default: "",
       trim: true,
     },
     rating: {
       type: Number,
-      required: true,
+      default: "",
       min: 0,
       max: 5,
     },
     reviewsCount: {
       type: Number,
-      required: true,
+      default: 0,
     },
     category: {
       type: String,
-      required: true,
+      default: "",
       trim: true,
     },
     skills: [
       {
         type: String,
         trim: true,
+        default: "",
       },
     ],
     hourlyRate: {
       type: Number,
       default: 50,
-      required: true,
       trim: true,
     },
     profilePicture: {

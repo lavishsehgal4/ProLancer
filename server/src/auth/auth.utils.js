@@ -15,11 +15,11 @@ async function comparePassword(plain, hash) {
 }
 
 // Generate JWT for a user object (keep payload minimal)
-function generateToken({ _id, email, accountType }) {
+function generateToken({ userId, email, accountType }) {
   const payload = {
-    userId: _id,
+    userId: userId,
     email,
-    role: accountType,
+    accountType: accountType,
   };
 
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });

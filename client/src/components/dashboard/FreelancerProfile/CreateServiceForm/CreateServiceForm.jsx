@@ -2,20 +2,22 @@
  * CreateServiceForm Component
  *
  * Form to create a new service
- * Fields match service schema: title, name, bio, description, rating, reviewsCount, category, skills, hourlyRate, profilePicture
+ * Fields: title (dropdown), name, bio, description, category, skills, hourlyRate, profilePicture
+ * Note: rating and reviewsCount fields have been removed
  */
 
 import { useState } from "react";
 import "./CreateServiceForm.css";
 
 const CreateServiceForm = ({ onSave, onCancel }) => {
+  // Array of predefined titles - you can fill this with your desired options
+  const titleOptions = ["Web Development","Mobile App Development","UI/UX Design","Backend Development","DevOps & Cloud","Database Management","API Development","Software Testing"];
+
   const [formData, setFormData] = useState({
     title: "",
     name: "",
     bio: "",
     description: "",
-    rating: 0,
-    reviewsCount: 0,
     category: "",
     skills: [],
     hourlyRate: 50,
@@ -30,10 +32,7 @@ const CreateServiceForm = ({ onSave, onCancel }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        name === "rating" || name === "reviewsCount" || name === "hourlyRate"
-          ? parseFloat(value) || 0
-          : value,
+      [name]: name === "hourlyRate" ? parseFloat(value) || 0 : value,
     }));
     // Clear error for this field
     if (errors[name]) {
@@ -76,12 +75,6 @@ const CreateServiceForm = ({ onSave, onCancel }) => {
     if (!formData.category.trim()) {
       newErrors.category = "Category is required";
     }
-    if (formData.rating < 0 || formData.rating > 5) {
-      newErrors.rating = "Rating must be between 0 and 5";
-    }
-    if (formData.reviewsCount < 0) {
-      newErrors.reviewsCount = "Reviews count cannot be negative";
-    }
     if (formData.hourlyRate < 0) {
       newErrors.hourlyRate = "Hourly rate cannot be negative";
     }
@@ -109,8 +102,6 @@ const CreateServiceForm = ({ onSave, onCancel }) => {
         name: "",
         bio: "",
         description: "",
-        rating: 0,
-        reviewsCount: 0,
         category: "",
         skills: [],
         hourlyRate: 50,
@@ -133,15 +124,20 @@ const CreateServiceForm = ({ onSave, onCancel }) => {
           <label htmlFor="title" className="create-service-form__label">
             Title <span className="required">*</span>
           </label>
-          <input
-            type="text"
+          <select
             id="title"
             name="title"
             value={formData.title}
             onChange={handleChange}
             className="create-service-form__input"
-            placeholder="e.g., Full Stack Web Development"
-          />
+          >
+            <option value="">Select a title</option>
+            {titleOptions.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
           {errors.title && (
             <span className="create-service-form__error">{errors.title}</span>
           )}
@@ -275,49 +271,7 @@ const CreateServiceForm = ({ onSave, onCancel }) => {
           )}
         </div>
 
-        {/* Rating */}
-        <div className="create-service-form__field">
-          <label htmlFor="rating" className="create-service-form__label">
-            Rating (0-5)
-          </label>
-          <input
-            type="number"
-            id="rating"
-            name="rating"
-            value={formData.rating}
-            onChange={handleChange}
-            className="create-service-form__input"
-            min="0"
-            max="5"
-            step="0.1"
-            placeholder="0"
-          />
-          {errors.rating && (
-            <span className="create-service-form__error">{errors.rating}</span>
-          )}
-        </div>
 
-        {/* Reviews Count */}
-        <div className="create-service-form__field">
-          <label htmlFor="reviewsCount" className="create-service-form__label">
-            Reviews Count
-          </label>
-          <input
-            type="number"
-            id="reviewsCount"
-            name="reviewsCount"
-            value={formData.reviewsCount}
-            onChange={handleChange}
-            className="create-service-form__input"
-            min="0"
-            placeholder="0"
-          />
-          {errors.reviewsCount && (
-            <span className="create-service-form__error">
-              {errors.reviewsCount}
-            </span>
-          )}
-        </div>
 
         {/* Hourly Rate */}
         <div className="create-service-form__field">

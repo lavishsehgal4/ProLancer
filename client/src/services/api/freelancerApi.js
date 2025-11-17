@@ -112,12 +112,10 @@ export const updateFreelancerProfile = async (profileData) => {
  * Creates a new service for the freelancer
  *
  * @param {Object} serviceData - Service data matching schema
- * @param {string} serviceData.title - Service title
+ * @param {string} serviceData.title - Service title (selected from predefined options)
  * @param {string} serviceData.name - Service name
  * @param {string} serviceData.bio - Service bio
  * @param {string} serviceData.description - Service description
- * @param {number} serviceData.rating - Service rating (0-5)
- * @param {number} serviceData.reviewsCount - Number of reviews
  * @param {string} serviceData.category - Service category
  * @param {string[]} serviceData.skills - Array of skills
  * @param {number} serviceData.hourlyRate - Hourly rate

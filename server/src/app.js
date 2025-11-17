@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const userRouter = require("./routes/user/user.router");
-
+const freelancerRouter = require("./routes/freelancers/freelancers.router");
 const app = express();
 
 app.use(
@@ -17,4 +17,5 @@ app.get("/test", (req, res) => {
   res.status(200).send("connection was ok");
 });
 app.use("/", userRouter);
+app.use("/", freelancerRouter);
 module.exports = app;

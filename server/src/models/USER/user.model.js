@@ -8,6 +8,7 @@ async function addUser(userData) {
     return {
       success: true,
       message: "User created successfully",
+      newUser,
     };
   } catch (err) {
     // 🟦 1. Handle Duplicate Key Errors (11000)
