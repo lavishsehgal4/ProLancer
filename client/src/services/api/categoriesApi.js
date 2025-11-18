@@ -103,7 +103,87 @@ export const getServicesByCategory = async (title, options = {}) => {
   }
 };
 
+/**
+ * Get freelancer and service details by service ID
+ * Fetches detailed information about a freelancer and their specific service
+ *
+ * @param {string} serviceId - Service ID (MongoDB ObjectId)
+ *
+ * @returns {Promise<Object>} - Freelancer and service data
+ * @throws {Error} - If API call fails
+ *
+ * Expected backend response format:
+ * {
+ *   success: true,
+ *   message: "Freelancer and service fetched successfully",
+ *   data: {
+ *     freelancerInfo: {
+ *       aboutMe: "Full-stack developer with 3 years experience.",
+ *       education: "B.Tech CSE 2022",
+ *       yearsOfExperience: 3,
+ *       averageRating: 4.8,
+ *       completedJobs: 42,
+ *       activeJobs: 3,
+ *       successRate: 97
+ *     },
+ *     service: {
+ *       _id: "675ac98b21e52c1bd48248cd",
+ *       title: "Web Development",
+ *       bio: "I build modern full-stack applications using MERN.",
+ *       description: "Detailed service description goes here...",
+ *       category: "web development",
+ *       skills: ["React", "Node.js", "MongoDB"],
+ *       hourlyRate: 40,
+ *       profilePicture: "https://example.com/service.jpg",
+ *       averageRating: 4.7,
+ *       totalReviews: 22,
+ *       isActive: true
+ *     }
+ *   }
+ * }
+ */
+export const getServiceDetails = async (serviceId) => {
+  try {
+    if (!serviceId) {
+      throw new Error("Service ID is required");
+    }
+
+    console.log("Fetching service details for serviceId:", serviceId);
+
+    // Make GET request to fetch service details
+    const response = await apiClient.get(`categories/service/${serviceId}`);
+
+    // Extract response data
+    const responseData = response.data;
+
+    // Check if backend returned success
+    if (responseData.success) {
+      return {
+        success: true,
+        data: {
+          freelancerInfo: responseData.data.freelancerInfo,
+          service: responseData.data.service
+        }
+      };
+    } else {
+      // Backend returned error
+      throw new Error(responseData.message || "Failed to fetch service details");
+    }
+  } catch (error) {
+    // Handle API errors
+    console.error("Get service details API error:", error);
+
+    // Return error in consistent format
+    return {
+      success: false,
+      message: error.message || "Failed to fetch service details. Please try again.",
+      error: error.error || error.message,
+    };
+  }
+};
+
 // Export all categories API functions
 export default {
   getServicesByCategory,
+  getServiceDetails,
 };

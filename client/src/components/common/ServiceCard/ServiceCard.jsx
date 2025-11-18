@@ -39,11 +39,15 @@ const ServiceCard = ({ service, showActions = false, onEdit, onDelete }) => {
 
   const serviceId = _id || id;
   
+  // Debug: Log what ServiceCard is receiving
+  console.log("ServiceCard received service:", service);
+  console.log("ServiceCard serviceId:", serviceId);
+  
   // Display only top 3 skills
   const displaySkills = skills?.slice(0, 3) || [];
 
   return (
-    <Link to={`/service/${serviceId}?freelancerId=${freelancerId}`} className="service-card">
+    <Link to={`/service/${serviceId}`} className="service-card">
       {/* Profile Picture */}
       <div className="service-card__image-wrapper">
         <img

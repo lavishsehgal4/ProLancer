@@ -1,6 +1,6 @@
 const Freelancer = require("../FREELANCER/freelancer.mongo");
 const mongoose = require("mongoose");
-
+const {getFreelancerIdFromServiceId}=require('../../models/FreelancerServiceMap/FreelancerServiceMap.model');
 /**
  * Get paginated & filtered services by service TITLE (case-insensitive)
  *
@@ -154,4 +154,76 @@ async function getServicesByCategory(title, page = 1, limit = 6, filters = {}) {
   }
 }
 
-module.exports = { getServicesByCategory };
+async function getFreelancerInfoFromServiceId(serviceId) {
+  try {
+    // 1️⃣ Get mapping response
+    const result = await getFreelancerIdFromServiceId(serviceId);
+
+    // If mapping failed
+    if (!result.success) {
+      return {
+        success: false,
+        message: result.message
+      };
+    }
+
+    // 2️⃣ Extract real userId
+    const userId = result.userId;
+
+    const objectServiceId = new mongoose.Types.ObjectId(serviceId);
+
+    // 3️⃣ Now your DB query will work correctly
+    const freelancer = await Freelancer.findOne(
+      { userId: userId },
+      {
+        aboutMe: 1,
+        education: 1,
+        yearsOfExperience: 1,
+        averageRating: 1,
+        completedJobs: 1,
+        activeJobs: 1,
+        successRate: 1,
+        "services.$": 1
+      }
+    ).where("services._id").equals(objectServiceId);
+
+    if (!freelancer) {
+      return {
+        success: false,
+        message: "Freelancer not found for this service"
+      };
+    }
+
+    return {
+      success: true,
+      message: "Freelancer and service fetched successfully",
+      data: {
+        freelancerInfo: {
+          aboutMe: freelancer.aboutMe,
+          education: freelancer.education,
+          yearsOfExperience: freelancer.yearsOfExperience,
+          averageRating: freelancer.averageRating,
+          completedJobs: freelancer.completedJobs,
+          activeJobs: freelancer.activeJobs,
+          successRate: freelancer.successRate,
+          profileCompleted: freelancer.profileCompleted,
+          profileCompletionPercentage: freelancer.profileCompletionPercentage,
+          isVerified: freelancer.isVerified,
+          verificationBadges: freelancer.verificationBadges
+        },
+        service: freelancer.services[0]
+      }
+    };
+
+  } catch (error) {
+    console.error("SERVICE FETCH ERROR:", error);
+    return {
+      success: false,
+      message: "Server error",
+      error: error.message
+    };
+  }
+}
+
+
+module.exports = { getServicesByCategory,getFreelancerInfoFromServiceId };

@@ -434,4 +434,122 @@
   .service-detail__order-card {
     position: static;
   }
+}/* F
+reelancer Information Section */
+.service-detail__freelancer {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.service-detail__freelancer-info {
+  margin-top: 1rem;
+}
+
+.service-detail__freelancer-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.service-detail__stat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.service-detail__stat-icon {
+  color: #6ba5a8;
+  flex-shrink: 0;
+}
+
+.service-detail__stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.service-detail__stat-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+
+.service-detail__stat-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.service-detail__freelancer-about,
+.service-detail__freelancer-education {
+  margin-bottom: 1.5rem;
+}
+
+.service-detail__freelancer-about-title,
+.service-detail__freelancer-education-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.service-detail__freelancer-about-text,
+.service-detail__freelancer-education-text {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* Reviews Placeholder Styles */
+.service-detail__reviews-placeholder {
+  padding: 2rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.service-detail__reviews-placeholder-text {
+  color: #64748b;
+  font-style: italic;
+}
+
+.service-detail__review-placeholder {
+  padding: 2rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.service-detail__review-placeholder p {
+  color: #64748b;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.service-detail__submit-review-btn--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #94a3b8 !important;
+}
+
+.service-detail__submit-review-btn--disabled:hover {
+  background-color: #94a3b8 !important;
+}
+
+/* Responsive Design for Freelancer Stats */
+@media (max-width: 768px) {
+  .service-detail__freelancer-stats {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .service-detail__stat {
+    padding: 0.75rem;
+  }
 }

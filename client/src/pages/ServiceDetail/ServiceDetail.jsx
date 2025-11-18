@@ -1,77 +1,56 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Star, Edit, MessageCircle } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Star, Edit, MessageCircle, User, Award, Briefcase, TrendingUp } from "lucide-react";
 import { getToken } from "../../utils/auth/token";
-import { getServiceById, getServiceReviews, createReview } from "../../services/api/serviceApi";
+import { getServiceDetails } from "../../services/api/categoriesApi";
 import { createOrder } from "../../services/api/orderApi";
 import "./ServiceDetail.css";
 
 const ServiceDetail = () => {
   const { serviceId } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const freelancerId = searchParams.get('freelancerId');
   const [service, setService] = useState(null);
+  const [freelancerInfo, setFreelancerInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  const [reviews, setReviews] = useState([]);
-
   useEffect(() => {
     fetchServiceDetails();
     checkOwnership();
-  }, [serviceId, freelancerId]);
+  }, [serviceId]);
 
   const fetchServiceDetails = async () => {
     try {
       setLoading(true);
+      setError(null);
       
       console.log("ServiceDetail - serviceId:", serviceId);
-      console.log("ServiceDetail - freelancerId:", freelancerId);
       
-      if (!freelancerId) {
-        setError("Freelancer ID is required");
-        setLoading(false);
-        return;
-      }
-      
-      // Get service data using serviceId and freelancerId
-      console.log("Making API call with:", { serviceId, freelancerId });
-      const response = await getServiceById(serviceId, freelancerId);
+      // Get service and freelancer data using the new API
+      const response = await getServiceDetails(serviceId);
       console.log("API Response:", response);
 
       if (response.success) {
-        setService(response.data);
+        setService(response.data.service);
+        setFreelancerInfo(response.data.freelancerInfo);
 
         // Check ownership after service data is loaded
         const token = getToken();
         if (token && currentUser) {
-          setIsOwner(currentUser.userId === response.data.freelancerId);
+          // Note: We'll need to add freelancer ID to the response or get it from token
+          // For now, we'll assume ownership check based on token
+          setIsOwner(false); // Will be updated when we have proper freelancer ID
         }
-
-        // Also fetch reviews for this service
-        await fetchServiceReviews();
       } else {
         setError(response.message || "Failed to load service details");
       }
     } catch (err) {
+      console.error("Error fetching service details:", err);
       setError("Failed to load service details");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchServiceReviews = async () => {
-    try {
-      const response = await getServiceReviews(serviceId);
-
-      if (response.success) {
-        setReviews(response.data.reviews || []);
-      }
-    } catch (err) {
-      console.error("Failed to fetch reviews:", err);
     }
   };
 
@@ -101,7 +80,7 @@ const ServiceDetail = () => {
 
     const orderData = {
       serviceId: service._id,
-      freelancerId: service.freelancerId,
+      freelancerId: service.freelancerId || "freelancer-id-placeholder", // Will need to get this from API
       message: "I'm interested in your service. Please contact me to discuss the details.",
       budget: service.hourlyRate * 10, // Default budget estimate
       deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 7 days from now
@@ -133,26 +112,15 @@ const ServiceDetail = () => {
       return;
     }
 
-    const formData = new FormData(e.target);
-    const reviewData = {
-      rating: parseInt(formData.get('rating')),
-      comment: formData.get('comment')
-    };
-
-    try {
-      const response = await createReview(serviceId, reviewData);
-      if (response.success) {
-        alert("Review submitted successfully!");
-        // Refresh reviews
-        await fetchServiceReviews();
-        // Reset form
-        e.target.reset();
-      } else {
-        alert(response.message || "Failed to submit review");
-      }
-    } catch (err) {
-      alert("Failed to submit review. Please try again.");
-    }
+    // For now, we'll show a placeholder message since review API will be implemented later
+    alert("Review functionality will be implemented soon!");
+    
+    // TODO: Implement review submission when review API is ready
+    // const formData = new FormData(e.target);
+    // const reviewData = {
+    //   rating: parseInt(formData.get('rating')),
+    //   comment: formData.get('comment')
+    // };
   };
 
   if (loading) {
@@ -171,7 +139,7 @@ const ServiceDetail = () => {
     );
   }
 
-  if (!service) {
+  if (!service || !freelancerInfo) {
     return (
       <div className="service-detail">
         <div className="service-detail__not-found">Service not found</div>
@@ -179,10 +147,9 @@ const ServiceDetail = () => {
     );
   }
 
-  const averageRating = service?.averageRating || 
-    (reviews.length > 0 ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 0);
-  
-  const totalReviews = service?.totalReviews || reviews.length;
+  const serviceRating = service?.averageRating || 0;
+  const totalReviews = service?.totalReviews || 0;
+  const freelancerRating = freelancerInfo?.averageRating || 0;
 
   return (
     <div className="service-detail">
@@ -193,7 +160,7 @@ const ServiceDetail = () => {
           <div className="service-detail__header">
             <div className="service-detail__image-wrapper">
               <img
-                src={service.profilePicture}
+                src={service.profilePicture || "/default-service.jpg"}
                 alt={service.title}
                 className="service-detail__image"
               />
@@ -201,24 +168,23 @@ const ServiceDetail = () => {
             <div className="service-detail__header-info">
               <span className="service-detail__category">{service.category}</span>
               <h1 className="service-detail__title">{service.title}</h1>
-              <h2 className="service-detail__name">{service.name}</h2>
               <p className="service-detail__bio">{service.bio}</p>
 
-              {/* Rating */}
+              {/* Service Rating */}
               <div className="service-detail__rating">
                 <div className="service-detail__stars">
                   {[...Array(5)].map((_, index) => (
                     <Star
                       key={index}
                       size={20}
-                      className={`star ${index < Math.floor(averageRating) ? "star--filled" : "star--empty"
+                      className={`star ${index < Math.floor(serviceRating) ? "star--filled" : "star--empty"
                         }`}
-                      fill={index < Math.floor(averageRating) ? "#FFB800" : "none"}
-                      stroke={index < Math.floor(averageRating) ? "#FFB800" : "#D1D5DB"}
+                      fill={index < Math.floor(serviceRating) ? "#FFB800" : "none"}
+                      stroke={index < Math.floor(serviceRating) ? "#FFB800" : "#D1D5DB"}
                     />
                   ))}
                 </div>
-                <span className="service-detail__rating-number">{averageRating.toFixed(1)}</span>
+                <span className="service-detail__rating-number">{serviceRating.toFixed(1)}</span>
                 <span className="service-detail__reviews-count">
                   ({totalReviews} reviews)
                 </span>
@@ -226,12 +192,68 @@ const ServiceDetail = () => {
 
               {/* Skills */}
               <div className="service-detail__skills">
-                {service.skills.map((skill, index) => (
+                {service.skills?.map((skill, index) => (
                   <span key={index} className="service-detail__skill-tag">
                     {skill}
                   </span>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Freelancer Information Section */}
+          <div className="service-detail__freelancer">
+            <h3 className="service-detail__section-title">About the Freelancer</h3>
+            <div className="service-detail__freelancer-info">
+              <div className="service-detail__freelancer-stats">
+                <div className="service-detail__stat">
+                  <User className="service-detail__stat-icon" size={20} />
+                  <div className="service-detail__stat-content">
+                    <span className="service-detail__stat-label">Experience</span>
+                    <span className="service-detail__stat-value">{freelancerInfo.yearsOfExperience} years</span>
+                  </div>
+                </div>
+                
+                <div className="service-detail__stat">
+                  <Award className="service-detail__stat-icon" size={20} />
+                  <div className="service-detail__stat-content">
+                    <span className="service-detail__stat-label">Rating</span>
+                    <span className="service-detail__stat-value">{freelancerRating.toFixed(1)} ⭐</span>
+                  </div>
+                </div>
+                
+                <div className="service-detail__stat">
+                  <Briefcase className="service-detail__stat-icon" size={20} />
+                  <div className="service-detail__stat-content">
+                    <span className="service-detail__stat-label">Completed Jobs</span>
+                    <span className="service-detail__stat-value">{freelancerInfo.completedJobs}</span>
+                  </div>
+                </div>
+                
+                <div className="service-detail__stat">
+                  <TrendingUp className="service-detail__stat-icon" size={20} />
+                  <div className="service-detail__stat-content">
+                    <span className="service-detail__stat-label">Success Rate</span>
+                    <span className="service-detail__stat-value">{freelancerInfo.successRate}%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* About Me */}
+              {freelancerInfo.aboutMe && (
+                <div className="service-detail__freelancer-about">
+                  <h4 className="service-detail__freelancer-about-title">About Me</h4>
+                  <p className="service-detail__freelancer-about-text">{freelancerInfo.aboutMe}</p>
+                </div>
+              )}
+
+              {/* Education */}
+              {freelancerInfo.education && (
+                <div className="service-detail__freelancer-education">
+                  <h4 className="service-detail__freelancer-education-title">Education</h4>
+                  <p className="service-detail__freelancer-education-text">{freelancerInfo.education}</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -241,77 +263,37 @@ const ServiceDetail = () => {
             <p className="service-detail__description-text">{service.description}</p>
           </div>
 
-          {/* Reviews Section */}
+          {/* Reviews Section - Placeholder for future implementation */}
           <div className="service-detail__reviews">
             <h3 className="service-detail__section-title">
               Reviews ({totalReviews})
             </h3>
 
-            {reviews.length > 0 ? (
-              <div className="service-detail__reviews-list">
-                {reviews.map((review) => (
-                  <div key={review.id} className="service-detail__review">
-                    <div className="service-detail__review-header">
-                      <img
-                        src={review.userAvatar}
-                        alt={review.userName}
-                        className="service-detail__review-avatar"
-                      />
-                      <div className="service-detail__review-info">
-                        <h4 className="service-detail__review-name">{review.userName}</h4>
-                        <div className="service-detail__review-rating">
-                          {[...Array(5)].map((_, index) => (
-                            <Star
-                              key={index}
-                              size={16}
-                              className={`star ${index < review.rating ? "star--filled" : "star--empty"
-                                }`}
-                              fill={index < review.rating ? "#FFB800" : "none"}
-                              stroke={index < review.rating ? "#FFB800" : "#D1D5DB"}
-                            />
-                          ))}
-                        </div>
-                        <span className="service-detail__review-date">{review.date}</span>
-                      </div>
-                    </div>
-                    <p className="service-detail__review-comment">{review.comment}</p>
-                  </div>
-                ))}
+            {totalReviews > 0 ? (
+              <div className="service-detail__reviews-placeholder">
+                <p className="service-detail__reviews-placeholder-text">
+                  This service has {totalReviews} reviews. Review details will be implemented soon.
+                </p>
               </div>
             ) : (
               <p className="service-detail__no-reviews">No reviews yet</p>
             )}
 
-            {/* Add Review Form - Only show if not owner */}
+            {/* Add Review Form - Placeholder for future implementation */}
             {!isOwner && currentUser && (
               <div className="service-detail__add-review">
                 <h4 className="service-detail__add-review-title">Leave a Review</h4>
-                <form onSubmit={handleSubmitReview} className="service-detail__review-form">
-                  <div className="service-detail__review-rating-input">
-                    <label>Rating:</label>
-                    <select name="rating" required>
-                      <option value="">Select rating</option>
-                      <option value="5">5 Stars</option>
-                      <option value="4">4 Stars</option>
-                      <option value="3">3 Stars</option>
-                      <option value="2">2 Stars</option>
-                      <option value="1">1 Star</option>
-                    </select>
-                  </div>
-                  <div className="service-detail__review-comment-input">
-                    <label>Comment:</label>
-                    <textarea
-                      name="comment"
-                      rows="4"
-                      placeholder="Share your experience with this service..."
-                      required
-                    />
-                  </div>
-                  <button type="submit" className="service-detail__submit-review-btn">
+                <div className="service-detail__review-placeholder">
+                  <p>Review submission will be available soon!</p>
+                  <button 
+                    type="button" 
+                    className="service-detail__submit-review-btn service-detail__submit-review-btn--disabled"
+                    disabled
+                  >
                     <MessageCircle size={16} />
-                    Submit Review
+                    Submit Review (Coming Soon)
                   </button>
-                </form>
+                </div>
               </div>
             )}
           </div>
@@ -350,9 +332,17 @@ const ServiceDetail = () => {
               <div className="service-detail__info-item">
                 <span className="service-detail__info-label">Skills:</span>
                 <span className="service-detail__info-value">
-                  {service.skills.slice(0, 3).join(", ")}
-                  {service.skills.length > 3 && ` +${service.skills.length - 3} more`}
+                  {service.skills?.slice(0, 3).join(", ")}
+                  {service.skills?.length > 3 && ` +${service.skills.length - 3} more`}
                 </span>
+              </div>
+              <div className="service-detail__info-item">
+                <span className="service-detail__info-label">Experience:</span>
+                <span className="service-detail__info-value">{freelancerInfo.yearsOfExperience} years</span>
+              </div>
+              <div className="service-detail__info-item">
+                <span className="service-detail__info-label">Success Rate:</span>
+                <span className="service-detail__info-value">{freelancerInfo.successRate}%</span>
               </div>
             </div>
           </div>

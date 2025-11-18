@@ -3,13 +3,13 @@ const FreelancerServiceMap = require('./FreelancerServiceMap.mongo');
 
 async function getFreelancerIdFromServiceId(serviceId) {
   try {
-    // Validate & convert serviceId
+    // Convert to ObjectId
     const objectId = new mongoose.Types.ObjectId(serviceId);
 
     // Find mapping
     const record = await FreelancerServiceMap.findOne(
       { serviceId: objectId },
-      { userId: 1 }  // return only userId
+      { userId: 1 }  // only return userId field
     );
 
     if (!record) {
@@ -21,7 +21,6 @@ async function getFreelancerIdFromServiceId(serviceId) {
 
     return {
       success: true,
-      message: "Freelancer found",
       userId: record.userId
     };
 
@@ -34,4 +33,5 @@ async function getFreelancerIdFromServiceId(serviceId) {
   }
 }
 
+// ✔ Correct export
 module.exports = {getFreelancerIdFromServiceId};

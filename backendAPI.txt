@@ -360,3 +360,92 @@ NOTES:
 - Supports filters for budget, rating, and experience.
 - Returns paginated results with totalPages and totalItems.
 - Each service includes: serviceId, title, bio, hourlyRate, profilePicture, averageRating, totalReviews, skills, name.
+
+
+📘 API: Get Freelancer + Service Details from Service ID
+
+API URL:
+GET http://localhost:8000/categories/service/:serviceId
+
+Authentication:
+No authentication required
+
+Description:
+This API returns detailed information about a freelancer AND the specific service associated with the given serviceId.  
+ServiceId is mapped through a separate collection (FreelancerServiceMap).  
+Only the specific service is returned, not the entire services array.
+
+PATH PARAMETERS:
+| Name      | Type   | Required | Description |
+|-----------|---------|----------|-------------|
+| serviceId | String | Yes      | MongoDB ObjectId of the service you want to fetch |
+
+QUERY PARAMETERS:
+None
+
+EXAMPLE REQUEST:
+GET http://localhost:8000/categories/service/675ac98b21e52c1bd48248cd
+
+SUCCESS RESPONSE:
+{
+  "success": true,
+  "message": "Freelancer and service fetched successfully",
+  "data": {
+    "freelancerInfo": {
+      "aboutMe": "Full-stack developer with 3 years experience.",
+      "education": "B.Tech CSE 2022",
+      "yearsOfExperience": 3,
+      "averageRating": 4.8,
+      "completedJobs": 42,
+      "activeJobs": 3,
+      "successRate": 97,
+      
+    },
+    "service": {
+      "_id": "675ac98b21e52c1bd48248cd",
+      "title": "Web Development",
+      "bio": "I build modern full-stack applications using MERN.",
+      "description": "Detailed service description goes here...",
+      "category": "web development",
+      "skills": ["React", "Node.js", "MongoDB"],
+      "hourlyRate": 40,
+      "profilePicture": "https://example.com/service.jpg",
+      "averageRating": 4.7,
+      "totalReviews": 22,
+      "isActive": true
+    }
+  }
+}
+
+ERROR RESPONSES:
+
+1. Invalid or missing serviceId:
+{
+  "success": false,
+  "message": "Service ID is required"
+}
+
+2. No mapping found:
+{
+  "success": false,
+  "message": "No freelancer found for this serviceId"
+}
+
+3. No freelancer found:
+{
+  "success": false,
+  "message": "Freelancer not found for this service"
+}
+
+4. Server error:
+{
+  "success": false,
+  "message": "Server error",
+  "error": "Detailed error message"
+}
+
+NOTES:
+- serviceId must be a valid MongoDB ObjectId.
+- API uses FreelancerServiceMap to find which freelancer owns the service.
+- Only one service is returned using the MongoDB positional operator ("services.$").
+- Perfect for service detail pages showing freelancer information + their service.

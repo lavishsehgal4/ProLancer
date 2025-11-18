@@ -85,6 +85,9 @@ const CategoryDetail = () => {
 
       const response = await getServicesByCategory(categoryName, options);
 
+      console.log("API Response:", response);
+      console.log("Services from API:", response.data?.services);
+
       if (response.success) {
         setServices(response.data.services);
         setPagination({
@@ -211,10 +214,17 @@ const CategoryDetail = () => {
             {!error && services.length > 0 && (
               <div className="category-detail__grid">
                 {services.map((service) => {
+                  // Debug: Log the service data to see what we're receiving
+                  console.log("Raw service data from API:", service);
+                  console.log("Service ID:", service.serviceId);
+                  
                   // Transform service data to match ServiceCard component
+                  // Handle different possible ID field names from backend
+                  const actualServiceId = service.serviceId || service._id || service.id;
+                  
                   const serviceData = {
-                    _id: service.serviceId,
-                    id: service.serviceId,
+                    _id: actualServiceId,
+                    id: actualServiceId,
                     profilePicture: service.profilePicture || "/default-service.jpg",
                     name: service.name || "Service Provider",
                     title: service.title || service.bio,
@@ -226,9 +236,11 @@ const CategoryDetail = () => {
                     freelancerId: service.freelancerId // Add if available
                   };
                   
+                  console.log("Transformed service data:", serviceData);
+                  
                   return (
                     <ServiceCard
-                      key={service.serviceId}
+                      key={actualServiceId || `service-${Math.random()}`}
                       service={serviceData}
                       showActions={false}
                     />

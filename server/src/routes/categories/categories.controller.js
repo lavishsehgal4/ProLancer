@@ -1,4 +1,4 @@
-const { getServicesByCategory } = require("../../models/categories/categories.model");
+const { getServicesByCategory,getFreelancerInfoFromServiceId } = require("../../models/categories/categories.model");
 
 async function httpGetCategoriesWithPagingAndFilter(req, res) {
   try {
@@ -37,4 +37,30 @@ async function httpGetCategoriesWithPagingAndFilter(req, res) {
   }
 }
 
-module.exports = { httpGetCategoriesWithPagingAndFilter };
+async function httpGetFreelancerFromServiceId(req,res) {
+    try {
+        const serviceId=req.params.serviceId;
+        console.log(serviceId);
+        const response=await getFreelancerInfoFromServiceId(serviceId);
+        if(response.success===false){
+            throw new Error(response.message);
+        }
+        return res.status(200).json(response);
+
+    } catch (err) {
+        console.log(err.message);
+        if(err.message==="Server error"){
+            return res.status(500).json({
+                success:false,
+                message:err.message
+            })
+        }
+        return res.status(400).json({
+                success:false,
+                message:err.message
+            });
+        
+    }
+    
+}
+module.exports = { httpGetCategoriesWithPagingAndFilter ,httpGetFreelancerFromServiceId};
