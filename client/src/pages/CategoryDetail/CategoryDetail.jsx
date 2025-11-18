@@ -1,17 +1,41 @@
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import CategoryHeader from "../../components/category/CategoryHeader/CategoryHeader";
 import FilterSidebar from "../../components/category/FilterSidebar/FilterSidebar";
-import FreelancerCard from "../../components/common/FreelancerCard/FreelancerCard";
+import ServiceCard from "../../components/common/ServiceCard/ServiceCard";
+import { getServicesByCategory } from "../../services/api/categoriesApi";
 import "./CategoryDetail.css";
 
 /**
  * CategoryDetail Page
- * Displays freelancers in a specific category with filters
+ * Displays services in a specific category with filters and pagination
  */
 
 const CategoryDetail = () => {
   // Get category name from URL params
   const { categoryName } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // State management
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    limit: 6
+  });
+
+  // Filter state
+  const [filters, setFilters] = useState({
+    page: parseInt(searchParams.get('page')) || 1,
+    limit: parseInt(searchParams.get('limit')) || 6,
+    minRate: searchParams.get('minRate') || '',
+    maxRate: searchParams.get('maxRate') || '',
+    rating: searchParams.get('rating') || '',
+    experience: searchParams.get('experience') || ''
+  });
 
   // Format category name for display (e.g., "web-development" -> "Web Development")
   const formatCategoryName = (name) => {
@@ -23,81 +47,112 @@ const CategoryDetail = () => {
 
   const displayCategoryName = formatCategoryName(categoryName);
 
-  // Mock freelancer data (replace with API call later)
-  const mockFreelancers = [
-    {
-      id: 1,
-      profilePicture:
-        "https://ui-avatars.com/api/?name=John+Doe&background=6BA5A8&color=fff&size=200",
-      name: "John Doe",
-      title: "Senior Full Stack Developer",
-      rating: 4.9,
-      reviewsCount: 127,
-      hourlyRate: 50,
-      skills: ["React", "Node.js", "MongoDB", "Express"],
-      bio: "I build scalable web applications with modern tech stack",
-    },
-    {
-      id: 2,
-      profilePicture:
-        "https://ui-avatars.com/api/?name=Sarah+Smith&background=4A6B7C&color=fff&size=200",
-      name: "Sarah Smith",
-      title: "UI/UX Designer & Developer",
-      rating: 5.0,
-      reviewsCount: 89,
-      hourlyRate: 45,
-      skills: ["Figma", "React", "Tailwind CSS"],
-      bio: "Creating beautiful and intuitive user experiences",
-    },
-    {
-      id: 3,
-      profilePicture:
-        "https://ui-avatars.com/api/?name=Mike+Johnson&background=D1E9EB&color=4A6B7C&size=200",
-      name: "Mike Johnson",
-      title: "Backend Developer",
-      rating: 4.8,
-      reviewsCount: 156,
-      hourlyRate: 60,
-      skills: ["Python", "Django", "PostgreSQL"],
-      bio: "Expert in building robust backend systems and APIs",
-    },
-    {
-      id: 4,
-      profilePicture:
-        "https://ui-avatars.com/api/?name=Emma+Wilson&background=6BA5A8&color=fff&size=200",
-      name: "Emma Wilson",
-      title: "Frontend Developer",
-      rating: 4.7,
-      reviewsCount: 92,
-      hourlyRate: 40,
-      skills: ["Vue.js", "JavaScript", "CSS3"],
-      bio: "Passionate about creating responsive web interfaces",
-    },
-    {
-      id: 5,
-      profilePicture:
-        "https://ui-avatars.com/api/?name=David+Brown&background=4A6B7C&color=fff&size=200",
-      name: "David Brown",
-      title: "Mobile App Developer",
-      rating: 4.9,
-      reviewsCount: 134,
-      hourlyRate: 55,
-      skills: ["React Native", "iOS", "Android"],
-      bio: "Building cross-platform mobile applications",
-    },
-    {
-      id: 6,
-      profilePicture:
-        "https://ui-avatars.com/api/?name=Lisa+Anderson&background=D1E9EB&color=4A6B7C&size=200",
-      name: "Lisa Anderson",
-      title: "DevOps Engineer",
-      rating: 5.0,
-      reviewsCount: 78,
-      hourlyRate: 70,
-      skills: ["AWS", "Docker", "Kubernetes"],
-      bio: "Streamlining deployment and infrastructure management",
-    },
-  ];
+  // Fetch services when component mounts or filters change
+  useEffect(() => {
+    fetchServices();
+  }, [categoryName, filters]);
+
+  // Update URL params when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value && value !== '') {
+        params.set(key, value);
+      }
+    });
+
+    setSearchParams(params);
+  }, [filters, setSearchParams]);
+
+  /**
+   * Fetch services from backend API
+   */
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Prepare filter options (only include non-empty values)
+      const options = {};
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value && value !== '') {
+          options[key] = value;
+        }
+      });
+
+      console.log("Fetching services for category:", categoryName, "with filters:", options);
+
+      const response = await getServicesByCategory(categoryName, options);
+
+      if (response.success) {
+        setServices(response.data.services);
+        setPagination({
+          currentPage: response.data.currentPage,
+          totalPages: response.data.totalPages,
+          totalItems: response.data.totalItems,
+          limit: response.data.limit
+        });
+      } else {
+        setError(response.message || "Failed to load services");
+        setServices([]);
+      }
+    } catch (err) {
+      console.error("Error fetching services:", err);
+      setError("An error occurred while loading services");
+      setServices([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Handle filter changes
+   */
+  const handleFilterChange = (newFilters) => {
+    setFilters(prev => ({
+      ...prev,
+      ...newFilters,
+      page: 1 // Reset to first page when filters change
+    }));
+  };
+
+  /**
+   * Handle pagination
+   */
+  const handlePageChange = (page) => {
+    setFilters(prev => ({
+      ...prev,
+      page: page
+    }));
+  };
+
+  /**
+   * Handle sorting
+   */
+  const handleSortChange = (sortValue) => {
+    // You can implement sorting logic here
+    console.log("Sort changed to:", sortValue);
+    // For now, just refresh the data
+    fetchServices();
+  };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="category-detail">
+        <CategoryHeader categoryTitle={displayCategoryName} />
+        <div className="category-detail__content">
+          <div className="category-detail__container">
+            <div className="category-detail__loading">
+              <div className="loading-spinner"></div>
+              <p>Loading services...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="category-detail">
@@ -108,16 +163,33 @@ const CategoryDetail = () => {
       <div className="category-detail__content">
         <div className="category-detail__container">
           {/* Left Sidebar - Filters */}
-          <FilterSidebar />
+          <FilterSidebar 
+            filters={filters}
+            onFilterChange={handleFilterChange}
+          />
 
-          {/* Right Side - Freelancer Listings */}
+          {/* Right Side - Service Listings */}
           <main className="category-detail__main">
             {/* Results Header */}
             <div className="category-detail__header">
               <p className="category-detail__results">
-                Found <strong>{mockFreelancers.length}</strong> freelancers
+                {error ? (
+                  <span className="error-text">{error}</span>
+                ) : (
+                  <>
+                    Found <strong>{pagination.totalItems}</strong> services
+                    {pagination.totalItems > 0 && (
+                      <span className="page-info">
+                        {" "}(Page {pagination.currentPage} of {pagination.totalPages})
+                      </span>
+                    )}
+                  </>
+                )}
               </p>
-              <select className="category-detail__sort">
+              <select 
+                className="category-detail__sort"
+                onChange={(e) => handleSortChange(e.target.value)}
+              >
                 <option value="top-rated">Top Rated</option>
                 <option value="newest">Newest</option>
                 <option value="price-low">Price: Low to High</option>
@@ -125,24 +197,119 @@ const CategoryDetail = () => {
               </select>
             </div>
 
-            {/* Freelancer Cards Grid */}
-            <div className="category-detail__grid">
-              {mockFreelancers.map((freelancer) => (
-                <FreelancerCard key={freelancer.id} freelancer={freelancer} />
-              ))}
-            </div>
+            {/* Error State */}
+            {error && !loading && (
+              <div className="category-detail__error">
+                <p>{error}</p>
+                <button onClick={fetchServices} className="retry-button">
+                  Try Again
+                </button>
+              </div>
+            )}
+
+            {/* Services Grid */}
+            {!error && services.length > 0 && (
+              <div className="category-detail__grid">
+                {services.map((service) => {
+                  // Transform service data to match ServiceCard component
+                  const serviceData = {
+                    _id: service.serviceId,
+                    id: service.serviceId,
+                    profilePicture: service.profilePicture || "/default-service.jpg",
+                    name: service.name || "Service Provider",
+                    title: service.title || service.bio,
+                    rating: service.averageRating || 0,
+                    reviewsCount: service.totalReviews || 0,
+                    hourlyRate: service.hourlyRate || 0,
+                    skills: service.skills || [],
+                    bio: service.bio || "No description available",
+                    freelancerId: service.freelancerId // Add if available
+                  };
+                  
+                  return (
+                    <ServiceCard
+                      key={service.serviceId}
+                      service={serviceData}
+                      showActions={false}
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!error && !loading && services.length === 0 && (
+              <div className="category-detail__empty">
+                <div className="empty-icon">🔍</div>
+                <h3>No services found</h3>
+                <p>Try adjusting your filters or search criteria</p>
+                <button 
+                  onClick={() => handleFilterChange({ 
+                    minRate: '', 
+                    maxRate: '', 
+                    rating: '', 
+                    experience: '' 
+                  })}
+                  className="clear-filters-button"
+                >
+                  Clear Filters
+                </button>
+              </div>
+            )}
 
             {/* Pagination */}
-            <div className="category-detail__pagination">
-              <button className="pagination__button pagination__button--active">
-                1
-              </button>
-              <button className="pagination__button">2</button>
-              <button className="pagination__button">3</button>
-              <button className="pagination__button">4</button>
-              <button className="pagination__button">...</button>
-              <button className="pagination__button">10</button>
-            </div>
+            {!error && services.length > 0 && pagination.totalPages > 1 && (
+              <div className="category-detail__pagination">
+                {/* Previous Button */}
+                <button 
+                  className="pagination__button"
+                  onClick={() => handlePageChange(pagination.currentPage - 1)}
+                  disabled={pagination.currentPage === 1}
+                >
+                  Previous
+                </button>
+
+                {/* Page Numbers */}
+                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => {
+                  // Show first page, last page, current page, and pages around current
+                  const showPage = 
+                    page === 1 || 
+                    page === pagination.totalPages || 
+                    Math.abs(page - pagination.currentPage) <= 1;
+
+                  if (!showPage && page === 2 && pagination.currentPage > 4) {
+                    return <span key={page} className="pagination__ellipsis">...</span>;
+                  }
+                  
+                  if (!showPage && page === pagination.totalPages - 1 && pagination.currentPage < pagination.totalPages - 3) {
+                    return <span key={page} className="pagination__ellipsis">...</span>;
+                  }
+
+                  if (!showPage) return null;
+
+                  return (
+                    <button
+                      key={page}
+                      className={`pagination__button ${
+                        page === pagination.currentPage ? 'pagination__button--active' : ''
+                      }`}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+
+                {/* Next Button */}
+                <button 
+                  className="pagination__button"
+                  onClick={() => handlePageChange(pagination.currentPage + 1)}
+                  disabled={pagination.currentPage === pagination.totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </main>
         </div>
       </div>

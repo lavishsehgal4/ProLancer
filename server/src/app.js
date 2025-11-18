@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const userRouter = require("./routes/user/user.router");
 const freelancerRouter = require("./routes/freelancers/freelancers.router");
+const categoriesRouter=require('./routes/categories/categories.router');
 const app = express();
 
 app.use(
@@ -18,4 +19,5 @@ app.get("/test", (req, res) => {
 });
 app.use("/", userRouter);
 app.use("/", freelancerRouter);
+app.use("/", categoriesRouter);
 module.exports = app;

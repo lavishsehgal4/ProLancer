@@ -285,3 +285,78 @@ response{
     "message": "Service deleted successfully"
 }
 ##
+
+
+📘 API: Get Services by Title (Pagination + Filters)
+
+API URL:
+GET http://localhost:8000/categories/:title
+
+Authentication:
+No authentication required
+
+Description:
+Fetches a paginated list of freelancer services based on a service title (case-insensitive). Supports filters like budget range, rating, experience level, and pagination. Used for Fiverr-style category pages.
+
+PATH PARAMETERS:
+| Name  | Type   | Required | Description |
+|-------|---------|----------|-------------|
+| title | String | Yes | Service title in slug format (e.g., "web-development"). Backend auto-converts this to "web development". |
+
+QUERY PARAMETERS (ALL OPTIONAL):
+| Query       | Type   | Required | Example        | Description |
+|-------------|--------|----------|----------------|-------------|
+| page        | Number | No       | 1              | Page number |
+| limit       | Number | No       | 6              | Items per page |
+| minRate     | Number | No       | 20             | Minimum hourly rate |
+| maxRate     | Number | No       | 60             | Maximum hourly rate |
+| rating      | Number | No       | 4              | Minimum rating |
+| experience  | String | No       | intermediate   | "entry", "intermediate", "expert" |
+
+EXAMPLE REQUEST:
+GET http://localhost:8000/categories/web-development?page=1&limit=6&minRate=20&maxRate=60&rating=4&experience=intermediate
+
+SUCCESS RESPONSE:
+{
+    "success": true,
+    "title": "web development",
+    "currentPage": 1,
+    "totalPages": 3,
+    "limit": 6,
+    "totalItems": 18,
+    "services": [
+        {
+            "serviceId": "675ac98b21e52c1bd48248cd",
+            "title": "Web Development",
+            "bio": "Building modern responsive web apps.",
+            "hourlyRate": 40,
+            "profilePicture": "https://example.com/pic.jpg",
+            "averageRating": 4.7,
+            "totalReviews": 22,
+            "skills": ["React", "Node.js", "MongoDB"],
+            "name": "John Doe"
+        }
+    ]
+}
+
+ERROR RESPONSES:
+
+Missing title:
+{
+    "success": false,
+    "message": "Service title is required in URL"
+}
+
+Server Error:
+{
+    "success": false,
+    "message": "Server error in fetching services",
+    "error": "..."
+}
+
+NOTES:
+- "web-development" (slug) is auto-converted to "web development".
+- Title comparison is case-insensitive.
+- Supports filters for budget, rating, and experience.
+- Returns paginated results with totalPages and totalItems.
+- Each service includes: serviceId, title, bio, hourlyRate, profilePicture, averageRating, totalReviews, skills, name.
