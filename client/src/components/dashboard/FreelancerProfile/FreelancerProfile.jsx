@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
+import { getToken } from "../../../utils/auth/token";
 import {
   getFreelancerProfile,
   updateFreelancerProfile,
   createService,
+  updateService,
   deleteService,
 } from "../../../services/api/freelancerApi";
-import FreelancerCard from "../../common/FreelancerCard/FreelancerCard";
+import ServiceCard from "../../common/ServiceCard/ServiceCard";
 import EditProfileForm from "./EditProfileForm/EditProfileForm";
 import CreateServiceForm from "./CreateServiceForm/CreateServiceForm";
 import "./FreelancerProfile.css";
@@ -21,6 +23,23 @@ const FreelancerProfile = () => {
   // Modal states
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showCreateService, setShowCreateService] = useState(false);
+  const [showEditService, setShowEditService] = useState(false);
+  const [editingService, setEditingService] = useState(null);
+
+  // Get current user ID from token
+  const getCurrentUserId = () => {
+    const token = getToken();
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.userId;
+      } catch (err) {
+        console.error("Error decoding token:", err);
+        return null;
+      }
+    }
+    return null;
+  };
 
   // Fetch freelancer profile data on component mount
   useEffect(() => {
@@ -40,6 +59,9 @@ const FreelancerProfile = () => {
       if (response.success) {
         setFreelancerData(response.data);
         setServices(response.data.services || []);
+        console.log("Freelancer Data:", response.data);
+        console.log("Services:", response.data.services);
+        console.log("Current User ID:", getCurrentUserId());
       } else {
         setError(response.message || "Failed to load profile");
       }
@@ -89,6 +111,40 @@ const FreelancerProfile = () => {
     } catch (err) {
       console.error("Error creating service:", err);
       alert("An error occurred while creating the service");
+    }
+  };
+
+  /**
+   * Handle edit service
+   */
+  const handleEditService = (service) => {
+    setEditingService(service);
+    setShowEditService(true);
+  };
+
+  /**
+   * Handle update service
+   */
+  const handleUpdateService = async (serviceData) => {
+    try {
+      const response = await updateService(serviceData);
+
+      if (response.success) {
+        // Update the service in the services array
+        setServices((prev) =>
+          prev.map((service) =>
+            service._id === editingService._id ? { ...service, ...response.data } : service
+          )
+        );
+        setShowEditService(false);
+        setEditingService(null);
+        alert("Service updated successfully!");
+      } else {
+        alert(response.message || "Failed to update service");
+      }
+    } catch (err) {
+      console.error("Error updating service:", err);
+      alert("An error occurred while updating the service");
     }
   };
 
@@ -157,6 +213,23 @@ const FreelancerProfile = () => {
         <CreateServiceForm
           onSave={handleCreateService}
           onCancel={() => setShowCreateService(false)}
+        />
+      </div>
+    );
+  }
+
+  // Show edit service form modal
+  if (showEditService && editingService) {
+    return (
+      <div className="freelancer-profile">
+        <CreateServiceForm
+          initialData={editingService}
+          onSave={handleUpdateService}
+          onCancel={() => {
+            setShowEditService(false);
+            setEditingService(null);
+          }}
+          isEditing={true}
         />
       </div>
     );
@@ -250,22 +323,29 @@ const FreelancerProfile = () => {
         {/* Services Grid */}
         {services.length > 0 ? (
           <div className="freelancer-profile__services-grid">
-            {services.map((service) => (
-              <FreelancerCard
-                key={service._id || service.id}
-                freelancer={{
-                  id: service._id || service.id,
-                  profilePicture: service.profilePicture || "/default-service.jpg",
-                  name: service.name || "Service",
-                  title: service.title || service.category,
-                  rating: 0, // Default since we removed rating from form
-                  reviewsCount: 0, // Default since we removed reviewsCount from form
-                  hourlyRate: service.hourlyRate || 0,
-                  skills: service.skills || [],
-                  bio: service.bio || service.description || "No description available"
-                }}
-              />
-            ))}
+            {services.map((service) => {
+              const serviceData = {
+                ...service,
+                name: service.name || "Service",
+                title: service.title || service.category,
+                rating: service.averageRating || 0, // Use averageRating from service
+                reviewsCount: service.totalReviews || 0, // Use totalReviews from service
+                bio: service.bio || service.description || "No description available",
+                freelancerId: getCurrentUserId() || service.freelancerId // Add freelancerId for URL
+              };
+              
+              console.log("Service Card Data:", serviceData);
+              
+              return (
+                <ServiceCard
+                  key={service._id || service.id}
+                  service={serviceData}
+                  showActions={true}
+                  onEdit={handleEditService}
+                  onDelete={handleDeleteService}
+                />
+              );
+            })}
           </div>
         ) : (
           /* Empty State */

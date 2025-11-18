@@ -28,6 +28,15 @@ export const API_ENDPOINTS = {
   CREATE_SERVICE: "freelancer/services", // POST request to create a service
   UPDATE_SERVICE: "freelancer/services", // PUT request to update a service
   DELETE_SERVICE: "freelancer/services", // DELETE request to delete a service
+  GET_SERVICE_BY_ID: "freelancer/services/getProfile", // GET request to fetch service by ID using query params
+  
+  // Review endpoints
+  GET_SERVICE_REVIEWS: (serviceId) => `services/${serviceId}/reviews`, // GET request to fetch service reviews
+  CREATE_REVIEW: (serviceId) => `services/${serviceId}/reviews`, // POST request to create a review
+  
+  // Order endpoints
+  CREATE_ORDER: "orders", // POST request to create an order
+  GET_USER_ORDERS: "orders/user", // GET request to fetch user's orders
 
   // Add more endpoints here as needed
   // LOGOUT: '/api/users/logout',

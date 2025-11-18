@@ -3,6 +3,7 @@ import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import Home from "../pages/Home";
 import CategoryDetail from "../pages/CategoryDetail/CategoryDetail";
+import ServiceDetail from "../pages/ServiceDetail/ServiceDetail";
 import SignUpChoice from "../pages/Auth/SignUpChoice/SignUpChoice";
 import SignUpForm from "../pages/Auth/SignUpForm/SignUpForm";
 import Login from "../pages/Auth/Login/Login";
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "categories/:categoryName",
         element: <CategoryDetail />,
+      },
+      {
+        path: "service/:serviceId",
+        element: <ServiceDetail />,
       },
       {
         path: "dashboard",

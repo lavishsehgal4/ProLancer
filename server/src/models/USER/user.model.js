@@ -4,11 +4,18 @@ const User = require("./user.mongo");
 async function addUser(userData) {
   try {
     const newUser = await User.create(userData);
-
+    // hide sensitive fields
+const userObj = newUser.toObject();
+delete userObj.passwordHash;
+delete userObj.isActive;
+delete userObj.isEmailVerified;
+delete userObj.createdAt;
+delete userObj.updatedAt;
+delete userObj.__v;
     return {
       success: true,
       message: "User created successfully",
-      newUser,
+      userObj,
     };
   } catch (err) {
     // 🟦 1. Handle Duplicate Key Errors (11000)
@@ -81,6 +88,7 @@ async function doesUserExist(email) {
       lastName: user.lastName,
       accountType: user.accountType,
       passwordHash: user.passwordHash, // used for password comparison
+      country:user.country,
     };
   } catch (err) {
     return {
@@ -98,7 +106,7 @@ async function getUserDataById(id) {
       firstName: 1,
       lastName: 1,
       accountType: 1,
-      phone: 1,
+      phoneNumber: 1,
       profilePicture: 1,
       country: 1,
     });
@@ -116,7 +124,7 @@ async function getUserDataById(id) {
         firstName: user.firstName,
         lastName: user.lastName || "",
         accountType: user.accountType,
-        phoneNumber: user.phone || "",
+        phoneNumber: user.phoneNumber || "",
         profilePicture: user.profilePicture || "",
         country: user.country || "",
       },
@@ -131,26 +139,21 @@ async function getUserDataById(id) {
 
 async function updateUserById(userId, updates) {
   try {
-    // Fields allowed to update
     const allowedFields = [
       "firstName",
       "lastName",
-      "phone",
+      "phoneNumber",
       "profilePicture",
       "country",
     ];
 
-    // Filter only allowed fields
     const filteredUpdates = {};
     for (let key of Object.keys(updates)) {
       if (allowedFields.includes(key)) {
         filteredUpdates[key] = updates[key];
-      } else if (key == "phoneNumber") {
-        filteredUpdates["phone"] = updates[key];
       }
     }
 
-    // If no valid fields provided
     if (Object.keys(filteredUpdates).length === 0) {
       return {
         success: false,
@@ -158,7 +161,6 @@ async function updateUserById(userId, updates) {
       };
     }
 
-    // Update user
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: filteredUpdates },
@@ -166,16 +168,25 @@ async function updateUserById(userId, updates) {
     );
 
     if (!updatedUser) {
-      return {
-        success: false,
-        message: "User not found",
-      };
+      return { success: false, message: "User not found" };
     }
-    updatedUser.phone = updatedUser.phoneNumber;
+
+    // Convert to plain object so we can delete fields
+    const userSafe = updatedUser.toObject();
+
+    // Remove unwanted fields
+    delete userSafe.passwordHash;
+    delete userSafe._id;
+    delete userSafe.isEmailVerified;
+    delete userSafe.isActive;
+    delete userSafe.createdAt;
+    delete userSafe.updatedAt;
+    delete userSafe.__v;
+
     return {
       success: true,
       message: "Profile updated successfully",
-      data: updatedUser,
+      data: userSafe,
     };
   } catch (err) {
     return {
@@ -185,6 +196,7 @@ async function updateUserById(userId, updates) {
     };
   }
 }
+
 
 module.exports = {
   addUser,

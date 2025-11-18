@@ -1,0 +1,287 @@
+backend Sign up route 
+##
+api: http://localhost:8000/signup/{accountType}
+
+requesType:post
+
+request{
+    "email": "rohan.client@example.com",
+  "passwordHash": "123456hashed",
+  "firstName": "Rohan",
+  "lastName": "Sharma" (Optional)
+}
+
+response{
+     "success": true,
+    "message": "User created successfully",
+    "userObj": {
+        "email": "rohan.client@example.com",
+        "firstName": "Rohan",
+        "lastName": "Sharma",
+        "accountType": {accountType},
+        "country": "india"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTFjMDE3YzNkMDQwNjQ2NWE0ZjYyNDYiLCJlbWFpbCI6InJvaGFuLmNsaWVudEBleGFtcGxlLmNvbSIsImFjY291bnRUeXBlIjoiY2xpZW50IiwiaWF0IjoxNzYzNDQzMDY4LCJleHAiOjE3NjQwNDc4Njh9.bDjm2IKJw91n15RWJDOmwLstf5fZUlXHDa6KS7IiREk"
+}
+
+##
+
+
+backend login route
+##
+
+api: http://localhost:8000/users/login
+
+requesType:post
+
+request{
+    "email": "rohan.client@example.com",
+  "password": "123456hashed"
+}
+
+response{
+     "success": true,
+    "message": "Login successful",
+    "userObj": {
+        "firstName": "Rohan",
+        "lastName": "Sharma",
+        "accountType": "client",
+        "email": "rohan.client@example.com"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTFjMDE3YzNkMDQwNjQ2NWE0ZjYyNDYiLCJlbWFpbCI6InJvaGFuLmNsaWVudEBleGFtcGxlLmNvbSIsImFjY291bnRUeXBlIjoiY2xpZW50IiwiaWF0IjoxNzYzNDQ2MjEyLCJleHAiOjE3NjQwNTEwMTJ9._xjJDLsN5uqEl9u9ooCKRRVQc7UegC2Qrtti1BnxnsY"
+}
+
+##
+
+
+backend get user profile api
+##
+
+api: http://localhost:8000/users/basicprofile
+
+requesType:get
+
+header:JWT token
+
+response{
+    "success": true,
+    "message": "User found",
+    "data": {
+        "email": "rohan.client@example.com",
+        "firstName": "Rohan",
+        "lastName": "Sharma",
+        "accountType": "client",
+        "phoneNumber": "",
+        "profilePicture": "",
+        "country": "india"
+    }
+}
+
+##
+ 
+ backend update user profile api
+##
+
+api :http://localhost:8000/users/basicprofile
+
+requestType: put
+
+header:JWT token
+
+request{
+
+    "email": "rohan.client@example.com",
+        "firstName": "Rohan",
+        "lastName": "sehgal",
+        "accountType": "client",
+        "phoneNumber": "9518055364",
+        "profilePicture": "",
+        "country": "USA"
+}
+
+response{
+
+    "success": true,
+    "message": "Profile updated successfully",
+    "data": {
+        "email": "rohan.client@example.com",
+        "firstName": "Rohan",
+        "lastName": "sehgal",
+        "accountType": "client",
+        "country": "USA",
+        "phoneNumber": "9518055364",
+        "profilePicture": ""
+    }
+}
+
+##
+
+
+backend get freelancer profile api 
+##
+api: http://localhost:8000/freelancer/profile
+
+requestType: get
+
+request header: jwt token
+
+response{
+
+    "success": true,
+    "message": "Profile fetched successfully",
+    "data": {
+        "aboutMe": "",
+        "education": "",
+        "yearsOfExperience": 0,
+        "averageRating": 0,
+        "services": [],
+        "completedJobs": 0,
+        "activeJobs": 0,
+        "successRate": 0,
+        "profileCompleted": false,
+        "profileCompletionPercentage": 0,
+        "isVerified": false,
+        "verificationBadges": []
+    }
+}
+
+##
+
+backend update freelancer profile api
+##
+
+api : http://localhost:8000/freelancer/profile
+
+requestType: put
+
+requestheader :jwt token
+
+request:{
+  "aboutMe": "I am a professional web developer with 3+ years of experience in MERN stack.",
+  "education": "B.Tech in Computer Science, 2023",
+  "yearsOfExperience": 3,
+  "successRate": 96,
+  "profileCompleted": true,
+  "profileCompletionPercentage": 85  
+}
+
+response:{
+    "success": true,
+    "message": "Profile updated successfully",
+    "data": {
+        "aboutMe": "I am a professional web developer with 3+ years of experience in MERN stack.",
+        "education": "B.Tech in Computer Science, 2023",
+        "yearsOfExperience": 3,
+        "averageRating": 0,
+        "isComplete": false,
+        "completedJobs": 0,
+        "activeJobs": 0,
+        "successRate": 96,
+        "isVerified": false,
+        "verificationBadges": [],
+        "profileCompleted": true,
+        "profileCompletionPercentage": 85,
+        "services": []
+    }
+}
+
+##
+
+backend createservice api
+##
+
+api: http://localhost:8000/freelancer/services
+
+requestType: post
+
+requestheader : jwt token
+
+request{
+  "title": "Full Stack Web Development",
+  "bio": "I build fast and scalable MERN stack applications.",
+  "description": "I am a highly experienced full stack web developer specializing in the MERN stack, with a strong focus on building scalable, secure, and high-quality applications for businesses and individuals. My services include frontend development using React, backend development using Node.js and Express, and database design using MongoDB. I follow clean code practices, create responsive UI, optimize performance, and ensure that every project is delivered with excellent quality and precision. Whether you need a complete application, API development, admin dashboard, or bug fixing, I can provide reliable and professional results.",
+  "category": "Web Development",
+  "skills": ["React", "Node.js", "MongoDB", "Express"],
+  "hourlyRate": 40,
+  "profilePicture": "https://example.com/service/mern-dev.jpg"
+}
+
+response{
+
+    "success": true,
+    "message": "Service created successfully",
+    "data": {
+        "title": "Full Stack Web Development",
+        "bio": "I build fast and scalable MERN stack applications.",
+        "description": "I am a highly experienced full stack web developer specializing in the MERN stack, with a strong focus on building scalable, secure, and high-quality applications for businesses and individuals. My services include frontend development using React, backend development using Node.js and Express, and database design using MongoDB. I follow clean code practices, create responsive UI, optimize performance, and ensure that every project is delivered with excellent quality and precision. Whether you need a complete application, API development, admin dashboard, or bug fixing, I can provide reliable and professional results.",
+        "averageRating": 0,
+        "totalReviews": 0,
+        "category": "Web Development",
+        "skills": [
+            "React",
+            "Node.js",
+            "MongoDB",
+            "Express"
+        ],
+        "hourlyRate": 40,
+        "profilePicture": "https://example.com/service/mern-dev.jpg",
+        "isActive": true
+    }
+}
+
+##
+
+backend update user service api
+##
+api : http://localhost:8000/freelancer/services
+
+requestType: put
+
+requestheader:jwt token
+
+request:{
+  "title": "Full Stack Web Development",
+  "bio": "Experienced MERN stack developer with strong backend and frontend .",
+  "description": "I am a skilled full stack developer specializing in the MERN stack, creating scalable, secure, and performance-optimized applications for businesses of all sizes. With deep knowledge of Node.js, Express, MongoDB, and React, I build professional dashboards, APIs, authentication systems, admin panels, and responsive UI components. I follow clean coding practices, implement reusable architecture, optimize database queries, write documented APIs, and focus on high performance. I have delivered multiple production-level applications with excellent user experience, proper error-handling, and security best practices.",
+  "category": "Web Development",
+  "skills": ["Node.js", "React", "Express", "MongoDB"],
+  "hourlyRate": 45,
+  "profilePicture": "https://example.com/images/fullstack-update.jpg"
+}
+
+response:{
+    "success": true,
+    "message": "Service updated successfully",
+    "data": {
+        "title": "Full Stack Web Development",
+        "bio": "Experienced MERN stack developer with strong backend and frontend .",
+        "description": "I am a skilled full stack developer specializing in the MERN stack, creating scalable, secure, and performance-optimized applications for businesses of all sizes. With deep knowledge of Node.js, Express, MongoDB, and React, I build professional dashboards, APIs, authentication systems, admin panels, and responsive UI components. I follow clean coding practices, implement reusable architecture, optimize database queries, write documented APIs, and focus on high performance. I have delivered multiple production-level applications with excellent user experience, proper error-handling, and security best practices.",
+        "averageRating": 0,
+        "totalReviews": 0,
+        "category": "Web Development",
+        "skills": [
+            "Node.js",
+            "React",
+            "Express",
+            "MongoDB"
+        ],
+        "hourlyRate": 45,
+        "profilePicture": "https://example.com/images/fullstack-update.jpg",
+        "isActive": true
+    }
+}
+##
+
+
+backend service delete api
+##
+api:freelancer/services/:serviceId
+
+requestType:delete
+requestheader:jwttoken
+
+response{
+    "success": true,
+    "message": "Service deleted successfully"
+}
+##

@@ -100,13 +100,13 @@ const Login = () => {
         }
 
         // Log user data received from login (optional - for debugging)
-        // Backend sends: id, email, name, accountType along with token
-        if (response.id && response.email && response.accountType) {
+        // Backend sends: userObj with firstName, lastName, accountType, email
+        if (response.userObj) {
           console.log("User logged in:", {
-            id: response.id,
-            email: response.email,
-            name: response.name,
-            accountType: response.accountType,
+            firstName: response.userObj.firstName,
+            lastName: response.userObj.lastName,
+            email: response.userObj.email,
+            accountType: response.userObj.accountType,
           });
         }
 

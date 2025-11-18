@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
       index: true,
     },
 
-    phone: {
+    phoneNumber: {
       type: String,
     },
 

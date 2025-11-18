@@ -21,10 +21,17 @@ import { API_ENDPOINTS } from "../../config/api";
  *   message: "Profile fetched successfully",
  *   data: {
  *     aboutMe: "string",
- *     education: "string",
+ *     education: "string", 
  *     yearsOfExperience: number,
  *     averageRating: number,
- *     services: [...]
+ *     services: [...],
+ *     completedJobs: number,
+ *     activeJobs: number,
+ *     successRate: number,
+ *     profileCompleted: boolean,
+ *     profileCompletionPercentage: number,
+ *     isVerified: boolean,
+ *     verificationBadges: []
  *   }
  * }
  */
@@ -62,19 +69,43 @@ export const getFreelancerProfile = async () => {
 
 /**
  * Update freelancer profile data
- * Updates freelancer information: aboutMe, education, yearsOfExperience
+ * Updates freelancer information according to backend API
  *
  * @param {Object} profileData - Updated profile data
  * @param {string} profileData.aboutMe - About me text
  * @param {string} profileData.education - Education details
  * @param {number} profileData.yearsOfExperience - Years of experience
+ * @param {number} profileData.successRate - Success rate percentage
+ * @param {boolean} profileData.profileCompleted - Profile completion status
+ * @param {number} profileData.profileCompletionPercentage - Profile completion percentage
  *
  * @returns {Promise<Object>} - Updated profile data
  * @throws {Error} - If API call fails
+ *
+ * Expected backend response format:
+ * {
+ *   success: true,
+ *   message: "Profile updated successfully",
+ *   data: {
+ *     aboutMe: "string",
+ *     education: "string",
+ *     yearsOfExperience: number,
+ *     averageRating: number,
+ *     isComplete: boolean,
+ *     completedJobs: number,
+ *     activeJobs: number,
+ *     successRate: number,
+ *     isVerified: boolean,
+ *     verificationBadges: [],
+ *     profileCompleted: boolean,
+ *     profileCompletionPercentage: number,
+ *     services: []
+ *   }
+ * }
  */
 export const updateFreelancerProfile = async (profileData) => {
   try {
-    // Make PUT/PATCH request to update freelancer profile
+    // Make PUT request to update freelancer profile
     const response = await apiClient.put(
       API_ENDPOINTS.UPDATE_FREELANCER_PROFILE,
       profileData
@@ -109,20 +140,37 @@ export const updateFreelancerProfile = async (profileData) => {
 
 /**
  * Create a new service
- * Creates a new service for the freelancer
+ * Creates a new service for the freelancer according to backend API
  *
- * @param {Object} serviceData - Service data matching schema
- * @param {string} serviceData.title - Service title (selected from predefined options)
- * @param {string} serviceData.name - Service name
- * @param {string} serviceData.bio - Service bio
- * @param {string} serviceData.description - Service description
- * @param {string} serviceData.category - Service category
- * @param {string[]} serviceData.skills - Array of skills
- * @param {number} serviceData.hourlyRate - Hourly rate
- * @param {string} serviceData.profilePicture - Service profile picture URL
+ * @param {Object} serviceData - Service data matching backend schema
+ * @param {string} serviceData.title - Service title (required)
+ * @param {string} serviceData.bio - Service bio (required, 10-200 chars)
+ * @param {string} serviceData.description - Service description (required, min 300 chars)
+ * @param {string} serviceData.category - Service category (required)
+ * @param {string[]} serviceData.skills - Array of skills (required)
+ * @param {number} serviceData.hourlyRate - Hourly rate (required, min 1)
+ * @param {string} serviceData.profilePicture - Service profile picture URL (optional)
  *
  * @returns {Promise<Object>} - Created service data
  * @throws {Error} - If API call fails
+ *
+ * Expected backend response format:
+ * {
+ *   success: true,
+ *   message: "Service created successfully",
+ *   data: {
+ *     title: "string",
+ *     bio: "string",
+ *     description: "string",
+ *     averageRating: 0,
+ *     totalReviews: 0,
+ *     category: "string",
+ *     skills: ["skill1", "skill2"],
+ *     hourlyRate: number,
+ *     profilePicture: "string",
+ *     isActive: true
+ *   }
+ * }
  */
 export const createService = async (serviceData) => {
   try {
@@ -161,19 +209,43 @@ export const createService = async (serviceData) => {
 
 /**
  * Update an existing service
- * Updates a service for the freelancer
+ * Updates a service for the freelancer according to backend API
  *
- * @param {string} serviceId - Service ID to update
  * @param {Object} serviceData - Updated service data
+ * @param {string} serviceData.title - Service title (required)
+ * @param {string} serviceData.bio - Service bio (required, 10-200 chars)
+ * @param {string} serviceData.description - Service description (required, min 300 chars)
+ * @param {string} serviceData.category - Service category (required)
+ * @param {string[]} serviceData.skills - Array of skills (required)
+ * @param {number} serviceData.hourlyRate - Hourly rate (required, min 1)
+ * @param {string} serviceData.profilePicture - Service profile picture URL (optional)
  *
  * @returns {Promise<Object>} - Updated service data
  * @throws {Error} - If API call fails
+ *
+ * Expected backend response format:
+ * {
+ *   success: true,
+ *   message: "Service updated successfully",
+ *   data: {
+ *     title: "string",
+ *     bio: "string", 
+ *     description: "string",
+ *     averageRating: 0,
+ *     totalReviews: 0,
+ *     category: "string",
+ *     skills: ["skill1", "skill2"],
+ *     hourlyRate: number,
+ *     profilePicture: "string",
+ *     isActive: true
+ *   }
+ * }
  */
-export const updateService = async (serviceId, serviceData) => {
+export const updateService = async (serviceData) => {
   try {
-    // Make PUT/PATCH request to update service
+    // Make PUT request to update service
     const response = await apiClient.put(
-      `${API_ENDPOINTS.UPDATE_SERVICE}/${serviceId}`,
+      API_ENDPOINTS.UPDATE_SERVICE,
       serviceData
     );
 
@@ -206,19 +278,31 @@ export const updateService = async (serviceId, serviceData) => {
 
 /**
  * Delete a service
- * Deletes a service for the freelancer
+ * Deletes a service for the freelancer according to backend API
  *
  * @param {string} serviceId - Service ID to delete
  *
  * @returns {Promise<Object>} - Success response
  * @throws {Error} - If API call fails
+ *
+ * Expected backend response format:
+ * {
+ *   success: true,
+ *   message: "Service deleted successfully"
+ * }
  */
 export const deleteService = async (serviceId) => {
   try {
+    // Validate serviceId
+    if (!serviceId) {
+      throw new Error("Service ID is required for deletion");
+    }
+
+    console.log("Deleting service with ID:", serviceId);
+
     // Make DELETE request to delete service
-    const response = await apiClient.delete(
-      `${API_ENDPOINTS.DELETE_SERVICE}/${serviceId}`
-    );
+    // Backend expects: freelancer/services/:serviceId
+    const response = await apiClient.delete(`freelancer/services/${serviceId}`);
 
     // Extract response data
     const responseData = response.data;
@@ -236,6 +320,7 @@ export const deleteService = async (serviceId) => {
   } catch (error) {
     // Handle API errors
     console.error("Delete service API error:", error);
+    console.error("Service ID that failed:", serviceId);
 
     // Return error in consistent format
     return {

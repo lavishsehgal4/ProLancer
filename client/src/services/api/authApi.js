@@ -18,16 +18,22 @@ import { API_ENDPOINTS } from "../../config/api";
  * @param {string} userData.password - User's password
  * @param {string} role - Account type: 'client' or 'freelancer'
  *
- * @returns {Promise<Object>} - Response object with success status, message, and data
+ * @returns {Promise<Object>} - Response object with success status, message, userObj, and token
  * @throws {Error} - If API call fails
  *
  * Expected backend response format:
  * {
  *   success: true,
  *   message: "User created successfully",
+ *   userObj: {
+ *     email: "user@example.com",
+ *     firstName: "John",
+ *     lastName: "Doe",
+ *     accountType: "client",
+ *     country: "india"
+ *   },
  *   token: "jwt_token_string"
  * }
- * Note: Backend does NOT send newUser object in response
  */
 export const signup = async (userData, role) => {
   try {
@@ -36,8 +42,7 @@ export const signup = async (userData, role) => {
       throw new Error('Invalid role. Must be "client" or "freelancer"');
     }
 
-    // Prepare the request payload
-    // Note: Backend expects 'passwordHash' field (backend will hash it)
+    // Prepare the request payload - backend expects passwordHash field
     const payload = {
       firstName: userData.firstName,
       lastName: userData.lastName || "",
@@ -50,7 +55,6 @@ export const signup = async (userData, role) => {
     const response = await apiClient.post(API_ENDPOINTS.SIGNUP(role), payload);
 
     // Extract response data
-    // Backend sends: { success, message, token } (no data wrapper, no newUser)
     const responseData = response.data;
 
     // Check if backend returned success
@@ -58,8 +62,8 @@ export const signup = async (userData, role) => {
       return {
         success: true,
         message: responseData.message || "Account created successfully",
-        token: responseData.token, // Token is at root level, not in data object
-        // Note: Backend does NOT send newUser in response
+        userObj: responseData.userObj, // User object with profile data
+        token: responseData.token, // JWT token
       };
     } else {
       // Backend returned error
@@ -83,18 +87,20 @@ export const signup = async (userData, role) => {
  *
  * @param {string} email - User's email
  * @param {string} password - User's password
- * @returns {Promise<Object>} - Response object with success status, message, token, and user data
+ * @returns {Promise<Object>} - Response object with success status, message, userObj, and token
  * @throws {Error} - If API call fails
  *
  * Expected backend response format:
  * {
  *   success: true,
  *   message: "Login successful",
- *   token: "jwt_token_string",
- *   id: "user_id",
- *   email: "user@example.com",
- *   name: "John Doe" or firstName,
- *   accountType: "client" | "freelancer"
+ *   userObj: {
+ *     firstName: "John",
+ *     lastName: "Doe",
+ *     accountType: "client",
+ *     email: "user@example.com"
+ *   },
+ *   token: "jwt_token_string"
  * }
  */
 export const login = async (email, password) => {
@@ -109,7 +115,6 @@ export const login = async (email, password) => {
     const response = await apiClient.post(API_ENDPOINTS.LOGIN, payload);
 
     // Extract response data
-    // Backend sends: { success, message, token, id, email, name, accountType }
     const responseData = response.data;
 
     // Check if backend returned success
@@ -117,11 +122,8 @@ export const login = async (email, password) => {
       return {
         success: true,
         message: responseData.message || "Login successful",
-        token: responseData.token, // Token is at root level
-        id: responseData.id, // User ID
-        email: responseData.email, // User email
-        name: responseData.name, // User name (firstName or full name)
-        accountType: responseData.accountType, // "client" or "freelancer"
+        userObj: responseData.userObj, // User object with profile data
+        token: responseData.token, // JWT token
       };
     } else {
       // Backend returned error

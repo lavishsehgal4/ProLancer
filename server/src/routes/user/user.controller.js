@@ -32,15 +32,17 @@ async function httpSignUpUser(req, res) {
 
     // 4. Create JWT token
     const payload = {
-      userId: newUser._id,
-      email: newUser.email,
-      accountType: newUser.accountType,
+      userId: response.userObj._id,
+      email: response.userObj.email,
+      accountType: response.userObj.accountType,
     };
     const token = generateToken(payload);
     response.token = token;
-    console.log(response.newUser._id.toString());
-    await addNameAndUser(response.newUser._id.toString());
-    delete response.newUser;
+    if(response.userObj.accountType==="freelancer"){
+    await addNameAndUser(response.userObj._id.toString());
+    }
+    delete response.userObj._id;
+    
     return res.status(201).json(response); // success case
   } catch (err) {
     return res.status(500).json({
@@ -76,13 +78,16 @@ async function httpLoginUser(req, res) {
     }
 
     // Step 3: Prepare user object
-    const userObj = {
+    const data = {
       success: true,
       message: "Login successful",
-      userId: response.userId,
-      name: response.firstName + " " + (response.lastName || ""),
+      userObj:{
+      firstName: response.firstName ,
+      lastName:(response.lastName || ""),
       accountType: response.accountType,
       email: response.email,
+      country:response.country,
+      }
     };
 
     // Step 4: Generate Token
@@ -92,10 +97,10 @@ async function httpLoginUser(req, res) {
       accountType: response.accountType,
     };
 
-    userObj.token = generateToken(payload);
+    data.token = generateToken(payload);
 
     // Step 5: Return response
-    return res.status(200).json(userObj);
+    return res.status(200).json(data);
   } catch (error) {
     console.error(error);
     console.log(error.message);
@@ -108,7 +113,7 @@ async function httpLoginUser(req, res) {
 
 async function httpGetUserData(req, res) {
   try {
-    const { userId, email, accountType } = req.user;
+    const { userId } = req.user;
 
     const response = await getUserDataById(userId);
     if (response.success) {

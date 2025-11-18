@@ -5,55 +5,58 @@ const serviceSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      default: "",
       trim: true,
-    },
-    name: {
-      type: String,
-      default: "",
       required: true,
-      trim: true,
     },
     bio: {
       type: String,
-      default: "",
       trim: true,
+      minlength: 10,
+      maxlength: 200, // limit short bio
+      required: true,
     },
     description: {
       type: String,
-      default: "",
       trim: true,
+      minlength: 300,
+      required: true,
     },
-    rating: {
+
+
+    averageRating: {
       type: Number,
-      default: "",
+      default: 0,
       min: 0,
       max: 5,
     },
-    reviewsCount: {
+    totalReviews: {
       type: Number,
       default: 0,
     },
+
     category: {
       type: String,
-      default: "",
       trim: true,
+      required: true,
     },
+
     skills: [
       {
         type: String,
         trim: true,
-        default: "",
+        required: true,
       },
     ],
+
     hourlyRate: {
       type: Number,
-      default: 50,
-      trim: true,
+      required: true,
+      min: 1,
     },
+
     profilePicture: {
       type: String,
-      default: "",
+      
     },
 
     isActive: {
@@ -63,6 +66,7 @@ const serviceSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
 
 // Freelancer Schema
 const freelancerSchema = new mongoose.Schema(
@@ -101,11 +105,7 @@ const freelancerSchema = new mongoose.Schema(
     // Services array - array of service schema
     services: [serviceSchema],
 
-    // Profile completion status
-    isComplete: {
-      type: Boolean,
-      default: false,
-    },
+    
 
     completedJobs: { type: Number, default: 0 },
     activeJobs: { type: Number, default: 0 },

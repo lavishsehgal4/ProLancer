@@ -9,19 +9,18 @@
 import { useState } from "react";
 import "./CreateServiceForm.css";
 
-const CreateServiceForm = ({ onSave, onCancel }) => {
+const CreateServiceForm = ({ onSave, onCancel, initialData = null, isEditing = false }) => {
   // Array of predefined titles - you can fill this with your desired options
   const titleOptions = ["Web Development","Mobile App Development","UI/UX Design","Backend Development","DevOps & Cloud","Database Management","API Development","Software Testing"];
 
   const [formData, setFormData] = useState({
-    title: "",
-    name: "",
-    bio: "",
-    description: "",
-    category: "",
-    skills: [],
-    hourlyRate: 50,
-    profilePicture: "",
+    title: initialData?.title || "",
+    bio: initialData?.bio || "",
+    description: initialData?.description || "",
+    category: initialData?.category || "",
+    skills: initialData?.skills || [],
+    hourlyRate: initialData?.hourlyRate || 50,
+    profilePicture: initialData?.profilePicture || "",
   });
 
   const [skillInput, setSkillInput] = useState("");
@@ -60,24 +59,38 @@ const CreateServiceForm = ({ onSave, onCancel }) => {
   const validateForm = () => {
     const newErrors = {};
 
+    // Title validation (required)
     if (!formData.title.trim()) {
       newErrors.title = "Title is required";
     }
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
+
+    // Bio validation (required, 10-200 chars)
     if (!formData.bio.trim()) {
       newErrors.bio = "Bio is required";
+    } else if (formData.bio.trim().length < 10) {
+      newErrors.bio = "Bio must be at least 10 characters";
+    } else if (formData.bio.trim().length > 200) {
+      newErrors.bio = "Bio must be less than 200 characters";
     }
+
+    // Description validation (required, min 300 chars)
     if (!formData.description.trim()) {
       newErrors.description = "Description is required";
+    } else if (formData.description.trim().length < 300) {
+      newErrors.description = "Description must be at least 300 characters";
     }
+
+    // Category validation (required)
     if (!formData.category.trim()) {
       newErrors.category = "Category is required";
     }
-    if (formData.hourlyRate < 0) {
-      newErrors.hourlyRate = "Hourly rate cannot be negative";
+
+    // Hourly rate validation (required, min 1)
+    if (!formData.hourlyRate || formData.hourlyRate < 1) {
+      newErrors.hourlyRate = "Hourly rate must be at least $1";
     }
+
+    // Skills validation (required, at least one)
     if (formData.skills.length === 0) {
       newErrors.skills = "At least one skill is required";
     }
@@ -99,7 +112,6 @@ const CreateServiceForm = ({ onSave, onCancel }) => {
       // Reset form on success
       setFormData({
         title: "",
-        name: "",
         bio: "",
         description: "",
         category: "",
@@ -115,7 +127,9 @@ const CreateServiceForm = ({ onSave, onCancel }) => {
   return (
     <div className="create-service-form">
       <div className="create-service-form__header">
-        <h2 className="create-service-form__title">Create New Service</h2>
+        <h2 className="create-service-form__title">
+          {isEditing ? "Edit Service" : "Create New Service"}
+        </h2>
       </div>
 
       <form onSubmit={handleSubmit} className="create-service-form__form">
@@ -143,24 +157,7 @@ const CreateServiceForm = ({ onSave, onCancel }) => {
           )}
         </div>
 
-        {/* Name */}
-        <div className="create-service-form__field">
-          <label htmlFor="name" className="create-service-form__label">
-            Name <span className="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="create-service-form__input"
-            placeholder="Service name"
-          />
-          {errors.name && (
-            <span className="create-service-form__error">{errors.name}</span>
-          )}
-        </div>
+
 
         {/* Bio */}
         <div className="create-service-form__field">
@@ -330,7 +327,7 @@ const CreateServiceForm = ({ onSave, onCancel }) => {
             className="create-service-form__button create-service-form__button--save"
             disabled={saving}
           >
-            {saving ? "Creating..." : "Create Service"}
+            {saving ? (isEditing ? "Updating..." : "Creating...") : (isEditing ? "Update Service" : "Create Service")}
           </button>
         </div>
       </form>
