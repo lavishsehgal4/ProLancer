@@ -9,6 +9,7 @@ import SignUpForm from "../pages/Auth/SignUpForm/SignUpForm";
 import Login from "../pages/Auth/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import EditAccount from "../pages/Dashboard/EditAccount/EditAccount";
+import AuthSuccess from "../pages/AuthSuccess/AuthSuccess";
 
 // Create router with routes
 const router = createBrowserRouter([
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />, // Login page
+      },
+      {
+        path: "auth/success",
+        element: <AuthSuccess />, // OAuth success handler
       },
     ],
   },

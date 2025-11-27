@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import "./SignUpForm.css";
-// Import API functions and token utilities
+// Import API functions and components
 import { signup } from "../../../services/api/authApi";
-import { saveToken } from "../../../utils/auth/token";
+import NotificationPopup from "../../../components/common/NotificationPopup/NotificationPopup";
 
 /**
  * SignUpForm Component
@@ -48,6 +48,14 @@ const SignUpForm = () => {
 
   // Loading state for API call
   const [isLoading, setIsLoading] = useState(false);
+
+  // Notification popup state
+  const [notification, setNotification] = useState({
+    isVisible: false,
+    type: "info",
+    title: "",
+    message: "",
+  });
 
   // Handle input changes
   const handleChange = (e) => {
@@ -156,31 +164,36 @@ const SignUpForm = () => {
 
       // Check if signup was successful
       if (response.success) {
-        // Save the authentication token to localStorage
-        // This allows the user to stay logged in
-        // Note: Backend sends token at root level, not in data object
-        if (response.token) {
-          saveToken(response.token);
-        }
+        // Show email verification notification
+        setNotification({
+          isVisible: true,
+          type: "success",
+          title: "Account Created Successfully!",
+          message: response.message || "Please check your email and click the verification link to activate your account.",
+        });
 
-        // Show success alert
-        alert(response.message || "Account created successfully!");
-
-        // Redirect to home page
-        navigate("/");
+        // Redirect to home page after showing notification
+        setTimeout(() => {
+          navigate("/");
+        }, 3000);
       } else {
-        // Signup failed - show error message
-        alert(
-          response.message || "Failed to create account. Please try again."
-        );
+        // Signup failed - show error notification
+        setNotification({
+          isVisible: true,
+          type: "warning",
+          title: "Signup Failed",
+          message: response.message || "Failed to create account. Please try again.",
+        });
       }
     } catch (error) {
       // Handle unexpected errors (network issues, etc.)
       console.error("Signup error:", error);
-      alert(
-        error.message ||
-          "An error occurred while creating your account. Please try again."
-      );
+      setNotification({
+        isVisible: true,
+        type: "warning",
+        title: "Error",
+        message: error.message || "An error occurred while creating your account. Please try again.",
+      });
     } finally {
       // Always reset loading state, whether success or failure
       setIsLoading(false);
@@ -188,8 +201,19 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="signup-form">
-      <div className="signup-form__container">
+    <>
+      {/* Notification Popup */}
+      <NotificationPopup
+        isVisible={notification.isVisible}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onClose={() => setNotification({ ...notification, isVisible: false })}
+        autoClose={notification.type === "success" ? 5000 : null}
+      />
+
+      <div className="signup-form">
+        <div className="signup-form__container">
         {/* Heading */}
         <h1 className="signup-form__heading">Sign Up as {role}</h1>
         <p className="signup-form__subheading">
@@ -314,8 +338,9 @@ const SignUpForm = () => {
             Log in
           </Link>
         </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

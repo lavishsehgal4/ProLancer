@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Star, Edit, MessageCircle, User, Award, Briefcase, TrendingUp } from "lucide-react";
 import { getToken } from "../../utils/auth/token";
 import { getServiceDetails } from "../../services/api/categoriesApi";
-import { createOrder } from "../../services/api/orderApi";
+import OrderRequestModal from "../../components/order/OrderRequestModal/OrderRequestModal";
 import "./ServiceDetail.css";
 
 const ServiceDetail = () => {
@@ -15,6 +15,7 @@ const ServiceDetail = () => {
   const [error, setError] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showOrderModal, setShowOrderModal] = useState(false);
 
   useEffect(() => {
     fetchServiceDetails();
@@ -71,31 +72,14 @@ const ServiceDetail = () => {
     }
   };
 
-  const handleRequestOrder = async () => {
+  const handleRequestOrder = () => {
     if (!currentUser) {
       alert("Please login to request an order");
       navigate("/login");
       return;
     }
 
-    const orderData = {
-      serviceId: service._id,
-      freelancerId: service.freelancerId || "freelancer-id-placeholder", // Will need to get this from API
-      message: "I'm interested in your service. Please contact me to discuss the details.",
-      budget: service.hourlyRate * 10, // Default budget estimate
-      deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 7 days from now
-    };
-
-    try {
-      const response = await createOrder(orderData);
-      if (response.success) {
-        alert("Order request sent successfully! The freelancer will contact you soon.");
-      } else {
-        alert(response.message || "Failed to send order request");
-      }
-    } catch (err) {
-      alert("Failed to send order request. Please try again.");
-    }
+    setShowOrderModal(true);
   };
 
   const handleEditService = () => {
@@ -348,6 +332,14 @@ const ServiceDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Order Request Modal */}
+      <OrderRequestModal
+        isOpen={showOrderModal}
+        onClose={() => setShowOrderModal(false)}
+        service={service}
+        freelancerInfo={freelancerInfo}
+      />
     </div>
   );
 };

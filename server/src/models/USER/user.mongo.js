@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
       index: true,
     },
 
+    // REQUIRED ONLY FOR LOCAL USERS
     passwordHash: {
       type: String,
       required: true,
@@ -22,6 +23,8 @@ const userSchema = new mongoose.Schema(
     lastName: {
       type: String,
     },
+
+   
 
     accountType: {
       type: String,
@@ -54,7 +57,7 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // adds createdAt and updatedAt automatically
+    timestamps: true,
   }
 );
 

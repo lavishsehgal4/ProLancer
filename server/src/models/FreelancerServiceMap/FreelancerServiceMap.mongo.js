@@ -12,7 +12,7 @@ const freelancerServiceMapSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       index: true,
-    }
+    },
   },
   { timestamps: true }
 );
@@ -20,4 +20,7 @@ const freelancerServiceMapSchema = new mongoose.Schema(
 // Compound index (fast lookups)
 freelancerServiceMapSchema.index({ userId: 1, serviceId: 1 }, { unique: true });
 
-module.exports = mongoose.model("FreelancerServiceMap", freelancerServiceMapSchema);
+module.exports = mongoose.model(
+  "FreelancerServiceMap",
+  freelancerServiceMapSchema
+);

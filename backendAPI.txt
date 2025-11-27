@@ -449,3 +449,71 @@ NOTES:
 - API uses FreelancerServiceMap to find which freelancer owns the service.
 - Only one service is returned using the MongoDB positional operator ("services.$").
 - Perfect for service detail pages showing freelancer information + their service.
+
+
+
+
+# FRONTEND TASK: Implement Google Login (Login Only)
+
+Your backend exposes these endpoints:
+
+1️⃣ Start Google Login  
+GET http://localhost:8000/auth/google/login
+
+2️⃣ Google Login Callback redirects to frontend:  
+http://localhost:5173/auth/success?token=JWT
+
+3️⃣ If user not registered, backend redirects to:  
+http://localhost:5173/login?error=not_registered
+
+
+## ✔️ TASK 1 — Create a "Login with Google" button
+
+Create a React button that redirects user to:
+http://localhost:8000/auth/google/login
+
+Example:
+<button onClick={() => window.location.href = "http://localhost:8000/auth/google/login"}>
+  Login with Google
+</button>
+
+
+## ✔️ TASK 2 — Create a page: /auth/success
+
+Create a component at:
+src/pages/AuthSuccess.jsx
+
+This page should:
+
+1. Read token from URL:
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token");
+
+2. Store token:
+localStorage.setItem("token", token);
+
+3. Redirect user to dashboard:
+navigate("/dashboard");
+
+
+## ✔️ TASK 3 — Handle Errors on Login Page
+
+On the login page, read URL query:
+const params = new URLSearchParams(window.location.search);
+if (params.get("error") === "not_registered") {
+  show an alert or message: "Google account not registered. Please sign up first."
+}
+
+## ✔️ TASK 4 — Make every API request send JWT
+
+Create axios instance:
+axios.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem("token");
+
+## ✔️ SUMMARY
+
+Flow should be:
+Login Page → Click "Login with Google" →
+Backend → Google →
+Backend callback → Redirect to /auth/success?token=XYZ →
+Save token → Redirect to dashboard →
+Use token for all protected APIs.

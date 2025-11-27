@@ -143,8 +143,42 @@ export const login = async (email, password) => {
   }
 };
 
+
+
+/**
+ * Resend verification email
+ *
+ * @param {string} email - User's email address
+ * @returns {Promise<Object>} - Response object with success status and message
+ */
+export const resendVerificationEmail = async (email) => {
+  try {
+    const payload = { email };
+
+    const response = await apiClient.post("/api/email/resend-verification", payload);
+    const responseData = response.data;
+
+    if (responseData.success) {
+      return {
+        success: true,
+        message: responseData.message || "Verification email sent successfully",
+      };
+    } else {
+      throw new Error(responseData.message || "Failed to resend verification email");
+    }
+  } catch (error) {
+    console.error("Resend verification email error:", error);
+    return {
+      success: false,
+      message: error.message || "Failed to resend verification email. Please try again.",
+      error: error.error || error.message,
+    };
+  }
+};
+
 // Export all auth API functions
 export default {
   signup,
   login,
+  resendVerificationEmail,
 };

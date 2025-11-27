@@ -69,6 +69,7 @@ async function doesUserExist(email) {
         lastName: 1,
         email: 1,
         accountType: 1,
+        isEmailVerified:1,
       }
     );
 
@@ -89,6 +90,7 @@ async function doesUserExist(email) {
       accountType: user.accountType,
       passwordHash: user.passwordHash, // used for password comparison
       country:user.country,
+      isEmailVerified:user.isEmailVerified,
     };
   } catch (err) {
     return {
@@ -108,6 +110,7 @@ async function getUserDataById(id) {
       accountType: 1,
       phoneNumber: 1,
       profilePicture: 1,
+      isEmailVerified:1,
       country: 1,
     });
     if (!user) {
@@ -145,6 +148,8 @@ async function updateUserById(userId, updates) {
       "phoneNumber",
       "profilePicture",
       "country",
+      "isEmailVerified",
+      "isActive",
     ];
 
     const filteredUpdates = {};

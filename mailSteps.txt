@@ -1,0 +1,85 @@
+USER SIGN-UP FLOW (WITH EMAIL VERIFICATION)
+===========================================
+
+1. USER → CLIENT (Sign Up Form)
+   --------------------------------
+   User enters:
+     - email
+     - password
+   ↓
+   Client sends POST /signup
+
+
+2. CLIENT → SERVER (POST /signup)
+   --------------------------------
+   Server checks:
+     - is email already registered?
+   ↓
+   If not:
+     - hash password
+     - create user in DB:
+         {
+           email,
+           passwordHash,
+           verified: false,
+           createdAt,
+           updatedAt
+         }
+   ↓
+   Generate a verification token (string or JWT)
+   ↓
+   Save token in DB with:
+       userId, token, expiryTime
+   ↓
+   Send verification email with link:
+       https://your-domain.com/verify?token=XYZ
+   ↓
+   Response to client:
+       "Account created. Please verify your email."
+
+
+3. USER → EMAIL (Sees Verification Email)
+   -----------------------------------------
+   HTML email shows:
+     "Verify Email" button
+   ↓
+   When user clicks it:
+     goes to your backend verify route
+
+
+4. USER BROWSER → SERVER (GET /verify?token=XYZ)
+   ------------------------------------------------
+   Server logic:
+     - find token in DB
+     - check if token exists
+     - check if token is not expired
+     - find associated user
+   ↓
+   If valid:
+     - update user's "verified" = true
+     - delete token from DB
+     - redirect to success page
+   Else:
+     - show "Invalid or expired link"
+
+
+5. USER → SUCCESS PAGE
+   -------------------------
+   Shows:
+     "Email verified successfully!"
+   ↓
+   User can now log in
+
+
+LOGIN FLOW (short)
+==================
+1. USER → POST /login
+2. Server checks:
+      - user exists
+      - password matches
+      - verified == true
+3. If verified:
+      return JWT / session token
+   Else:
+      return:
+        "Please verify your email before logging in."

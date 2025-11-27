@@ -49,6 +49,90 @@
   text-decoration: underline;
 }
 
+/* Divider */
+.signup-choice__divider {
+  position: relative;
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.signup-choice__divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e2e8f0;
+}
+
+.signup-choice__divider span {
+  background-color: #f7f9fc;
+  padding: 0 1.5rem;
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Google Login Button */
+.signup-choice__google-btn {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  padding: 1.125rem 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0 auto 2rem auto;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.signup-choice__google-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transition: left 0.6s;
+}
+
+.signup-choice__google-btn:hover::before {
+  left: 100%;
+}
+
+.signup-choice__google-btn:hover {
+  border-color: #4285f4;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(66, 133, 244, 0.2);
+}
+
+.signup-choice__google-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(66, 133, 244, 0.25);
+}
+
+.signup-choice__google-icon {
+  flex-shrink: 0;
+  transition: transform 0.4s ease;
+}
+
+.signup-choice__google-btn:hover .signup-choice__google-icon {
+  transform: scale(1.15) rotate(5deg);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .signup-choice__heading {
@@ -63,5 +147,15 @@
   .signup-choice__cards {
     flex-direction: column;
     gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-choice__heading {
+    font-size: 1.75rem;
+  }
+
+  .signup-choice__subheading {
+    font-size: 0.95rem;
   }
 }

@@ -11,39 +11,69 @@ const {
   comparePassword,
 } = require("../../auth/auth.utils");
 
+const {
+  createVerificationToken,
+}=require('../../models/TOKEN/token.model');
+
+const{sendVerificationEmail}=require('../../emails/email.service');
+
 async function httpSignUpUser(req, res) {
   try {
     const userData = req.body;
     const role = req.params.role;
+
     const newUser = Object.assign(userData, {
       accountType: role,
-      isEmailVerified: true,
-      isActive: true,
+      isEmailVerified: false,
+      isActive: false,
     });
 
-    // 2. Hash password
+    // Hash password
     newUser.passwordHash = await hashPassword(newUser.passwordHash);
 
+    // Save user to DB
     const response = await addUser(newUser);
 
     if (!response.success) {
-      return res.status(400).json(response); // error case
+      return res.status(400).json(response);
+    }
+    console.log(response);
+    // Extract userId & email immediately
+    const userId = response.userObj._id.toString();
+    const email = response.userObj.email;
+
+    // ------------------------------------------------------
+    // ⭐ 1️⃣ FREELANCER SETUP (BEFORE SENDING EMAIL)
+    // ------------------------------------------------------
+    if (response.userObj.accountType === "freelancer") {
+      await addNameAndUser(userId);
     }
 
-    // 4. Create JWT token
-    const payload = {
-      userId: response.userObj._id,
-      email: response.userObj.email,
-      accountType: response.userObj.accountType,
-    };
-    const token = generateToken(payload);
-    response.token = token;
-    if(response.userObj.accountType==="freelancer"){
-    await addNameAndUser(response.userObj._id.toString());
-    }
+    // ------------------------------------------------------
+    // ⭐ 2️⃣ CREATE TOKEN
+    // ------------------------------------------------------
+    const token = await createVerificationToken(userId);
+
+    // ------------------------------------------------------
+    // ⭐ 3️⃣ BUILD VERIFICATION URL
+    // ------------------------------------------------------
+    const verificationUrl = `http://localhost:8000/api/user/verify-email?token=${token}`;
+
+    // ------------------------------------------------------
+    // ⭐ 4️⃣ SEND VERIFICATION EMAIL
+    // ------------------------------------------------------
+    await sendVerificationEmail(email, verificationUrl);
+
+    // ------------------------------------------------------
+    // CLEAN RESPONSE
+    // ------------------------------------------------------
     delete response.userObj._id;
-    
-    return res.status(201).json(response); // success case
+
+    return res.status(201).json({
+      success: true,
+      message: "Signup successful. Please verify your email.",
+    });
+
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -52,6 +82,7 @@ async function httpSignUpUser(req, res) {
     });
   }
 }
+
 
 async function httpLoginUser(req, res) {
   try {
@@ -67,7 +98,15 @@ async function httpLoginUser(req, res) {
       });
     }
 
-    // Step 2: Compare password correctly (bcrypt.compare)
+    // Step 2: Check if email is verified
+    if (!response.isEmailVerified) {
+      return res.status(403).json({
+        success: false,
+        message: "Please verify your email before logging in.",
+      });
+    }
+
+    // Step 3: Compare password
     const isMatch = await comparePassword(password, response.passwordHash);
 
     if (!isMatch) {
@@ -77,20 +116,20 @@ async function httpLoginUser(req, res) {
       });
     }
 
-    // Step 3: Prepare user object
+    // Step 4: Prepare user object
     const data = {
       success: true,
       message: "Login successful",
-      userObj:{
-      firstName: response.firstName ,
-      lastName:(response.lastName || ""),
-      accountType: response.accountType,
-      email: response.email,
-      country:response.country,
-      }
+      userObj: {
+        firstName: response.firstName,
+        lastName: response.lastName || "",
+        accountType: response.accountType,
+        email: response.email,
+        country: response.country,
+      },
     };
 
-    // Step 4: Generate Token
+    // Step 5: Generate JWT token
     const payload = {
       userId: response.userId,
       email: response.email,
@@ -99,17 +138,18 @@ async function httpLoginUser(req, res) {
 
     data.token = generateToken(payload);
 
-    // Step 5: Return response
+    // Step 6: Return response
     return res.status(200).json(data);
+
   } catch (error) {
     console.error(error);
-    console.log(error.message);
     return res.status(500).json({
       success: false,
       message: "Server error",
     });
   }
 }
+
 
 async function httpGetUserData(req, res) {
   try {

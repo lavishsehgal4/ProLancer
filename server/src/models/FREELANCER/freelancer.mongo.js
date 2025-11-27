@@ -22,7 +22,6 @@ const serviceSchema = new mongoose.Schema(
       required: true,
     },
 
-
     averageRating: {
       type: Number,
       default: 0,
@@ -56,7 +55,6 @@ const serviceSchema = new mongoose.Schema(
 
     profilePicture: {
       type: String,
-      
     },
 
     isActive: {
@@ -66,7 +64,6 @@ const serviceSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
 
 // Freelancer Schema
 const freelancerSchema = new mongoose.Schema(
@@ -104,8 +101,6 @@ const freelancerSchema = new mongoose.Schema(
 
     // Services array - array of service schema
     services: [serviceSchema],
-
-    
 
     completedJobs: { type: Number, default: 0 },
     activeJobs: { type: Number, default: 0 },

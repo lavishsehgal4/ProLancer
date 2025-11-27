@@ -1,6 +1,6 @@
 const Freelancer = require("./freelancer.mongo");
 const mongoose = require("mongoose");
-const FreelancerServiceMap=require('../FreelancerServiceMap/FreelancerServiceMap.mongo')
+const FreelancerServiceMap = require("../FreelancerServiceMap/FreelancerServiceMap.mongo");
 
 async function getFreelancerProfile(userId) {
   try {
@@ -18,7 +18,7 @@ async function getFreelancerProfile(userId) {
         profileCompleted: 1,
         profileCompletionPercentage: 1,
         isVerified: 1,
-        verificationBadges: 1
+        verificationBadges: 1,
       }
     );
 
@@ -45,7 +45,7 @@ async function getFreelancerProfile(userId) {
         profileCompleted: freelancer.profileCompleted,
         profileCompletionPercentage: freelancer.profileCompletionPercentage,
         isVerified: freelancer.isVerified,
-        verificationBadges: freelancer.verificationBadges
+        verificationBadges: freelancer.verificationBadges,
       },
     };
   } catch (err) {
@@ -57,7 +57,6 @@ async function getFreelancerProfile(userId) {
     };
   }
 }
-
 
 async function addNameAndUser(userId) {
   try {
@@ -87,7 +86,7 @@ async function updateUserProfile(
     yearsOfExperience,
     successRate,
     profileCompleted,
-    profileCompletionPercentage
+    profileCompletionPercentage,
   }
 ) {
   try {
@@ -104,7 +103,9 @@ async function updateUserProfile(
     if (profileCompleted !== undefined)
       updateFields.profileCompleted = Boolean(profileCompleted);
     if (profileCompletionPercentage !== undefined)
-      updateFields.profileCompletionPercentage = Number(profileCompletionPercentage);
+      updateFields.profileCompletionPercentage = Number(
+        profileCompletionPercentage
+      );
 
     if (Object.keys(updateFields).length === 0) {
       return {
@@ -141,9 +142,7 @@ async function updateUserProfile(
       message: "Profile updated successfully",
       data: safeProfile,
     };
-
   } catch (err) {
-    
     return {
       success: false,
       message: "Server error",
@@ -151,8 +150,6 @@ async function updateUserProfile(
     };
   }
 }
-
-
 
 async function createFreelancerService(
   userId,
@@ -166,13 +163,14 @@ async function createFreelancerService(
     // -------------------------------------
     const exists = await Freelancer.findOne({
       userId: objectId,
-      "services.title": title.trim()
+      "services.title": title.trim(),
     });
 
     if (exists) {
       return {
         success: false,
-        message: "A service with this title already exists. Please choose a different title.",
+        message:
+          "A service with this title already exists. Please choose a different title.",
       };
     }
 
@@ -186,7 +184,7 @@ async function createFreelancerService(
       category: category?.trim(),
       skills: skills || [],
       hourlyRate: Number(hourlyRate),
-      profilePicture: profilePicture?.trim()
+      profilePicture: profilePicture?.trim(),
     };
 
     // -------------------------------------
@@ -231,7 +229,6 @@ async function createFreelancerService(
       message: "Service created successfully",
       data: safeService,
     };
-
   } catch (err) {
     console.error("SERVICE ERROR:", err);
     return {
@@ -241,8 +238,6 @@ async function createFreelancerService(
     };
   }
 }
-
-
 
 async function updateFreelancerService(userId, title, updates) {
   try {
@@ -339,10 +334,7 @@ async function updateFreelancerService(userId, title, updates) {
   }
 }
 
-async function deleteFreelancerService(userId,title) {
-  
-}
-
+async function deleteFreelancerService(userId, title) {}
 
 /**
  * Delete a service
@@ -377,12 +369,12 @@ async function deleteFreelancerService(userId, serviceId) {
   }
 }
 
-module.exports = { 
-  getFreelancerProfile, 
-  addNameAndUser, 
-  updateUserProfile, 
+module.exports = {
+  getFreelancerProfile,
+  addNameAndUser,
+  updateUserProfile,
   createFreelancerService,
   updateFreelancerService,
-  
-  deleteFreelancerService
+
+  deleteFreelancerService,
 };
