@@ -155,7 +155,7 @@ export const resendVerificationEmail = async (email) => {
   try {
     const payload = { email };
 
-    const response = await apiClient.post("/api/email/resend-verification", payload);
+    const response = await apiClient.post("/api/user/resend-verification", payload);
     const responseData = response.data;
 
     if (responseData.success) {
@@ -176,9 +176,74 @@ export const resendVerificationEmail = async (email) => {
   }
 };
 
+/**
+ * Send forgot password email
+ *
+ * @param {string} email - User's email address
+ * @returns {Promise<Object>} - Response object with success status and message
+ */
+export const forgotPassword = async (email) => {
+  try {
+    const payload = { email };
+
+    const response = await apiClient.post("/api/user/forgot-password", payload);
+    const responseData = response.data;
+
+    if (responseData.success) {
+      return {
+        success: true,
+        message: responseData.message || "Password reset email sent successfully",
+      };
+    } else {
+      throw new Error(responseData.message || "Failed to send password reset email");
+    }
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return {
+      success: false,
+      message: error.message || "Failed to send password reset email. Please try again.",
+      error: error.error || error.message,
+    };
+  }
+};
+
+/**
+ * Reset password with token
+ *
+ * @param {string} token - Reset token from email
+ * @param {string} newPassword - New password
+ * @returns {Promise<Object>} - Response object with success status and message
+ */
+export const resetPassword = async (token, newPassword) => {
+  try {
+    const payload = { newPassword };
+
+    const response = await apiClient.post(`/api/user/reset-password?token=${token}`, payload);
+    const responseData = response.data;
+
+    if (responseData.success) {
+      return {
+        success: true,
+        message: responseData.message || "Password reset successfully",
+      };
+    } else {
+      throw new Error(responseData.message || "Failed to reset password");
+    }
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return {
+      success: false,
+      message: error.message || "Failed to reset password. Please try again.",
+      error: error.error || error.message,
+    };
+  }
+};
+
 // Export all auth API functions
 export default {
   signup,
   login,
   resendVerificationEmail,
+  forgotPassword,
+  resetPassword,
 };

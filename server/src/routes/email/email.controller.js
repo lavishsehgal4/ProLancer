@@ -8,9 +8,13 @@ const {
   doesUserExist,
   getUserDataById,
   updateUserById,
+  updatePasswordHashById,
 } = require("../../models/USER/user.model");
 
-const { sendVerificationEmail } = require("../../emails/email.service");
+const { sendVerificationEmail, sendPasswordResetEmail } = require("../../emails/email.service");
+
+const { createResetPasswordToken ,validateResetToken,
+  markResetTokenUsed} = require("../../models/TOKEN/resetPasswordToken.model");
 
 
 // ------------------------------------------------------
@@ -74,7 +78,7 @@ async function httpVerifyEmail(req, res) {
 async function httpResendVerification(req, res) {
   try {
     const { email } = req.body;
-
+    console.log(email);
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -123,9 +127,85 @@ async function httpResendVerification(req, res) {
   }
 }
 
+async function httpForgotPassword(req, res) {
+  try {
+    const { email } = req.body;
+
+    const user = await doesUserExist(email);
+    if (!user.success) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const token = await createResetPasswordToken(user.userId);
+
+    const resetUrl = `http://localhost:5173/reset-password?token=${token}`;
+
+    await sendPasswordResetEmail(email, resetUrl);
+
+    return res.json({
+      success: true,
+      message: "Password reset email sent."
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+async function httpResetPassword(req, res) {
+  try {
+    const { token } = req.query;
+    const { newPassword } = req.body;
+
+    // 1) Validate token
+    const tokenData = await validateResetToken(token);
+    
+    if (!tokenData.success) {
+      return res.status(400).json(tokenData);
+    }
+
+    // 2) Get userId from token document
+    const userId = tokenData.tokenDoc.userId;
+      console.log(userId);
+    // 3) Confirm user exists
+    const userRes = await getUserDataById(userId);
+    
+    if (!userRes.success || !userRes.data) {
+      
+      return res.status(404).json({
+        success: false,
+        message: "User not found."
+      });
+    }
+    
+    // 4) Update password directly using userId (your new helper)
+    const updateRes = await updatePasswordHashById(userId, newPassword);
+    
+    if (!updateRes.success) {
+      return res.status(400).json(updateRes);
+    }
+
+    // 5) Mark token as used (one-time use)
+    await markResetTokenUsed(token);
+
+    return res.json({
+      success: true,
+      message: "Password updated successfully."
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message
+    });
+  }
+}
 
 
 module.exports = {
   httpVerifyEmail,
   httpResendVerification,
+  httpForgotPassword,
+  httpResetPassword,
 };

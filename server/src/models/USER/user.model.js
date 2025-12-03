@@ -1,5 +1,5 @@
 const User = require("./user.mongo");
-
+const {hashPassword}=require('../../auth/auth.utils')
 //create new user in mongoDB
 async function addUser(userData) {
   try {
@@ -202,10 +202,51 @@ async function updateUserById(userId, updates) {
   }
 }
 
+async function updatePasswordHashById(userId, newPassword) {
+  try {
+    // Validate input
+    if (!userId || !newPassword) {
+      return {
+        success: false,
+        message: "User ID and password are required",
+      };
+    }
+
+    // Hash the new password
+    const hashed = await hashPassword(newPassword);
+
+    // Update user password using _id
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: { passwordHash: hashed } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Password updated successfully",
+    };
+
+  } catch (err) {
+    return {
+      success: false,
+      message: "Server error",
+      error: err.message,
+    };
+  }
+}
 
 module.exports = {
   addUser,
   doesUserExist,
   getUserDataById,
   updateUserById,
+  updatePasswordHashById
 };

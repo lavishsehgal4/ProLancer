@@ -51,4 +51,19 @@ console.log("HTML after replace:", html);
   }
 }
 
-module.exports = { sendVerificationEmail };
+async function sendPasswordResetEmail(toEmail, resetUrl) {
+  let html = loadTemplate("reset-password.html");
+  html = html.replace(/{{\s*RESET_URL\s*}}/g, resetUrl);
+
+  const mailOptions = {
+    from: FROM_EMAIL,
+    to: toEmail,
+    subject: "Reset Your Password",
+    text: `Reset your password: ${resetUrl}`,
+    html
+  };
+
+  return transporter.sendMail(mailOptions);
+}
+
+module.exports = { sendVerificationEmail,sendPasswordResetEmail };

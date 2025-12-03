@@ -10,6 +10,8 @@ import Login from "../pages/Auth/Login/Login";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import EditAccount from "../pages/Dashboard/EditAccount/EditAccount";
 import AuthSuccess from "../pages/AuthSuccess/AuthSuccess";
+import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
+import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
 
 // Create router with routes
 const router = createBrowserRouter([
@@ -63,6 +65,14 @@ const router = createBrowserRouter([
       {
         path: "auth/success",
         element: <AuthSuccess />, // OAuth success handler
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />, // Forgot password page
+      },
+      {
+        path: "reset-password",
+        element: <ResetPassword />, // Reset password page
       },
     ],
   },
