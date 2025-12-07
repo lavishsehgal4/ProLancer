@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Bell } from "lucide-react";
 import { isAuthenticated } from "../../../utils/auth/token";
+import { useSSE } from "../../../contexts/SSEContext";
 import "./Navbar.css";
 import logo from "../../../assets/images/logo.png";
 
 const Navbar = () => {
   // State to track if user is logged in
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Get SSE context for notification count
+  const { unreadCount, clearUnreadCount } = useSSE();
 
   // State to control mobile menu open/close
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -171,13 +176,28 @@ const Navbar = () => {
 
         {/* RIGHT SIDE - Action Buttons */}
         <div className="navbar__actions">
-          {/* Show Dashboard link if logged in, otherwise show Login/Sign Up */}
+          {/* Show Dashboard and Notifications if logged in, otherwise show Login/Sign Up */}
           {isLoggedIn ? (
-            <Link to="/dashboard">
-              <button className="navbar__button navbar__button--dashboard">
-                Dashboard
-              </button>
-            </Link>
+            <>
+              {/* Notification Bell */}
+              <Link to="/notifications" className="navbar__notification-link" onClick={clearUnreadCount}>
+                <div className="navbar__notification-bell">
+                  <Bell size={20} />
+                  {unreadCount > 0 && (
+                    <span className="navbar__notification-badge">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </div>
+              </Link>
+
+              {/* Dashboard Button */}
+              <Link to="/dashboard">
+                <button className="navbar__button navbar__button--dashboard">
+                  Dashboard
+                </button>
+              </Link>
+            </>
           ) : (
             <>
               {/* Login Button - Only visible when not logged in */}

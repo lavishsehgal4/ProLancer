@@ -1,70 +1,106 @@
-const mongoose = require("mongoose");
+const ProjectRequest = require("./RequestJob.mongo");
 
-const projectRequestSchema = new mongoose.Schema(
-  {
-    clientId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      index: true,
-    },
+async function addUserJob(clientId, freelancerId, serviceId, data) {
+  try {
+    // Create the project request object
+    const newRequest = await ProjectRequest.create({
+      clientId,
+      freelancerId,
+      serviceId,
+      projectTitle: data.projectTitle,
+      projectDescription: data.projectDescription,
+      budget: data.budget,
+      deadline: data.deadline,
+      additionalRequirements: data.additionalRequirements || "",
+      status: "pending",
+    });
 
-    freelancerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      index: true,
-    },
+    return {
+      success: true,
+      message: "job added succesfully",
+      job: newRequest,
+    };
+  } catch (error) {
+    console.error("Error creating project request:", error);
+    return {
+      success: false,
+      message: "Server error",
+    };
 
-    serviceId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Service", // even if you don't have service model, keep this for clarity
-      required: true,
-      index: true,
-    },
+  }
+}
 
-    projectTitle: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 3,
-      maxlength: 100,
-    },
 
-    projectDescription: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 50,
-      maxlength: 5000,
-    },
+async function getAllRequests(freelancerId) {
+  try {
+    const requests = await ProjectRequest.find(
+      { freelancerId },
+      {
+        _id: 1,
+        serviceId: 1,
+        projectTitle: 1,
+        projectDescription: 1,
+        budget: 1,
+        deadline: 1,
+        additionalRequirements: 1,
+        status: 1,
+      }
+    ).lean(); // lean() returns plain JS objects, easier to modify
 
-    budget: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
+    // rename _id → jobId
+    const formatted = requests.map(req => ({
+      jobId: req._id,
+      serviceId: req.serviceId,
+      projectTitle: req.projectTitle,
+      projectDescription: req.projectDescription,
+      budget: req.budget,
+      deadline: req.deadline,
+      additionalRequirements: req.additionalRequirements,
+      status: req.status,
+    }));
 
-    deadline: {
-      type: Date,
-      required: true,
-    },
+    return {
+      success: true,
+      data: formatted,
+    };
 
-    additionalRequirements: {
-      type: String,
-      trim: true,
-      default: "",
-      maxlength: 2000,
-    },
+  } catch (error) {
+    console.error("Error fetching freelancer requests:", error);
+    return {
+      success: false,
+      message: "Failed to fetch freelancer requests",
+    };
+  }
+}
 
-    // Order status
-    status: {
-      type: String,
-      enum: ["pending", "accepted", "rejected", "completed"],
-      default: "pending",
-    },
-  },
-  { timestamps: true }
-);
+async function rejectRequest(jobId, freelancerId) {
+  try {
+    const updated = await ProjectRequest.updateOne(
+      { _id: jobId, freelancerId },   // ensure freelancer owns this request
+      { status: "rejected" }
+    );
 
-module.exports = mongoose.model("ProjectRequest", projectRequestSchema);
+    // If no document was updated → job does not belong to this freelancer
+    if (updated.matchedCount === 0) {
+      return {
+        success: false,
+        message: "Request not found or unauthorized",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Request rejected successfully",
+    };
+
+  } catch (error) {
+    console.error("Error rejecting request:", error);
+    return {
+      success: false,
+      message: "Server Error",
+    };
+  }
+}
+
+
+module.exports = { addUserJob, getAllRequests, rejectRequest };

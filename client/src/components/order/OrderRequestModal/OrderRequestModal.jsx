@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Send, Loader2 } from "lucide-react";
 import { createOrder } from "../../../services/api/orderApi";
+import NotificationPopup from "../../common/NotificationPopup/NotificationPopup";
 import "./OrderRequestModal.css";
 
 /**
@@ -24,6 +25,15 @@ const OrderRequestModal = ({ isOpen, onClose, service, freelancerInfo }) => {
 
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
+
+    // Notification popup state
+    const [notification, setNotification] = useState({
+        isVisible: false,
+        type: "info",
+        title: "",
+        message: "",
+        showStatusButton: false,
+    });
 
     // Don't render if modal is not open
     if (!isOpen) return null;
@@ -86,13 +96,11 @@ const OrderRequestModal = ({ isOpen, onClose, service, freelancerInfo }) => {
         try {
             const orderData = {
                 serviceId: service._id,
-                freelancerId: service.freelancerId || "freelancer-placeholder",
                 projectTitle: formData.projectTitle,
-                description: formData.description,
+                projectDescription: formData.description,
                 budget: parseFloat(formData.budget),
                 deadline: formData.deadline,
-                requirements: formData.requirements || "",
-                message: `Project: ${formData.projectTitle}\n\nDescription: ${formData.description}\n\nRequirements: ${formData.requirements || "None specified"}`
+                additionalRequirements: formData.requirements || "",
             };
 
             console.log("Submitting order request:", orderData);
@@ -100,9 +108,14 @@ const OrderRequestModal = ({ isOpen, onClose, service, freelancerInfo }) => {
             const response = await createOrder(orderData);
 
             if (response.success) {
-                // Success - show success message and close modal
-                alert("Order request sent successfully! The freelancer will contact you soon.");
-                onClose();
+                // Success - show enhanced success notification
+                setNotification({
+                    isVisible: true,
+                    type: "success",
+                    title: "Request Sent Successfully!",
+                    message: `${response.message || "Your order request has been sent to the freelancer."} You can check your request status from here.`,
+                    showStatusButton: true,
+                });
 
                 // Reset form
                 setFormData({
@@ -113,11 +126,24 @@ const OrderRequestModal = ({ isOpen, onClose, service, freelancerInfo }) => {
                     requirements: ""
                 });
             } else {
-                alert(response.message || "Failed to send order request");
+                // Error - show error notification
+                setNotification({
+                    isVisible: true,
+                    type: "warning",
+                    title: "Request Failed",
+                    message: response.message || "Failed to send order request. Please try again.",
+                    showStatusButton: false,
+                });
             }
         } catch (error) {
             console.error("Error submitting order:", error);
-            alert("Failed to send order request. Please try again.");
+            setNotification({
+                isVisible: true,
+                type: "warning",
+                title: "Error",
+                message: error.message || "Failed to send order request. Please try again.",
+                showStatusButton: false,
+            });
         } finally {
             setLoading(false);
         }
@@ -129,8 +155,30 @@ const OrderRequestModal = ({ isOpen, onClose, service, freelancerInfo }) => {
         }
     };
 
+    // Handle status check button click (placeholder for now)
+    const handleCheckStatus = () => {
+        console.log("Check status clicked - functionality to be implemented");
+        // Close notification after clicking
+        setNotification({ ...notification, isVisible: false });
+        // Close modal
+        onClose();
+    };
+
     return (
-        <div className="order-modal-backdrop" onClick={handleBackdropClick}>
+        <>
+            {/* Notification Popup */}
+            <NotificationPopup
+                isVisible={notification.isVisible}
+                type={notification.type}
+                title={notification.title}
+                message={notification.message}
+                onClose={() => setNotification({ ...notification, isVisible: false })}
+                showStatusButton={notification.showStatusButton}
+                onStatusCheck={handleCheckStatus}
+                autoClose={notification.type === "success" ? null : 5000} // Don't auto-close success with button
+            />
+
+            <div className="order-modal-backdrop" onClick={handleBackdropClick}>
             <div className={`order-modal ${loading ? 'order-modal--loading' : ''}`}>
                 {/* Loading Overlay */}
                 {loading && (
@@ -304,6 +352,7 @@ const OrderRequestModal = ({ isOpen, onClose, service, freelancerInfo }) => {
                 </form>
             </div>
         </div>
+        </>
     );
 };
 

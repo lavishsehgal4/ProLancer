@@ -14,6 +14,8 @@ import "./NotificationPopup.css";
  * - onClose: function - callback when popup is closed
  * - showResendButton: boolean - shows resend email button
  * - onResend: function - callback for resend action
+ * - showStatusButton: boolean - shows check status button
+ * - onStatusCheck: function - callback for status check action
  * - autoClose: number - auto close after milliseconds (optional)
  */
 
@@ -25,6 +27,8 @@ const NotificationPopup = ({
   onClose,
   showResendButton = false,
   onResend,
+  showStatusButton = false,
+  onStatusCheck,
   autoClose = null,
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -98,14 +102,24 @@ const NotificationPopup = ({
         </div>
         
         {/* Action Buttons */}
-        {showResendButton && (
+        {(showResendButton || showStatusButton) && (
           <div className="notification-popup__actions">
-            <button 
-              className="notification-popup__resend-btn"
-              onClick={onResend}
-            >
-              Resend Verification Email
-            </button>
+            {showResendButton && (
+              <button 
+                className="notification-popup__resend-btn"
+                onClick={onResend}
+              >
+                Resend Verification Email
+              </button>
+            )}
+            {showStatusButton && (
+              <button 
+                className="notification-popup__status-btn"
+                onClick={onStatusCheck}
+              >
+                Check Request Status
+              </button>
+            )}
           </div>
         )}
       </div>

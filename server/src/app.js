@@ -6,6 +6,9 @@ const freelancerRouter = require("./routes/freelancers/freelancers.router");
 const categoriesRouter = require("./routes/categories/categories.router");
 const googleAuthRouter = require("./routes/googleAuth/googleAuth.router");
 const emailRouter = require("./routes/email/email.router");
+const jobsRouter=require('./routes/jobs/jobs.router');
+const sseRouter = require("./routes/sse/events.router");
+
 const app = express();
 
 app.use(
@@ -24,5 +27,8 @@ app.use("/", userRouter);
 app.use("/", freelancerRouter);
 app.use("/", categoriesRouter);
 app.use("/api/user", emailRouter);
+app.use("/",jobsRouter);
+app.use("/events", sseRouter);
+
 
 module.exports = app;

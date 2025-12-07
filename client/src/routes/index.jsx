@@ -12,6 +12,7 @@ import EditAccount from "../pages/Dashboard/EditAccount/EditAccount";
 import AuthSuccess from "../pages/AuthSuccess/AuthSuccess";
 import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
 import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
+import Notifications from "../pages/Notifications/Notifications";
 
 // Create router with routes
 const router = createBrowserRouter([
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard/edit-account",
         element: <EditAccount />, // Edit account page
+      },
+      {
+        path: "notifications",
+        element: <Notifications />, // Notifications page
       },
     ],
   },

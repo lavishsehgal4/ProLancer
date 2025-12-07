@@ -49,23 +49,27 @@ import { API_ENDPOINTS } from "../../config/api";
  */
 export const createOrder = async (orderData) => {
   try {
-    const response = await apiClient.post(API_ENDPOINTS.CREATE_ORDER, orderData);
+    // Extract serviceId from orderData for the endpoint
+    const { serviceId, ...requestBody } = orderData;
+    
+    // Use the jobs controller endpoint: POST /jobrequest/:serviceId
+    const response = await apiClient.post(`/jobrequest/${serviceId}`, requestBody);
     const responseData = response.data;
 
     if (responseData.success) {
       return {
         success: true,
-        message: responseData.message || "Order created successfully",
+        message: responseData.message || "Order request sent successfully",
         data: responseData.data,
       };
     } else {
-      throw new Error(responseData.message || "Failed to create order");
+      throw new Error(responseData.message || "Failed to send order request");
     }
   } catch (error) {
     console.error("Create order API error:", error);
     return {
       success: false,
-      message: error.message || "Failed to create order. Please try again.",
+      message: error.message || "Failed to send order request. Please try again.",
       error: error.error || error.message,
     };
   }
