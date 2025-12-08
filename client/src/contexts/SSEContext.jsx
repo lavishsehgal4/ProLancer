@@ -8,7 +8,14 @@ const SSEContext = createContext();
 export const useSSE = () => {
   const context = useContext(SSEContext);
   if (!context) {
-    throw new Error("useSSE must be used within an SSEProvider");
+    // Return default values instead of throwing error
+    return {
+      connectionStatus: { isConnected: false, reconnectAttempts: 0 },
+      unreadCount: 0,
+      clearUnreadCount: () => {},
+      connect: () => {},
+      disconnect: () => {},
+    };
   }
   return context;
 };
@@ -31,20 +38,24 @@ export const SSEProvider = ({ children }) => {
   useEffect(() => {
     // Connect to SSE when user is authenticated
     if (isAuthenticated()) {
-      sseService.connect();
-      
-      // Add listener for notifications
-      sseService.addListener("global", handleSSEMessage);
+      try {
+        sseService.connect();
+        
+        // Add listener for notifications
+        sseService.addListener("global", handleSSEMessage);
 
-      // Update connection status periodically
-      const statusInterval = setInterval(() => {
-        setConnectionStatus(sseService.getConnectionStatus());
-      }, 5000);
+        // Update connection status periodically
+        const statusInterval = setInterval(() => {
+          setConnectionStatus(sseService.getConnectionStatus());
+        }, 5000);
 
-      return () => {
-        clearInterval(statusInterval);
-        sseService.removeListener("global");
-      };
+        return () => {
+          clearInterval(statusInterval);
+          sseService.removeListener("global");
+        };
+      } catch (error) {
+        console.error("Failed to initialize SSE connection:", error);
+      }
     }
   }, []);
 

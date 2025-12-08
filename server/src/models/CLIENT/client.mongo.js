@@ -2,16 +2,16 @@ const mongoose = require("mongoose");
 
 const clientSchema = new mongoose.Schema(
   {
-    // Relationship with User
+    // Link to User (identity stored there)
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true, // each user can have only one client profile
+      unique: true,
       index: true,
     },
 
-    // Company Info
+    // BUSINESS DETAILS
     isCompany: {
       type: Boolean,
       default: false,
@@ -32,22 +32,41 @@ const clientSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // Active Job References
-    activeJobs: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Job",
-      },
-    ],
-
-    // Ratings
-    averageRating: {
+    // CLIENT PERFORMANCE / TRUST METRICS
+    clientRating: {
       type: Number,
       default: 0,
     },
-  },
 
-  // Automatically adds createdAt, updatedAt
+    totalReviews: {
+      type: Number,
+      default: 0,
+    },
+
+    totalSpent: {
+      type: Number,
+      default: 0,
+    },
+
+    completedJobs: {
+      type: Number,
+      default: 0,
+    },
+
+    clientLevel: {
+      type: String,
+      enum: ["new", "intermediate", "premium"],
+      default: "new",
+    },
+
+    // VERIFICATION STATUS
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    
+  },
   { timestamps: true }
 );
 

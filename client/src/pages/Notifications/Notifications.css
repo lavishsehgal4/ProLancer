@@ -168,7 +168,7 @@
 }
 
 .notification-status-icon--rejected {
-  background-color: #ef4444;
+  background-color: #dc2626;
 }
 
 .notification-status-icon--default {
@@ -334,6 +334,23 @@
 .notification-btn--profile:hover:not(:disabled) {
   background: #d1d5db;
   transform: translateY(-1px);
+}
+
+.notification-btn--delete {
+  background: #f87171;
+  color: white;
+  border: none;
+}
+
+.notification-btn--delete:hover:not(:disabled) {
+  background: #ef4444;
+  transform: translateY(-1px);
+}
+
+.notification-btn--delete:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
 }
 
 .btn-spinner {

@@ -16,6 +16,7 @@ import { getUserProfile } from "../../services/api/userApi";
 import { removeToken, isAuthenticated } from "../../utils/auth/token";
 import BasicProfile from "../../components/dashboard/BasicProfile/BasicProfile";
 import FreelancerProfile from "../../components/dashboard/FreelancerProfile/FreelancerProfile";
+import ClientProfile from "../../components/dashboard/ClientProfile/ClientProfile";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -145,6 +146,20 @@ const Dashboard = () => {
               </button>
             )}
 
+            {/* Client Profile - Only for clients */}
+            {isClient && (
+              <button
+                className={`dashboard__nav-item ${
+                  activeSection === "client-profile"
+                    ? "dashboard__nav-item--active"
+                    : ""
+                }`}
+                onClick={() => setActiveSection("client-profile")}
+              >
+                Client Profile
+              </button>
+            )}
+
             {/* Projects Section - Always visible */}
             <button
               className={`dashboard__nav-item ${
@@ -179,6 +194,10 @@ const Dashboard = () => {
 
           {activeSection === "freelancer-profile" && isFreelancer && (
             <FreelancerProfile userProfile={userProfile} />
+          )}
+
+          {activeSection === "client-profile" && isClient && (
+            <ClientProfile userProfile={userProfile} />
           )}
 
           {activeSection === "projects" && (

@@ -44,11 +44,13 @@ async function getAllRequests(freelancerId) {
         deadline: 1,
         additionalRequirements: 1,
         status: 1,
+        createdAt: 1,
       }
     ).lean(); // lean() returns plain JS objects, easier to modify
 
     // rename _id → jobId
     const formatted = requests.map(req => ({
+      _id: req._id,
       jobId: req._id,
       serviceId: req.serviceId,
       projectTitle: req.projectTitle,
@@ -57,6 +59,7 @@ async function getAllRequests(freelancerId) {
       deadline: req.deadline,
       additionalRequirements: req.additionalRequirements,
       status: req.status,
+      createdAt: req.createdAt,
     }));
 
     return {
@@ -102,5 +105,50 @@ async function rejectRequest(jobId, freelancerId) {
   }
 }
 
+async function getAllClientRequest(clientId) {
+  try {
+    const requests = await ProjectRequest.find(
+      { clientId },
+      {
+        _id: 1,
+        serviceId: 1,
+        projectTitle: 1,
+        projectDescription: 1,
+        budget: 1,
+        deadline: 1,
+        additionalRequirements: 1,
+        status: 1,
+        createdAt: 1,
+      }
+    ).lean();
 
-module.exports = { addUserJob, getAllRequests, rejectRequest };
+    // rename _id → jobId
+    const formatted = requests.map(req => ({
+      _id: req._id,
+      jobId: req._id,
+      serviceId: req.serviceId,
+      projectTitle: req.projectTitle,
+      projectDescription: req.projectDescription,
+      budget: req.budget,
+      deadline: req.deadline,
+      additionalRequirements: req.additionalRequirements,
+      status: req.status,
+      createdAt: req.createdAt,
+    }));
+
+    return {
+      success: true,
+      data: formatted,
+    };
+
+  } catch (error) {
+    console.error("Error fetching client requests:", error);
+    return {
+      success: false,
+      message: "Failed to fetch client requests",
+    };
+  }
+}
+
+
+module.exports = { addUserJob, getAllRequests, rejectRequest ,getAllClientRequest};

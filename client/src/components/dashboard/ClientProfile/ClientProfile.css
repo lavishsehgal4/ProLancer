@@ -1,0 +1,282 @@
+/**
+ * Client Profile Component Styles
+ * 
+ * Styles for displaying client-specific profile information
+ */
+
+.client-profile {
+  max-width: 800px;
+}
+
+.client-profile__loading {
+  text-align: center;
+  padding: 3rem;
+  color: #666666;
+}
+
+.client-profile__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.client-profile__title {
+  font-size: 1.8rem;
+  color: #333333;
+  margin: 0 0 0.5rem 0;
+}
+
+.client-profile__subtitle {
+  color: #666666;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.client-profile__section {
+  margin-bottom: 2.5rem;
+}
+
+.client-profile__section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.client-profile__section-title {
+  font-size: 1.4rem;
+  color: #333333;
+  margin: 0;
+}
+
+.client-profile__edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #6ba5a8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.client-profile__edit-btn:hover {
+  background-color: #5a9497;
+}
+
+/* Statistics Grid */
+.client-profile__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.client-profile__stat {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border-left: 4px solid #6ba5a8;
+}
+
+.client-profile__stat-icon {
+  color: #6ba5a8;
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+.client-profile__stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.client-profile__stat-label {
+  font-size: 0.85rem;
+  color: #666666;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.client-profile__stat-value {
+  font-size: 1.2rem;
+  color: #333333;
+  font-weight: 600;
+}
+
+.client-profile__level {
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.client-profile__level--new {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.client-profile__level--intermediate {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.client-profile__level--premium {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.client-profile__verification {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.client-profile__verification-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.client-profile__verification-status {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.client-profile__verification-status.verified {
+  color: #4caf50;
+}
+
+.client-profile__verification-status.unverified {
+  color: #f44336;
+}
+
+/* Company Information */
+.client-profile__company-content {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.client-profile__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.client-profile__label {
+  font-weight: 600;
+  color: #333333;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.client-profile__value {
+  font-size: 1.1rem;
+  color: #555555;
+  padding: 0.75rem;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.client-profile__individual-note {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  color: #666666;
+  border-left: 4px solid #cccccc;
+}
+
+.client-profile__individual-note p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .client-profile__stats {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .client-profile__stat {
+    padding: 0.75rem;
+  }
+  
+  .client-profile__company-content {
+    padding: 1rem;
+  }
+  
+  .client-profile__individual-note {
+    padding: 1rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .client-profile__section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .client-profile__edit-btn {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-profile__title {
+    font-size: 1.5rem;
+  }
+
+  .client-profile__section-title {
+    font-size: 1.2rem;
+  }
+  
+  .client-profile__stat {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .client-profile__stat-icon {
+    margin-top: 0;
+  }
+
+  .client-profile__section-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .client-profile__edit-btn {
+    align-self: auto;
+  }
+}

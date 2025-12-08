@@ -30,14 +30,11 @@ class SSEService {
     }
 
     try {
-      // Create EventSource with authorization header
-      const url = `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/events`;
+      // Create EventSource with token as query parameter since EventSource doesn't support custom headers
+      const baseUrl = 'http://localhost:8000';
+      const url = `${baseUrl}/events?token=${encodeURIComponent(token)}`;
       
       this.eventSource = new EventSource(url);
-
-      // Add authorization header (Note: EventSource doesn't support custom headers directly)
-      // We'll need to pass the token as a query parameter or use a different approach
-      // For now, let's use the token in the connection setup
       
       this.eventSource.onopen = () => {
         console.log("SSE connection established");

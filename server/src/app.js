@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const userRouter = require("./routes/user/user.router");
 const freelancerRouter = require("./routes/freelancers/freelancers.router");
+const clientRouter=require('./routes/clients/clients.router');
 const categoriesRouter = require("./routes/categories/categories.router");
 const googleAuthRouter = require("./routes/googleAuth/googleAuth.router");
 const emailRouter = require("./routes/email/email.router");
@@ -25,6 +26,7 @@ app.get("/test", (req, res) => {
 app.use(googleAuthRouter);
 app.use("/", userRouter);
 app.use("/", freelancerRouter);
+app.use("/",clientRouter);
 app.use("/", categoriesRouter);
 app.use("/api/user", emailRouter);
 app.use("/",jobsRouter);

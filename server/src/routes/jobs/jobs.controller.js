@@ -1,4 +1,4 @@
-const{addUserJob,getAllRequests,rejectRequest}=require('../../models/RequestJob/RequestJob.model');
+const{addUserJob,getAllRequests,rejectRequest,getAllClientRequest}=require('../../models/RequestJob/RequestJob.model');
 const{getFreelancerIdFromServiceId}=require('../../models/FreelancerServiceMap/FreelancerServiceMap.model');
 const{sendNotification}=require('../sse/events.controller');
 async function httpAddUserJob(req,res) {
@@ -98,4 +98,32 @@ async function httpRejectRequest(req, res) {
   }
 }
 
-module.exports={httpAddUserJob,httpGetAllRequests,httpRejectRequest};
+async function httpGetAllClientRequest(req, res) {
+  try {
+    const clientId = req.user.userId;
+
+    const response = await getAllClientRequest(clientId);
+
+    if (!response.success) {
+      return res.status(400).json({
+        success: false,
+        message: response.message,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: response.data,
+    });
+
+  } catch (error) {
+    console.error("Error fetching client requests:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+}
+
+module.exports={httpAddUserJob,httpGetAllRequests,httpRejectRequest,httpGetAllClientRequest};
