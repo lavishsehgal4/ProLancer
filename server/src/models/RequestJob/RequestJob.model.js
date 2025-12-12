@@ -31,27 +31,16 @@ async function addUserJob(clientId, freelancerId, serviceId, data) {
 }
 
 
-async function getAllRequests(freelancerId) {
-  try {
-    const requests = await ProjectRequest.find(
-      { freelancerId },
-      {
-        _id: 1,
-        serviceId: 1,
-        projectTitle: 1,
-        projectDescription: 1,
-        budget: 1,
-        deadline: 1,
-        additionalRequirements: 1,
-        status: 1,
-        createdAt: 1,
-      }
-    ).lean(); // lean() returns plain JS objects, easier to modify
 
-    // rename _id → jobId
-    const formatted = requests.map(req => ({
+
+async function getJobRequests(filter = {}) {
+  try {
+    const jobs = await ProjectRequest.find(filter).sort({ createdAt: -1 });
+
+    // Map results to only required fields
+    const cleanJobs = jobs.map((req) => ({
       _id: req._id,
-      jobId: req._id,
+      jobId: req._id, // alias
       serviceId: req.serviceId,
       projectTitle: req.projectTitle,
       projectDescription: req.projectDescription,
@@ -64,91 +53,60 @@ async function getAllRequests(freelancerId) {
 
     return {
       success: true,
-      data: formatted,
+      jobs: cleanJobs,
     };
-
-  } catch (error) {
-    console.error("Error fetching freelancer requests:", error);
+  } catch (err) {
+    console.error("Error fetching job requests:", err);
     return {
       success: false,
-      message: "Failed to fetch freelancer requests",
+      message: "Server error",
     };
   }
 }
 
-async function rejectRequest(jobId, freelancerId) {
+async function updateJobStatus(jobId, freelancerId, newStatus) {
   try {
-    const updated = await ProjectRequest.updateOne(
-      { _id: jobId, freelancerId },   // ensure freelancer owns this request
-      { status: "rejected" }
+    const updated = await ProjectRequest.findOneAndUpdate(
+      { _id: jobId, freelancerId },
+      { status: newStatus },
+      { new: true }
     );
 
-    // If no document was updated → job does not belong to this freelancer
-    if (updated.matchedCount === 0) {
+    if (!updated) {
+      return { success: false, message: "Job not found or unauthorized" };
+    }
+
+    return { success: true, job: updated };
+  } catch (err) {
+    console.error("Error updating job status:", err);
+    return { success: false, message: "Server error" };
+  }
+}
+
+async function getJobById(jobId) {
+  try {
+    const job = await ProjectRequest.findById(jobId);
+
+    if (!job) {
       return {
         success: false,
-        message: "Request not found or unauthorized",
+        message: "Job not found",
       };
     }
 
     return {
       success: true,
-      message: "Request rejected successfully",
+      data: job,
     };
 
-  } catch (error) {
-    console.error("Error rejecting request:", error);
+  } catch (err) {
     return {
       success: false,
-      message: "Server Error",
-    };
-  }
-}
-
-async function getAllClientRequest(clientId) {
-  try {
-    const requests = await ProjectRequest.find(
-      { clientId },
-      {
-        _id: 1,
-        serviceId: 1,
-        projectTitle: 1,
-        projectDescription: 1,
-        budget: 1,
-        deadline: 1,
-        additionalRequirements: 1,
-        status: 1,
-        createdAt: 1,
-      }
-    ).lean();
-
-    // rename _id → jobId
-    const formatted = requests.map(req => ({
-      _id: req._id,
-      jobId: req._id,
-      serviceId: req.serviceId,
-      projectTitle: req.projectTitle,
-      projectDescription: req.projectDescription,
-      budget: req.budget,
-      deadline: req.deadline,
-      additionalRequirements: req.additionalRequirements,
-      status: req.status,
-      createdAt: req.createdAt,
-    }));
-
-    return {
-      success: true,
-      data: formatted,
-    };
-
-  } catch (error) {
-    console.error("Error fetching client requests:", error);
-    return {
-      success: false,
-      message: "Failed to fetch client requests",
+      message: "Server error",
+      error: err.message,
     };
   }
 }
 
 
-module.exports = { addUserJob, getAllRequests, rejectRequest ,getAllClientRequest};
+module.exports = { addUserJob, updateJobStatus ,getJobRequests,getJobById};

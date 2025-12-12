@@ -4,6 +4,7 @@ const {
   doesUserExist,
   getUserDataById,
   updateUserById,
+  editGithubUsername, // NEW IMPORT
 } = require("../../models/USER/user.model");
 const {
   hashPassword,
@@ -13,9 +14,9 @@ const {
 
 const {
   createVerificationToken,
-}=require('../../models/TOKEN/token.model');
+} = require('../../models/TOKEN/token.model');
 
-const{sendVerificationEmail}=require('../../emails/email.service');
+const { sendVerificationEmail } = require('../../emails/email.service');
 
 async function httpSignUpUser(req, res) {
   try {
@@ -201,9 +202,42 @@ async function httpUpdateUserData(req, res) {
   }
 }
 
+// NEW CONTROLLER: Edit GitHub username
+async function httpEditGithubUsername(req, res) {
+  try {
+    const { userId } = req.user; // From auth middleware
+    const { githubUsername } = req.body;
+
+    // Validate input
+    if (githubUsername !== null && githubUsername !== undefined && githubUsername.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        message: "GitHub username cannot be empty. Use null to remove it.",
+      });
+    }
+
+    const response = await editGithubUsername(userId, githubUsername);
+
+    if (!response.success) {
+      return res.status(400).json(response);
+    }
+
+    return res.status(200).json(response);
+
+  } catch (err) {
+    console.error("Error updating GitHub username:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message,
+    });
+  }
+}
+
 module.exports = {
   httpSignUpUser,
   httpLoginUser,
   httpGetUserData,
   httpUpdateUserData,
+  httpEditGithubUsername, // NEW EXPORT
 };

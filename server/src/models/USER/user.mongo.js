@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema(
       index: true,
     },
 
+    githubUsername: {
+      type: String,
+      trim: true,
+      default: null,
+    },
     // REQUIRED ONLY FOR LOCAL USERS
     passwordHash: {
       type: String,

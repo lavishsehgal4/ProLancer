@@ -1,4 +1,4 @@
-const{addUserJob,getAllRequests,rejectRequest,getAllClientRequest}=require('../../models/RequestJob/RequestJob.model');
+const{addUserJob,updateJobStatus,getJobRequests}=require('../../models/RequestJob/RequestJob.model');
 const{getFreelancerIdFromServiceId}=require('../../models/FreelancerServiceMap/FreelancerServiceMap.model');
 const{sendNotification}=require('../sse/events.controller');
 async function httpAddUserJob(req,res) {
@@ -41,89 +41,97 @@ async function httpAddUserJob(req,res) {
     
 }
 
-async function httpGetAllRequests(req, res) {
+
+
+async function httpUpdateJobStatus(req, res) {
   try {
+    const jobId = req.params.jobId;
     const freelancerId = req.user.userId;
+    const { status } = req.body;
 
-    const response = await getAllRequests(freelancerId);
-
-    if (!response.success) {
+    if (!status) {
       return res.status(400).json({
         success: false,
-        message: response.message,
+        message: "Status is required",
+      });
+    }
+
+    const allowed = ["accepted", "rejected", "completed"];
+    if (!allowed.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value",
+      });
+    }
+
+    const result = await updateJobStatus(jobId, freelancerId, status);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: result.message,
       });
     }
 
     return res.status(200).json({
       success: true,
-      data: response.data,
+      message: `Job ${status} successfully`,
+      status,
     });
 
-  } catch (error) {
-    console.error("Error fetching requests:", error);
-
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: "Server error",
     });
   }
 }
 
-async function httpRejectRequest(req, res) {
+
+async function httpGetJobs(req, res) {
   try {
-    const freelancerId = req.user.userId;
-    const { jobId } = req.params;
+    const { userId, accountType } = req.user;
+    const { status } = req.query;
 
-    const response = await rejectRequest(jobId, freelancerId);
+    const filter = {};
 
-    if (!response.success) {
+    // Attach correct filter based on user type
+    if (accountType === "freelancer") {
+      filter.freelancerId = userId;
+    } 
+    else if (accountType === "client") {
+      filter.clientId = userId;
+    } 
+    else {
       return res.status(400).json({
         success: false,
-        message: response.message,
+        message: "Invalid account type",
       });
+    }
+
+    // Optional status filter
+    if (status) filter.status = status;
+
+    const result = await getJobRequests(filter);
+
+    if (!result.success) {
+      return res.status(500).json(result);
     }
 
     return res.status(200).json({
       success: true,
-      message: "Request rejected successfully",
+      jobs: result.jobs,
     });
 
-  } catch (error) {
-    console.error("Error rejecting request:", error);
-
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: "Server error",
     });
   }
 }
 
-async function httpGetAllClientRequest(req, res) {
-  try {
-    const clientId = req.user.userId;
 
-    const response = await getAllClientRequest(clientId);
-
-    if (!response.success) {
-      return res.status(400).json({
-        success: false,
-        message: response.message,
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: response.data,
-    });
-
-  } catch (error) {
-    console.error("Error fetching client requests:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
-  }
-}
-
-module.exports={httpAddUserJob,httpGetAllRequests,httpRejectRequest,httpGetAllClientRequest};
+module.exports={httpAddUserJob,httpUpdateJobStatus,httpGetJobs};

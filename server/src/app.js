@@ -9,6 +9,7 @@ const googleAuthRouter = require("./routes/googleAuth/googleAuth.router");
 const emailRouter = require("./routes/email/email.router");
 const jobsRouter=require('./routes/jobs/jobs.router');
 const sseRouter = require("./routes/sse/events.router");
+const workspaceRouter = require("./routes/workspace/workspace.router");
 
 const app = express();
 
@@ -31,6 +32,6 @@ app.use("/", categoriesRouter);
 app.use("/api/user", emailRouter);
 app.use("/",jobsRouter);
 app.use("/events", sseRouter);
-
+app.use("/workspace", workspaceRouter);
 
 module.exports = app;

@@ -63,7 +63,9 @@ const projectRequestSchema = new mongoose.Schema(
             enum: ["pending", "accepted", "rejected", "completed"],
             default: "pending",
         },
+
     },
+
     { timestamps: true }
 );
 

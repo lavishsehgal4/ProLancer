@@ -105,6 +105,7 @@ async function getUserDataById(id) {
   try {
     const user = await User.findById(id, {
       email: 1,
+      githubUsername: 1,
       firstName: 1,
       lastName: 1,
       accountType: 1,
@@ -124,6 +125,7 @@ async function getUserDataById(id) {
       message: "User found",
       data: {
         email: user.email,
+        githubUsername: user.githubUsername || "", // ADDED GitHub username
         firstName: user.firstName,
         lastName: user.lastName || "",
         accountType: user.accountType,
@@ -243,10 +245,86 @@ async function updatePasswordHashById(userId, newPassword) {
   }
 }
 
+// NEW FUNCTION: Edit GitHub username for a user
+async function editGithubUsername(userId, githubUsername) {
+  try {
+    // Validate input
+    if (!userId) {
+      return {
+        success: false,
+        message: "User ID is required",
+      };
+    }
+
+    // Validate GitHub username format (basic validation)
+    if (githubUsername && !/^[a-zA-Z0-9]([a-zA-Z0-9]|-(?!-))*[a-zA-Z0-9]$/.test(githubUsername)) {
+      return {
+        success: false,
+        message: "Invalid GitHub username format",
+      };
+    }
+
+    // Update user GitHub username
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: { githubUsername: githubUsername || null } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    return {
+      success: true,
+      message: "GitHub username updated successfully",
+      data: {
+        githubUsername: updatedUser.githubUsername,
+      },
+    };
+
+  } catch (err) {
+    return {
+      success: false,
+      message: "Server error",
+      error: err.message,
+    };
+  }
+}
+
+async function getGithubUsernameById(userId) {
+  try {
+    const user = await User.findById(userId, { githubUsername: 1 });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    return {
+      success: true,
+      githubUsername: user.githubUsername || null,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      message: "Server error",
+      error: err.message,
+    };
+  }
+}
+
 module.exports = {
   addUser,
   doesUserExist,
   getUserDataById,
   updateUserById,
-  updatePasswordHashById
+  updatePasswordHashById,
+  editGithubUsername, // NEW EXPORT
+  getGithubUsernameById
 };

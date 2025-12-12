@@ -4,6 +4,7 @@ const {
   httpLoginUser,
   httpGetUserData,
   httpUpdateUserData,
+  httpEditGithubUsername, // NEW IMPORT
 } = require("./user.controller");
 const verifyToken = require("../../auth/auth.middleware");
 const userRouter = express.Router();
@@ -14,4 +15,8 @@ userRouter.post("/users/login", httpLoginUser);
 userRouter.get("/users/basicprofile", verifyToken, httpGetUserData);
 
 userRouter.put("/users/basicprofile", verifyToken, httpUpdateUserData);
+
+// NEW ROUTE: Edit GitHub username
+userRouter.put("/users/github-username", verifyToken, httpEditGithubUsername);
+
 module.exports = userRouter;
