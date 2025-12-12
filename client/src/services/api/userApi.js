@@ -111,8 +111,51 @@ export const updateUserProfile = async (profileData) => {
   }
 };
 
+/**
+ * Update user's GitHub username
+ * Updates or removes the GitHub username for the user
+ *
+ * @param {string|null} githubUsername - GitHub username or null to remove
+ * @returns {Promise<Object>} - Response with updated GitHub username
+ * @throws {Error} - If API call fails
+ */
+export const updateGithubUsername = async (githubUsername) => {
+  try {
+    // Make PUT request to update GitHub username
+    const response = await apiClient.put("/users/github-username", {
+      githubUsername: githubUsername
+    });
+
+    // Extract response data
+    const responseData = response.data;
+
+    // Check if backend returned success
+    if (responseData.success) {
+      return {
+        success: true,
+        message: responseData.message || "GitHub username updated successfully",
+        data: responseData.data, // Contains updated GitHub username
+      };
+    } else {
+      // Backend returned error
+      throw new Error(responseData.message || "Failed to update GitHub username");
+    }
+  } catch (error) {
+    // Handle API errors
+    console.error("Update GitHub username API error:", error);
+
+    // Return error in consistent format
+    return {
+      success: false,
+      message: error.message || "Failed to update GitHub username. Please try again.",
+      error: error.error || error.message,
+    };
+  }
+};
+
 // Export all user API functions
 export default {
   getUserProfile,
   updateUserProfile,
+  updateGithubUsername, // NEW EXPORT
 };

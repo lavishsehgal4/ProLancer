@@ -12,7 +12,8 @@ import {
   AlertCircle,
   Loader2
 } from "lucide-react";
-import { getAllJobRequests, getAllClientJobRequests, acceptJobRequest, rejectJobRequest } from "../../services/api/notificationsApi";
+import { getAllJobRequests, acceptJobRequest, rejectJobRequest, completeJobRequest } from "../../services/api/notificationsApi";
+import { getUserProfile } from "../../services/api/userApi";
 import NotificationPopup from "../../components/common/NotificationPopup/NotificationPopup";
 import "./Notifications.css";
 
@@ -26,7 +27,7 @@ const Notifications = () => {
   const [loading, setLoading] = useState(true);
   const [expandedNotifications, setExpandedNotifications] = useState(new Set());
   const [actionLoading, setActionLoading] = useState(new Set());
-  const [userType, setUserType] = useState("freelancer"); // "freelancer" or "client"
+  const [userProfile, setUserProfile] = useState(null);
 
   // Notification popup state
   const [notification, setNotification] = useState({
@@ -37,31 +38,34 @@ const Notifications = () => {
   });
 
   useEffect(() => {
+    fetchUserProfile();
     fetchNotifications();
   }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await getUserProfile();
+      if (response.success) {
+        setUserProfile(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
 
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      // Try to fetch freelancer notifications first
-      let response = await getAllJobRequests();
-      if (response.success && response.data.length > 0) {
+      const response = await getAllJobRequests();
+      if (response.success) {
         setNotifications(response.data);
-        setUserType("freelancer");
       } else {
-        // If no freelancer notifications, try client notifications
-        response = await getAllClientJobRequests();
-        if (response.success) {
-          setNotifications(response.data);
-          setUserType("client");
-        } else {
-          setNotification({
-            isVisible: true,
-            type: "warning",
-            title: "Error",
-            message: response.message || "Failed to load notifications",
-          });
-        }
+        setNotification({
+          isVisible: true,
+          type: "warning",
+          title: "Error",
+          message: response.message || "Failed to load notifications",
+        });
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -162,6 +166,44 @@ const Notifications = () => {
     }
   };
 
+  const handleComplete = async (jobId) => {
+    setActionLoading(prev => new Set(prev).add(jobId));
+    try {
+      const response = await completeJobRequest(jobId);
+      if (response.success) {
+        setNotification({
+          isVisible: true,
+          type: "success",
+          title: "Job Completed",
+          message: response.message || "Job completed successfully",
+        });
+        // Refresh notifications
+        fetchNotifications();
+      } else {
+        setNotification({
+          isVisible: true,
+          type: "warning",
+          title: "Error",
+          message: response.message || "Failed to complete job",
+        });
+      }
+    } catch (error) {
+      console.error("Error completing job:", error);
+      setNotification({
+        isVisible: true,
+        type: "warning",
+        title: "Error",
+        message: "Failed to complete job. Please try again.",
+      });
+    } finally {
+      setActionLoading(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(jobId);
+        return newSet;
+      });
+    }
+  };
+
   const getStatusIcon = (status) => {
     return <div className={`notification-status-icon notification-status-icon--${status}`}></div>;
   };
@@ -244,7 +286,7 @@ const Notifications = () => {
                       <div className="notification-info">
                         <h3 className="notification-project-title">{notif.projectTitle}</h3>
                         <p className="notification-client">
-                          {userType === "freelancer" 
+                          {userProfile?.accountType === "freelancer" 
                             ? `Client: ${notif.clientName || "Apex Tech Solutions"}`
                             : `Freelancer: ${notif.freelancerName || "Professional Freelancer"}`
                           }
@@ -257,17 +299,15 @@ const Notifications = () => {
                       </div>
                     </div>
 
-                    {/* Expand/Collapse Button */}
-                    <button 
-                      className="notification-expand-btn"
-                      onClick={() => toggleExpanded(notifId)}
-                    >
-                      {!isExpanded ? (
-                        <>Expand <ChevronDown size={16} /></>
-                      ) : (
-                        <>Show Less <ChevronUp size={16} /></>
-                      )}
-                    </button>
+                    {/* Expand Button - Only show when collapsed */}
+                    {!isExpanded && (
+                      <button 
+                        className="notification-expand-btn"
+                        onClick={() => toggleExpanded(notifId)}
+                      >
+                        Expand <ChevronDown size={16} />
+                      </button>
+                    )}
 
                     {/* Expanded Content */}
                     {isExpanded && (
@@ -304,22 +344,35 @@ const Notifications = () => {
 
                         {/* Action Buttons - Different for freelancers vs clients */}
                         <div className="notification-actions">
-                          {userType === "freelancer" && notif.status === "pending" && (
+                          {userProfile?.accountType === "freelancer" && (
                             <>
-                              <button
-                                className="notification-btn notification-btn--reject"
-                                onClick={() => handleReject(notifId)}
-                                disabled={isLoading}
-                              >
-                                {isLoading ? <Loader2 size={16} className="btn-spinner" /> : "Reject"}
-                              </button>
-                              <button
-                                className="notification-btn notification-btn--accept"
-                                onClick={() => handleAccept(notifId)}
-                                disabled={isLoading}
-                              >
-                                {isLoading ? <Loader2 size={16} className="btn-spinner" /> : "Accept"}
-                              </button>
+                              {notif.status === "pending" && (
+                                <>
+                                  <button
+                                    className="notification-btn notification-btn--reject"
+                                    onClick={() => handleReject(notifId)}
+                                    disabled={isLoading}
+                                  >
+                                    {isLoading ? <Loader2 size={16} className="btn-spinner" /> : "Reject"}
+                                  </button>
+                                  <button
+                                    className="notification-btn notification-btn--accept"
+                                    onClick={() => handleAccept(notifId)}
+                                    disabled={isLoading}
+                                  >
+                                    {isLoading ? <Loader2 size={16} className="btn-spinner" /> : "Accept"}
+                                  </button>
+                                </>
+                              )}
+                              {notif.status === "accepted" && (
+                                <button
+                                  className="notification-btn notification-btn--open"
+                                  onClick={() => window.open(`/project/${notifId}`, '_blank')}
+                                  disabled={isLoading}
+                                >
+                                  Open Project
+                                </button>
+                              )}
                               <button className="notification-btn notification-btn--schedule">
                                 Schedule Meeting
                               </button>
@@ -329,7 +382,7 @@ const Notifications = () => {
                             </>
                           )}
                           
-                          {userType === "client" && (
+                          {userProfile?.accountType === "client" && (
                             <>
                               <button className="notification-btn notification-btn--profile">
                                 View Freelancer Profile
@@ -343,6 +396,14 @@ const Notifications = () => {
                             </>
                           )}
                         </div>
+
+                        {/* Show Less Button - At bottom of expanded content */}
+                        <button 
+                          className="notification-collapse-btn"
+                          onClick={() => toggleExpanded(notifId)}
+                        >
+                          Show Less <ChevronUp size={16} />
+                        </button>
                       </div>
                     )}
                   </div>

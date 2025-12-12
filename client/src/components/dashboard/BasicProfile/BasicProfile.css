@@ -158,3 +158,191 @@
   }
 }
 
+/* GitHub Username Section Styles */
+.basic-profile__label svg {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.basic-profile__github-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.github-username-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.github-profile-link {
+  color: #6ba5a8;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.github-profile-link:hover {
+  color: #5a9497;
+}
+
+.basic-profile__github-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.github-edit-btn,
+.github-create-btn,
+.github-save-btn,
+.github-cancel-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.github-edit-btn {
+  background-color: #6ba5a8;
+  color: white;
+}
+
+.github-edit-btn:hover {
+  background-color: #5a9497;
+  transform: translateY(-1px);
+}
+
+.github-create-btn {
+  background-color: #1f2937;
+  color: white;
+}
+
+.github-create-btn:hover {
+  background-color: #111827;
+  transform: translateY(-1px);
+}
+
+.basic-profile__github-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.github-input-container {
+  display: flex;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border: 2px solid #e0e0e0;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.github-input-container:focus-within {
+  border-color: #6ba5a8;
+}
+
+.github-prefix {
+  padding: 0.75rem 0.5rem 0.75rem 0.75rem;
+  background-color: #e8e8e8;
+  color: #666666;
+  font-weight: 500;
+  border-right: 1px solid #d0d0d0;
+}
+
+.github-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  color: #555555;
+  outline: none;
+}
+
+.github-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.github-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.github-save-btn {
+  background-color: #22c55e;
+  color: white;
+}
+
+.github-save-btn:hover:not(:disabled) {
+  background-color: #16a34a;
+  transform: translateY(-1px);
+}
+
+.github-save-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.github-cancel-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.github-cancel-btn:hover:not(:disabled) {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.github-cancel-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loading-spinner-small {
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive Design for GitHub Section */
+@media (max-width: 768px) {
+  .basic-profile__github-actions {
+    flex-direction: column;
+  }
+  
+  .github-edit-btn,
+  .github-create-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .github-edit-actions {
+    flex-direction: column;
+  }
+  
+  .github-save-btn,
+  .github-cancel-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

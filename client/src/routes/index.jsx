@@ -13,6 +13,7 @@ import AuthSuccess from "../pages/AuthSuccess/AuthSuccess";
 import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
 import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
 import Notifications from "../pages/Notifications/Notifications";
+import ProjectWorkspace from "../pages/ProjectWorkspace/ProjectWorkspace";
 
 // Create router with routes
 const router = createBrowserRouter([
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "notifications",
         element: <Notifications />, // Notifications page
+      },
+      {
+        path: "project/:projectId",
+        element: <ProjectWorkspace />, // Project workspace page
       },
     ],
   },

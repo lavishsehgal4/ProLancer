@@ -1,0 +1,981 @@
+/**
+ * Project Workspace Styles
+ * 
+ * Comprehensive styles for the project management workspace
+ */
+
+.project-workspace {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding-top: 80px;
+}
+
+.project-workspace-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: #64748b;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Setup Flow Styles */
+.setup-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.setup-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.setup-header h1 {
+  font-size: 2.5rem;
+  color: #1e293b;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.setup-header p {
+  color: #64748b;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #e2e8f0;
+  border: none;
+  border-radius: 6px;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.back-btn:hover {
+  background: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.setup-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.setup-step {
+  display: flex;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.setup-step.active {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.1);
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  background: #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.setup-step.active .step-number {
+  background: #3b82f6;
+  color: white;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+}
+
+.step-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.github-input,
+.task-input {
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.github-input:focus,
+.task-input:focus,
+.github-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.github-textarea {
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.repo-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.repo-error {
+  color: #ef4444;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  margin-top: -0.5rem;
+}
+
+.github-btn,
+.continue-btn,
+.complete-setup-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.github-btn:hover,
+.continue-btn:hover,
+.complete-setup-btn:hover {
+  background: #111827;
+  transform: translateY(-1px);
+}
+
+.github-btn:disabled,
+.continue-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.task-input-container {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.add-task-btn {
+  padding: 0.75rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-task-btn:hover {
+  background: #059669;
+}
+
+.setup-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.setup-task {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+.setup-task button {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.setup-task button:hover {
+  background: #fee2e2;
+}
+
+.step-completed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #10b981;
+  font-weight: 500;
+}
+
+/* Main Workspace Styles */
+.workspace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2rem;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 2rem;
+}
+
+.header-left {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.project-info h1 {
+  font-size: 1.75rem;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.project-meta {
+  display: flex;
+  gap: 1.5rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.project-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.github-repo-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.github-repo-btn:hover {
+  background: #111827;
+  transform: translateY(-1px);
+}
+
+.workspace-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 0 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.left-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Progress Section */
+.progress-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.progress-section h3 {
+  margin: 0 0 1.5rem 0;
+  color: #1e293b;
+}
+
+.progress-circle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 1rem auto;
+}
+
+.circle-progress {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #3b82f6 0deg,
+    #3b82f6 calc(var(--progress) * 3.6deg),
+    #e2e8f0 calc(var(--progress) * 3.6deg),
+    #e2e8f0 360deg
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.circle-progress::before {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 50%;
+}
+
+.progress-text {
+  position: relative;
+  z-index: 1;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.progress-label {
+  color: #64748b;
+  margin: 0;
+}
+
+/* Tasks Section */
+.tasks-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: #1e293b;
+}
+
+.add-btn {
+  padding: 0.5rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.add-task-form {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+}
+
+.add-task-form input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.save-btn {
+  padding: 0.25rem 0.5rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  padding: 0.25rem 0.5rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.task-item:hover {
+  background: #f1f5f9;
+}
+
+.task-item.completed {
+  opacity: 0.7;
+}
+
+.task-item.completed .task-text {
+  text-decoration: line-through;
+}
+
+.task-checkbox {
+  background: none;
+  border: none;
+  color: #10b981;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.task-checkbox:hover {
+  color: #059669;
+}
+
+.task-text {
+  flex: 1;
+  color: #374151;
+}
+
+.delete-task {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.task-item:hover .delete-task {
+  opacity: 1;
+}
+
+.delete-task:hover {
+  background: #fee2e2;
+}
+
+/* Files Section */
+.files-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.files-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1.5rem 0;
+  color: #1e293b;
+}
+
+.file-upload-area {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+}
+
+.file-upload-area:hover,
+.file-upload-area.drag-active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.file-upload-area svg {
+  margin-bottom: 0.5rem;
+  opacity: 0.5;
+}
+
+.file-input {
+  display: none;
+}
+
+.upload-btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.upload-btn:hover {
+  background: #2563eb;
+}
+
+.uploaded-files h4 {
+  margin: 0 0 1rem 0;
+  color: #374151;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 0.5rem;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.file-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.file-name {
+  font-weight: 500;
+  color: #374151;
+}
+
+.file-meta {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.file-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.download-btn,
+.delete-btn {
+  padding: 0.25rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.download-btn {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.download-btn:hover {
+  background: #d1d5db;
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.delete-btn:hover {
+  background: #fecaca;
+}
+
+/* Client Actions */
+.client-actions {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.client-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.client-profile-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* Chat Button */
+.chat-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+  transition: all 0.2s ease;
+  z-index: 1000;
+}
+
+.chat-btn:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
+}
+
+/* Chat Modal */
+.chat-modal {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 350px;
+  height: 500px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.chat-header h3 {
+  margin: 0;
+  color: #1e293b;
+}
+
+.chat-header button {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.chat-header button:hover {
+  background: #f3f4f6;
+}
+
+.chat-content {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .workspace-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .workspace-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .project-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .project-workspace {
+    padding-top: 60px;
+  }
+  
+  .setup-container,
+  .workspace-content {
+    padding: 1rem;
+  }
+  
+  .setup-step {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .workspace-header {
+    padding: 1rem;
+  }
+  
+  .project-info h1 {
+    font-size: 1.5rem;
+  }
+  
+  .chat-modal {
+    width: calc(100vw - 2rem);
+    height: 400px;
+    bottom: 1rem;
+    right: 1rem;
+  }
+  
+  .chat-btn {
+    bottom: 1rem;
+    right: 1rem;
+  }
+}/* La
+rge Setup Step Styles */
+.setup-step-large {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e2e8f0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.setup-step-large .step-number {
+  width: 48px;
+  height: 48px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 auto 1.5rem auto;
+}
+
+.setup-step-large .step-content h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.setup-step-large .step-description {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 0 2rem 0;
+}
+
+.setup-step-large .repo-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.setup-step-large .github-input,
+.setup-step-large .github-textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.setup-step-large .github-input:focus,
+.setup-step-large .github-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.setup-step-large .github-textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+}
+
+.github-btn-large {
+  width: 100%;
+  padding: 1.25rem 2rem;
+  background: #24292e;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.github-btn-large:hover:not(:disabled) {
+  background: #1a1e22;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.github-btn-large:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.setup-step-large .repo-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Responsive Design for Large Setup */
+@media (max-width: 768px) {
+  .setup-step-large {
+    padding: 2rem;
+    margin: 0 1rem;
+  }
+
+  .setup-step-large .step-content h3 {
+    font-size: 1.5rem;
+  }
+
+  .setup-step-large .step-description {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .setup-step-large {
+    padding: 1.5rem;
+  }
+
+  .setup-step-large .step-number {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+
+  .setup-step-large .step-content h3 {
+    font-size: 1.25rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

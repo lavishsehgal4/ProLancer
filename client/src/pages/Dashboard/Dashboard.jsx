@@ -17,6 +17,7 @@ import { removeToken, isAuthenticated } from "../../utils/auth/token";
 import BasicProfile from "../../components/dashboard/BasicProfile/BasicProfile";
 import FreelancerProfile from "../../components/dashboard/FreelancerProfile/FreelancerProfile";
 import ClientProfile from "../../components/dashboard/ClientProfile/ClientProfile";
+import Projects from "../../components/dashboard/Projects/Projects";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -201,10 +202,7 @@ const Dashboard = () => {
           )}
 
           {activeSection === "projects" && (
-            <div className="dashboard__section-placeholder">
-              <h2>Projects Section</h2>
-              <p>This section will be implemented later.</p>
-            </div>
+            <Projects />
           )}
         </main>
       </div>

@@ -353,6 +353,51 @@
   cursor: not-allowed;
 }
 
+.notification-btn--complete {
+  background: #10b981;
+  color: white;
+  border: none;
+}
+
+.notification-btn--complete:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.notification-btn--open {
+  background: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.notification-btn--open:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* Show Less Button at Bottom */
+.notification-collapse-btn {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background: #f3f4f6;
+  border: none;
+  color: #374151;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  border-radius: 8px;
+}
+
+.notification-collapse-btn:hover {
+  background: #e5e7eb;
+}
+
 .btn-spinner {
   animation: spin 1s linear infinite;
 }
