@@ -33,9 +33,22 @@ import {
   Plus,
   Edit3,
   Save,
-  X
+  X,
+  Image,
+  FileArchive,
+  File
 } from "lucide-react";
-import { createGithubRepository, getGithubRepoStatus } from "../../services/api/workspaceApi";
+import { 
+  createGithubRepository, 
+  getGithubRepoStatus, 
+  getTasks, 
+  createTask as createTaskAPI, 
+  updateTaskStatus as updateTaskStatusAPI, 
+  deleteTask as deleteTaskAPI,
+  uploadFile,
+  getFiles,
+  deleteFile as deleteFileAPI
+} from "../../services/api/workspaceApi";
 import { getUserProfile } from "../../services/api/userApi";
 import NotificationPopup from "../../components/common/NotificationPopup/NotificationPopup";
 import "./ProjectWorkspace.css";
@@ -48,9 +61,10 @@ const ProjectWorkspace = () => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isSetup, setIsSetup] = useState(false);
+  const [repoName, setRepoName] = useState("");
   
   // Setup state
-  const [repoName, setRepoName] = useState("");
+  const [setupRepoName, setSetupRepoName] = useState("");
   const [repoDescription, setRepoDescription] = useState("");
   const [githubRepo, setGithubRepo] = useState("");
   const [tasks, setTasks] = useState([]);
@@ -63,6 +77,8 @@ const ProjectWorkspace = () => {
   // File management
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [dragActive, setDragActive] = useState(false);
+  const [showFiles, setShowFiles] = useState(false);
+  const [filesLoading, setFilesLoading] = useState(false);
   
   // UI state
   const [showChat, setShowChat] = useState(false);
@@ -92,27 +108,32 @@ const ProjectWorkspace = () => {
   const fetchProjectData = async () => {
     setLoading(true);
     try {
-      // Mock project data - replace with actual API call
-      const mockProject = {
-        id: projectId,
-        title: "E-commerce Website Development",
-        description: "Build a modern e-commerce platform with React and Node.js",
-        budget: 5000,
-        deadline: "2024-02-15",
-        clientName: "John Smith",
-        clientEmail: "john@example.com",
-        status: "accepted",
-        createdAt: "2024-01-15T10:00:00Z"
-      };
-      
-      setProject(mockProject);
-      
       // Check if repository exists via backend API
       const repoResponse = await getGithubRepoStatus(projectId);
       if (repoResponse.success && repoResponse.data?.exists) {
         setIsSetup(true);
         setGithubRepo(repoResponse.data.repoUrl);
-        loadProjectData();
+        setRepoName(repoResponse.data.repoName || "Project Repository");
+        
+        // Load tasks from backend
+        await loadTasks();
+      } else {
+        // No repository exists - show setup page
+        setIsSetup(false);
+        // Mock project data for display
+        const mockProject = {
+          id: projectId,
+          title: "E-commerce Website Development",
+          description: "Build a modern e-commerce platform with React and Node.js",
+          budget: 5000,
+          deadline: "2024-02-15",
+          clientName: "John Smith",
+          clientEmail: "john@example.com",
+          status: "accepted",
+          createdAt: "2024-01-15T10:00:00Z"
+        };
+        setProject(mockProject);
+        setRepoName("E-commerce Website Development");
       }
     } catch (error) {
       console.error("Error fetching project:", error);
@@ -127,15 +148,17 @@ const ProjectWorkspace = () => {
     }
   };
 
-  const loadProjectData = () => {
-    // Load saved project data from localStorage (replace with API calls)
-    const savedRepo = localStorage.getItem(`project_repo_${projectId}`);
-    const savedTasks = localStorage.getItem(`project_tasks_${projectId}`);
-    const savedFiles = localStorage.getItem(`project_files_${projectId}`);
-    
-    if (savedRepo) setGithubRepo(savedRepo);
-    if (savedTasks) setTasks(JSON.parse(savedTasks));
-    if (savedFiles) setUploadedFiles(JSON.parse(savedFiles));
+  const loadTasks = async () => {
+    try {
+      const response = await getTasks(projectId);
+      if (response.success) {
+        setTasks(response.data || []);
+      } else {
+        console.error("Failed to load tasks:", response.message);
+      }
+    } catch (error) {
+      console.error("Error loading tasks:", error);
+    }
   };
 
 
@@ -145,7 +168,7 @@ const ProjectWorkspace = () => {
     setRepoError("");
     
     // Validate inputs
-    if (!repoName.trim()) {
+    if (!setupRepoName.trim()) {
       setRepoError("Repository name is required");
       return;
     }
@@ -164,7 +187,7 @@ const ProjectWorkspace = () => {
     setRepoLoading(true);
     
     try {
-      const response = await createGithubRepository(projectId, repoName.trim(), repoDescription.trim());
+      const response = await createGithubRepository(projectId, setupRepoName.trim(), repoDescription.trim());
       
       if (response.success) {
         setGithubRepo(response.data.repoUrl);
@@ -175,10 +198,12 @@ const ProjectWorkspace = () => {
           message: "Redirecting to workspace...",
         });
         
+        setRepoName(response.data.repoName);
+        
         // Automatically go to workspace after successful repository creation
         setTimeout(() => {
           setIsSetup(true);
-          loadProjectData();
+          loadTasks();
         }, 1500);
       } else {
         setRepoError(response.message);
@@ -191,55 +216,199 @@ const ProjectWorkspace = () => {
     }
   };
 
-  const addTask = () => {
+  const addTask = async () => {
     if (newTask.trim()) {
-      const task = {
-        id: Date.now(),
-        text: newTask.trim(),
-        completed: false,
-        createdAt: new Date().toISOString()
-      };
-      const updatedTasks = [...tasks, task];
-      setTasks(updatedTasks);
-      localStorage.setItem(`project_tasks_${projectId}`, JSON.stringify(updatedTasks));
-      setNewTask("");
-      setIsAddingTask(false);
+      try {
+        const response = await createTaskAPI(projectId, newTask.trim());
+        if (response.success) {
+          await loadTasks(); // Reload tasks from backend
+          setNewTask("");
+          setIsAddingTask(false);
+          setNotification({
+            isVisible: true,
+            type: "success",
+            title: "Success",
+            message: "Task created successfully",
+          });
+        } else {
+          setNotification({
+            isVisible: true,
+            type: "error",
+            title: "Error",
+            message: response.message || "Failed to create task",
+          });
+        }
+      } catch (error) {
+        console.error("Error creating task:", error);
+        setNotification({
+          isVisible: true,
+          type: "error",
+          title: "Error",
+          message: "Failed to create task",
+        });
+      }
     }
   };
 
-  const toggleTask = (taskId) => {
-    const updatedTasks = tasks.map(task =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    );
-    setTasks(updatedTasks);
-    localStorage.setItem(`project_tasks_${projectId}`, JSON.stringify(updatedTasks));
+  const toggleTask = async (taskId) => {
+    try {
+      const task = tasks.find(t => t._id === taskId);
+      if (!task) return;
+      
+      const response = await updateTaskStatusAPI(taskId, !task.isCompleted);
+      if (response.success) {
+        await loadTasks(); // Reload tasks from backend
+      } else {
+        setNotification({
+          isVisible: true,
+          type: "error",
+          title: "Error",
+          message: response.message || "Failed to update task",
+        });
+      }
+    } catch (error) {
+      console.error("Error updating task:", error);
+      setNotification({
+        isVisible: true,
+        type: "error",
+        title: "Error",
+        message: "Failed to update task",
+      });
+    }
   };
 
-  const deleteTask = (taskId) => {
-    const updatedTasks = tasks.filter(task => task.id !== taskId);
-    setTasks(updatedTasks);
-    localStorage.setItem(`project_tasks_${projectId}`, JSON.stringify(updatedTasks));
+  const deleteTask = async (taskId) => {
+    try {
+      const response = await deleteTaskAPI(taskId);
+      if (response.success) {
+        await loadTasks(); // Reload tasks from backend
+        setNotification({
+          isVisible: true,
+          type: "success",
+          title: "Success",
+          message: "Task deleted successfully",
+        });
+      } else {
+        setNotification({
+          isVisible: true,
+          type: "error",
+          title: "Error",
+          message: response.message || "Failed to delete task",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      setNotification({
+        isVisible: true,
+        type: "error",
+        title: "Error",
+        message: "Failed to delete task",
+      });
+    }
   };
 
-  const handleFileUpload = (files) => {
-    const newFiles = Array.from(files).map(file => ({
-      id: Date.now() + Math.random(),
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      uploadedAt: new Date().toISOString(),
-      url: URL.createObjectURL(file) // In real app, upload to server
-    }));
+  const loadFiles = async () => {
+    setFilesLoading(true);
+    try {
+      const response = await getFiles(projectId);
+      if (response.success) {
+        setUploadedFiles(response.data || []);
+      } else {
+        console.error("Failed to load files:", response.message);
+        setNotification({
+          isVisible: true,
+          type: "error",
+          title: "Error",
+          message: "Failed to load files",
+        });
+      }
+    } catch (error) {
+      console.error("Error loading files:", error);
+      setNotification({
+        isVisible: true,
+        type: "error",
+        title: "Error",
+        message: "Failed to load files",
+      });
+    } finally {
+      setFilesLoading(false);
+    }
+  };
+
+  const handleShowFiles = async () => {
+    if (!showFiles) {
+      setShowFiles(true);
+      await loadFiles();
+    } else {
+      setShowFiles(false);
+    }
+  };
+
+  const handleFileUpload = async (files) => {
+    const fileArray = Array.from(files);
     
-    const updatedFiles = [...uploadedFiles, ...newFiles];
-    setUploadedFiles(updatedFiles);
-    localStorage.setItem(`project_files_${projectId}`, JSON.stringify(updatedFiles));
+    for (const file of fileArray) {
+      try {
+        const response = await uploadFile(projectId, file);
+        if (response.success) {
+          setNotification({
+            isVisible: true,
+            type: "success",
+            title: "Success",
+            message: `${file.name} uploaded successfully`,
+          });
+        } else {
+          setNotification({
+            isVisible: true,
+            type: "error",
+            title: "Upload Failed",
+            message: response.message,
+          });
+        }
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        setNotification({
+          isVisible: true,
+          type: "error",
+          title: "Upload Failed",
+          message: `Failed to upload ${file.name}`,
+        });
+      }
+    }
+    
+    // Reload files after upload
+    await loadFiles();
   };
 
-  const deleteFile = (fileId) => {
-    const updatedFiles = uploadedFiles.filter(file => file.id !== fileId);
-    setUploadedFiles(updatedFiles);
-    localStorage.setItem(`project_files_${projectId}`, JSON.stringify(updatedFiles));
+  const deleteFile = async (publicId, fileName) => {
+    try {
+      const response = await deleteFileAPI(publicId);
+      if (response.success) {
+        setNotification({
+          isVisible: true,
+          type: "success",
+          title: "Success",
+          message: `${fileName} deleted successfully`,
+        });
+        // Reload files after deletion
+        await loadFiles();
+      } else {
+        setNotification({
+          isVisible: true,
+          type: "error",
+          title: "Delete Failed",
+          message: response.message,
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      setNotification({
+        isVisible: true,
+        type: "error",
+        title: "Delete Failed",
+        message: `Failed to delete ${fileName}`,
+      });
+    }
   };
 
   const handleDrag = (e) => {
@@ -264,7 +433,7 @@ const ProjectWorkspace = () => {
 
   const calculateProgress = () => {
     if (tasks.length === 0) return 0;
-    const completedTasks = tasks.filter(task => task.completed).length;
+    const completedTasks = tasks.filter(task => task.isCompleted).length;
     return Math.round((completedTasks / tasks.length) * 100);
   };
 
@@ -274,6 +443,34 @@ const ProjectWorkspace = () => {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const getFileIcon = (fileType, fileName) => {
+    // Check by fileType first (from backend)
+    if (fileType === 'img') {
+      return <Image size={24} />;
+    }
+    if (fileType === 'zip') {
+      return <FileArchive size={24} />;
+    }
+    if (fileType === 'pdf' || fileType === 'doc') {
+      return <FileText size={24} />;
+    }
+    
+    // Fallback: check by file extension
+    const extension = fileName?.split('.').pop()?.toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(extension)) {
+      return <Image size={24} />;
+    }
+    if (['zip', 'rar', '7z', 'tar', 'gz'].includes(extension)) {
+      return <FileArchive size={24} />;
+    }
+    if (['pdf', 'doc', 'docx', 'txt', 'rtf'].includes(extension)) {
+      return <FileText size={24} />;
+    }
+    
+    // Default file icon
+    return <File size={24} />;
   };
 
   const formatDate = (dateString) => {
@@ -334,8 +531,8 @@ const ProjectWorkspace = () => {
                     <input
                       type="text"
                       placeholder="Repository name (e.g., my-project)"
-                      value={repoName}
-                      onChange={(e) => setRepoName(e.target.value)}
+                      value={setupRepoName}
+                      onChange={(e) => setSetupRepoName(e.target.value)}
                       className="github-input"
                       disabled={repoLoading}
                     />
@@ -358,7 +555,7 @@ const ProjectWorkspace = () => {
                   <button 
                     className="github-btn-large"
                     onClick={handleCreateRepository}
-                    disabled={!repoName.trim() || !repoDescription.trim() || repoLoading}
+                    disabled={!setupRepoName.trim() || !repoDescription.trim() || repoLoading}
                   >
                     <Github size={20} />
                     {repoLoading ? "Creating Repository..." : "Create Repository"}
@@ -373,7 +570,7 @@ const ProjectWorkspace = () => {
   }
 
   return (
-    <div className="project-workspace">
+    <div className="project-workspace-exact">
       <NotificationPopup
         isVisible={notification.isVisible}
         type={notification.type}
@@ -383,181 +580,281 @@ const ProjectWorkspace = () => {
         autoClose={3000}
       />
 
-      {/* Header */}
-      <div className="workspace-header">
-        <div className="header-left">
-          <button className="back-btn" onClick={() => navigate(-1)}>
-            <ArrowLeft size={20} />
-            Back
-          </button>
-          <div className="project-info">
-            <h1>{project?.title}</h1>
-            <div className="project-meta">
-              <span><DollarSign size={16} />${project?.budget?.toLocaleString()}</span>
-              <span><Calendar size={16} />Due: {formatDate(project?.deadline)}</span>
-              <span><Clock size={16} />Started: {formatDate(project?.createdAt)}</span>
-            </div>
-          </div>
-        </div>
-        <div className="header-right">
-          <button className="github-repo-btn">
-            <Github size={16} />
-            Open GitHub Repo
-            <ExternalLink size={14} />
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="workspace-content">
-        {/* Left Column */}
-        <div className="left-column">
-          {/* Progress Section */}
-          <div className="progress-section">
-            <h3>Progress Tracking</h3>
-            <div className="progress-circle">
-              <div className="circle-progress" style={{'--progress': calculateProgress()}}>
-                <span className="progress-text">{calculateProgress()}%</span>
+      {/* Dark Blue Header */}
+      <div className="workspace-header-exact">
+        <div className="header-content-exact">
+          <div className="header-left-exact">
+            <button className="back-btn-exact" onClick={() => navigate(-1)}>
+              <ArrowLeft size={16} />
+              Back
+            </button>
+            <div className="project-info-exact">
+              <h1>{repoName || "Project Workspace"}</h1>
+              <div className="project-meta-exact">
+                <span><DollarSign size={14} />$5,000</span>
+                <span><Calendar size={14} />Due: Feb 15, 2024, 05:30 AM</span>
+                <span><Clock size={14} />Started: Jan 15, 2024, 03:30 PM</span>
               </div>
             </div>
-            <p className="progress-label">
-              {tasks.filter(t => t.completed).length}/{tasks.length} Tasks Completed
-            </p>
           </div>
-
-          {/* Tasks Section */}
-          <div className="tasks-section">
-            <div className="section-header">
-              <h3>
-                <Github size={20} />
-                Project Tasks
-              </h3>
-              <button 
-                className="add-btn"
-                onClick={() => setIsAddingTask(true)}
-              >
-                <Plus size={16} />
-              </button>
-            </div>
-            
-            {isAddingTask && (
-              <div className="add-task-form">
-                <input
-                  type="text"
-                  placeholder="Enter new task..."
-                  value={newTask}
-                  onChange={(e) => setNewTask(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addTask()}
-                  autoFocus
-                />
-                <div className="form-actions">
-                  <button onClick={addTask} className="save-btn">
-                    <Save size={14} />
-                  </button>
-                  <button onClick={() => {setIsAddingTask(false); setNewTask("");}} className="cancel-btn">
-                    <X size={14} />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="tasks-list">
-              {tasks.map(task => (
-                <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
-                  <button 
-                    className="task-checkbox"
-                    onClick={() => toggleTask(task.id)}
-                  >
-                    {task.completed ? <CheckCircle size={18} /> : <Circle size={18} />}
-                  </button>
-                  <span className="task-text">{task.text}</span>
-                  <button 
-                    className="delete-task"
-                    onClick={() => deleteTask(task.id)}
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column */}
-        <div className="right-column">
-          {/* File Upload Section */}
-          <div className="files-section">
-            <h3>
-              <Upload size={20} />
-              Project Files
-            </h3>
-            
-            <div 
-              className={`file-upload-area ${dragActive ? 'drag-active' : ''}`}
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-            >
-              <Upload size={32} />
-              <p>Drag and drop files here</p>
-              <span>or</span>
-              <input
-                type="file"
-                multiple
-                onChange={(e) => handleFileUpload(e.target.files)}
-                className="file-input"
-                id="file-upload"
-              />
-              <label htmlFor="file-upload" className="upload-btn">
-                Choose Files
-              </label>
-            </div>
-
-            {uploadedFiles.length > 0 && (
-              <div className="uploaded-files">
-                <h4>Uploaded Files</h4>
-                {uploadedFiles.map(file => (
-                  <div key={file.id} className="file-item">
-                    <div className="file-info">
-                      <FileText size={16} />
-                      <div className="file-details">
-                        <span className="file-name">{file.name}</span>
-                        <span className="file-meta">
-                          {formatFileSize(file.size)} • {formatDate(file.uploadedAt)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="file-actions">
-                      <button className="download-btn">
-                        <Download size={14} />
-                      </button>
-                      <button 
-                        className="delete-btn"
-                        onClick={() => deleteFile(file.id)}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Client Actions */}
-          <div className="client-actions">
-            <button className="client-profile-btn">
+          <div className="header-right-exact">
+            <button className="profile-btn-exact">
               <User size={16} />
-              See Client Profile
+              See Freelancer Profile
             </button>
           </div>
         </div>
       </div>
 
+      {/* GitHub Repository Button */}
+      <div className="github-section-exact">
+        <button className="github-repo-btn-exact" onClick={() => window.open(githubRepo, '_blank')}>
+          <Github size={16} />
+          Open GitHub Repository
+          <ExternalLink size={14} />
+        </button>
+      </div>
+
+      {/* Main Content - Three Columns */}
+      <div className="workspace-content-exact">
+        {/* Tasks Section */}
+        <div className="tasks-section-exact">
+          <div className="section-header-exact">
+            <Github size={16} />
+            <span>Project Tasks</span>
+          </div>
+
+          {tasks.length === 0 ? (
+            <div className="empty-tasks-message">
+              <p>Add tasks and keep your client updated on project progress</p>
+            </div>
+          ) : (
+            tasks.map(task => (
+              <div key={task._id} className={`task-item-exact ${task.isCompleted ? 'completed' : ''}`}>
+                <div className="task-checkbox-exact">
+                  {task.isCompleted ? <CheckCircle size={20} /> : <Circle size={20} />}
+                </div>
+                <div className="task-content-exact">
+                  <div className="task-title-exact">{task.title}</div>
+                  <div className="task-description-exact">Task created on {new Date(task.createdAt).toLocaleDateString()}</div>
+                </div>
+              </div>
+            ))
+          )}
+
+          <button className="edit-tasks-btn-exact" onClick={() => setIsAddingTask(true)}>
+            <Edit3 size={16} />
+            Edit Tasks
+          </button>
+
+          {/* Edit Modal */}
+          {isAddingTask && (
+            <div className="edit-modal-overlay">
+              <div className="edit-modal">
+                <div className="modal-header">
+                  <h3>Edit Project Tasks</h3>
+                  <button onClick={() => setIsAddingTask(false)} className="close-modal">
+                    <X size={20} />
+                  </button>
+                </div>
+                
+                <div className="modal-content">
+                  <div className="add-task-form">
+                    <input
+                      type="text"
+                      placeholder="Enter new task..."
+                      value={newTask}
+                      onChange={(e) => setNewTask(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && addTask()}
+                    />
+                    <button onClick={addTask} className="add-task-btn">
+                      <Plus size={16} />
+                      Add Task
+                    </button>
+                  </div>
+
+                  <div className="tasks-list-edit">
+                    {tasks.map(task => (
+                      <div key={task._id} className={`task-item-edit ${task.isCompleted ? 'completed' : ''}`}>
+                        <button 
+                          className="task-checkbox"
+                          onClick={() => toggleTask(task._id)}
+                        >
+                          {task.isCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
+                        </button>
+                        <span className="task-text">{task.title}</span>
+                        <button 
+                          className="delete-task"
+                          onClick={() => deleteTask(task._id)}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  <button 
+                    className="confirm-btn"
+                    onClick={() => {
+                      if (window.confirm('Are you sure you want to save these changes?')) {
+                        setIsAddingTask(false);
+                        setNewTask("");
+                      }
+                    }}
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Progress Section */}
+        <div className="progress-section-exact">
+          <div className="section-header-exact">
+            <span>Progress Tracking</span>
+          </div>
+          <div className="progress-circle-exact">
+            <div className="circle-progress-exact">
+              <span className="progress-text-exact">{calculateProgress()}%</span>
+            </div>
+          </div>
+          <p className="progress-label-exact">
+            {tasks.filter(task => task.isCompleted).length}/{tasks.length} Tasks Completed
+          </p>
+        </div>
+
+        {/* Files Section */}
+        <div className="files-section-exact">
+          <div className="section-header-exact">
+            <Upload size={16} />
+            <span>Project Files</span>
+          </div>
+          
+          <div 
+            className={`file-upload-area-exact ${dragActive ? 'drag-active' : ''}`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+          >
+            <Upload size={32} />
+            <p>Drag and drop files here (Max 5MB)</p>
+            <input
+              type="file"
+              id="file-input-inline"
+              multiple
+              style={{ display: 'none' }}
+              onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+            />
+            <button 
+              className="choose-files-btn-inline-exact"
+              onClick={() => document.getElementById('file-input-inline').click()}
+            >
+              Choose Files
+            </button>
+          </div>
+
+          <input
+            type="file"
+            id="file-input-main"
+            multiple
+            style={{ display: 'none' }}
+            onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+          />
+          <button 
+            className="choose-files-btn-exact"
+            onClick={() => document.getElementById('file-input-main').click()}
+          >
+            Choose Files
+          </button>
+        </div>
+      </div>
+
+      {/* Files Sidebar Button */}
+      <button 
+        className="files-sidebar-toggle"
+        onClick={handleShowFiles}
+        title={showFiles ? 'Hide Files' : 'Show Files'}
+      >
+        <FileText size={20} />
+        {filesLoading && <span className="loading-spinner-small"></span>}
+      </button>
+
+      {/* Files Sidebar */}
+      <div className={`files-sidebar ${showFiles ? 'open' : ''}`}>
+        <div className="files-sidebar-header">
+          <h3>Project Files</h3>
+          <button 
+            className="close-sidebar-btn"
+            onClick={() => setShowFiles(false)}
+          >
+            <X size={20} />
+          </button>
+        </div>
+        
+        <div className="files-sidebar-content">
+          {filesLoading ? (
+            <div className="files-loading">
+              <div className="loading-spinner"></div>
+              <p>Loading files...</p>
+            </div>
+          ) : uploadedFiles.length === 0 ? (
+            <div className="no-files-message">
+              <FileText size={48} />
+              <p>No files uploaded yet</p>
+              <small>Upload files using the Project Files section</small>
+            </div>
+          ) : (
+            <div className="files-list">
+              {uploadedFiles.map(file => (
+                <div key={file._id} className="file-item-sidebar">
+                  <div className="file-icon-sidebar">
+                    {getFileIcon(file.fileType, file.fileName)}
+                  </div>
+                  <div className="file-details-sidebar">
+                    <h4 className="file-name-sidebar">{file.fileName}</h4>
+                    <div className="file-meta-sidebar">
+                      <span className="file-size-sidebar">
+                        {file.fileSize ? formatFileSize(file.fileSize) : 'Unknown size'}
+                      </span>
+                      <span className="file-date-sidebar">
+                        {new Date(file.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="file-actions-sidebar">
+                    <button 
+                      className="download-btn-sidebar"
+                      onClick={() => window.open(file.fileUrl, '_blank')}
+                      title="Download file"
+                    >
+                      <Download size={16} />
+                    </button>
+                    <button 
+                      className="delete-btn-sidebar"
+                      onClick={() => deleteFile(file.publicId, file.fileName)}
+                      title="Delete file"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Sidebar Overlay */}
+      {showFiles && <div className="sidebar-overlay" onClick={() => setShowFiles(false)}></div>}
+
       {/* Chat Button */}
       <button 
-        className="chat-btn"
+        className="chat-btn-exact"
         onClick={() => setShowChat(true)}
       >
         <MessageCircle size={20} />

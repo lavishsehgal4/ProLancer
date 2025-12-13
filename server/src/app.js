@@ -10,7 +10,7 @@ const emailRouter = require("./routes/email/email.router");
 const jobsRouter=require('./routes/jobs/jobs.router');
 const sseRouter = require("./routes/sse/events.router");
 const workspaceRouter = require("./routes/workspace/workspace.router");
-
+const fileRouter=require("./routes/workspace/file.router");
 const app = express();
 
 app.use(
@@ -33,5 +33,6 @@ app.use("/api/user", emailRouter);
 app.use("/",jobsRouter);
 app.use("/events", sseRouter);
 app.use("/workspace", workspaceRouter);
+app.use("/files", fileRouter);
 
 module.exports = app;
