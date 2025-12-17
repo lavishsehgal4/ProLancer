@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./StepCard.css";
 
 /**
@@ -9,11 +10,12 @@ import "./StepCard.css";
  * @param {number} number - Step number (1, 2, 3)
  * @param {string} title - Step title
  * @param {string} description - Step description text
+ * @param {string} link - Optional link to navigate to when clicked
  */
 
-const StepCard = ({ icon: Icon, number, title, description }) => {
-  return (
-    <div className="step-card">
+const StepCard = ({ icon: Icon, number, title, description, link }) => {
+  const CardContent = () => (
+    <>
       {/* Icon Container */}
       <div className="step-card__icon-wrapper">
         <Icon className="step-card__icon" size={40} />
@@ -27,6 +29,20 @@ const StepCard = ({ icon: Icon, number, title, description }) => {
 
       {/* Step Description */}
       <p className="step-card__description">{description}</p>
+    </>
+  );
+
+  if (link) {
+    return (
+      <Link to={link} className="step-card step-card--clickable">
+        <CardContent />
+      </Link>
+    );
+  }
+
+  return (
+    <div className="step-card">
+      <CardContent />
     </div>
   );
 };

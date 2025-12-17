@@ -103,3 +103,22 @@
     font-size: 0.9rem;
   }
 }
+/* Clickable Step Card */
+.step-card--clickable {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.step-card--clickable:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.step-card--clickable:hover .step-card__title {
+  color: #4a6b7c;
+}
+
+.step-card--clickable:active {
+  transform: translateY(-2px);
+}

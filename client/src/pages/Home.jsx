@@ -130,18 +130,21 @@ const Home = () => {
       number: 1,
       title: "Post Your Job",
       description: "Create a detailed job listing with requirements and budget",
+      link: "/guide/client",
     },
     {
       icon: Users,
       number: 2,
       title: "Review Proposals",
       description: "Browse applications from qualified freelancers",
+      link: "/guide/client",
     },
     {
       icon: CheckCircle,
       number: 3,
       title: "Hire & Pay Securely",
       description: "Choose the best fit and collaborate with confidence",
+      link: "/guide/client",
     },
   ];
 
@@ -152,18 +155,21 @@ const Home = () => {
       number: 1,
       title: "Create Your Profile",
       description: "Showcase your skills, portfolio, and experience",
+      link: "/guide/freelancer",
     },
     {
       icon: Briefcase,
       number: 2,
       title: "Browse & Apply to Jobs",
       description: "Find projects matching your expertise and submit proposals",
+      link: "/guide/freelancer",
     },
     {
       icon: DollarSign,
       number: 3,
       title: "Get Hired & Work",
       description: "Land your next gig and earn on your terms",
+      link: "/guide/freelancer",
     },
   ];
 
@@ -218,6 +224,7 @@ const Home = () => {
                 number={step.number}
                 title={step.title}
                 description={step.description}
+                link={step.link}
               />
             ))}
           </div>
