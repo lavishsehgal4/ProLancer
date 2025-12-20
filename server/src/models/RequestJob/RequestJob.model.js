@@ -108,5 +108,28 @@ async function getJobById(jobId) {
   }
 }
 
+async function isUserPartOfJob(jobId, userId) {
+  try {
+    const job = await ProjectRequest.findById(jobId).select(
+      "clientId freelancerId"
+    );
 
-module.exports = { addUserJob, updateJobStatus ,getJobRequests,getJobById};
+    if (!job) return { success: false, reason: "NOT_FOUND" };
+
+    const uid = userId.toString();
+
+    if (
+      job.clientId.toString() === uid ||
+      job.freelancerId.toString() === uid
+    ) {
+      return { success: true };
+    }
+
+    return { success: false, reason: "NOT_ALLOWED" };
+  } catch (err) {
+    return { success: false, reason: "ERROR" };
+  }
+}
+
+
+module.exports = { addUserJob, updateJobStatus ,getJobRequests,getJobById,isUserPartOfJob};
