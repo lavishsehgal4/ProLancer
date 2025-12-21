@@ -66,8 +66,40 @@ export const updateClientData = async (clientData) => {
   }
 };
 
+/**
+ * Get public client profile (no authentication required)
+ * 
+ * @param {string} userId - User ID of the client
+ * @returns {Promise<Object>} - Response with public client data
+ */
+export const getPublicClientProfile = async (userId) => {
+  try {
+    const response = await apiClient.get(`/clients/public?userId=${userId}`);
+    const responseData = response.data;
+
+    if (responseData.success) {
+      return {
+        success: true,
+        data: responseData.data,
+        message: "Client profile fetched successfully",
+      };
+    } else {
+      throw new Error(responseData.message || "Failed to fetch client profile");
+    }
+  } catch (error) {
+    console.error("Get public client profile API error:", error);
+    return {
+      success: false,
+      message: error.message || "Failed to fetch client profile. Please try again.",
+      error: error.error || error.message,
+      data: null,
+    };
+  }
+};
+
 // Export all client API functions
 export default {
   getClientData,
   updateClientData,
+  getPublicClientProfile,
 };

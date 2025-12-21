@@ -13,6 +13,8 @@
  */
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getUser } from "../../../utils/auth/token";
 import { getClientData } from "../../../services/api/clientApi";
 import EditClientProfileForm from "./EditClientProfileForm/EditClientProfileForm";
 import NotificationPopup from "../../common/NotificationPopup/NotificationPopup";
@@ -26,11 +28,13 @@ import {
   User,
   Mail,
   CreditCard,
-  Edit3
+  Edit3,
+  ExternalLink
 } from "lucide-react";
 import "./ClientProfile.css";
 
 const ClientProfile = ({ userProfile }) => {
+  const navigate = useNavigate();
   const [clientData, setClientData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -83,6 +87,21 @@ const ClientProfile = ({ userProfile }) => {
     });
   };
 
+  const handleViewPublicProfile = () => {
+    const user = getUser();
+    if (user && user.userId) {
+      // Open in new tab
+      window.open(`/client-profile/${user.userId}`, '_blank');
+    } else {
+      setNotification({
+        isVisible: true,
+        type: "error",
+        title: "Error",
+        message: "Unable to load public profile. Please try again.",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="client-profile">
@@ -106,10 +125,19 @@ const ClientProfile = ({ userProfile }) => {
       <div className="client-profile">
       {/* Header */}
       <div className="client-profile__header">
-        <h2 className="client-profile__title">Client Profile</h2>
-        <p className="client-profile__subtitle">
-          Your client statistics and business information
-        </p>
+        <div className="client-profile__header-content">
+          <h2 className="client-profile__title">Client Profile</h2>
+          <p className="client-profile__subtitle">
+            Your client statistics and business information
+          </p>
+        </div>
+        <button 
+          className="client-profile__public-profile-btn"
+          onClick={handleViewPublicProfile}
+        >
+          <ExternalLink size={16} />
+          View Public Profile
+        </button>
       </div>
 
       {/* Client Statistics */}

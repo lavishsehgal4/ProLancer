@@ -205,7 +205,12 @@ const ChatModal = ({ isOpen, onClose, jobId, clientName }) => {
           <div className="chat-header-info">
             <MessageCircle size={20} />
             <div>
-              <h3>Chat with {clientName}</h3>
+              <h3>
+                {currentUser.accountType === 'client' 
+                  ? 'Chat with Freelancer' 
+                  : `Chat with ${clientName}`
+                }
+              </h3>
               <span className={`connection-status ${connected ? 'connected' : 'disconnected'}`}>
                 {connected ? 'Connected' : 'Connecting...'}
               </span>

@@ -14,6 +14,7 @@ import ForgotPassword from "../pages/Auth/ForgotPassword/ForgotPassword";
 import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
 import Notifications from "../pages/Notifications/Notifications";
 import ProjectWorkspace from "../pages/ProjectWorkspace/ProjectWorkspace";
+import ClientPublicProfile from "../pages/ClientPublicProfile/ClientPublicProfile";
 import { FreelancerGuide, ClientGuide } from "../pages/Guide";
 
 // Create router with routes
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: "guide/client",
         element: <ClientGuide />, // Client guide page
+      },
+      {
+        path: "client-profile/:userId",
+        element: <ClientPublicProfile />, // Public client profile page
       },
     ],
   },

@@ -367,16 +367,17 @@ const Notifications = () => {
                               {notif.status === "accepted" && (
                                 <button
                                   className="notification-btn notification-btn--open"
-                                  onClick={() => window.open(`/project/${notifId}`, '_blank')}
+                                  onClick={() => window.open(`/project/${notifId}?serviceId=${notif.serviceId}`, '_blank')}
                                   disabled={isLoading}
                                 >
                                   Open Project
                                 </button>
                               )}
-                              <button className="notification-btn notification-btn--schedule">
-                                Schedule Meeting
-                              </button>
-                              <button className="notification-btn notification-btn--profile">
+
+                              <button 
+                                className="notification-btn notification-btn--profile"
+                                onClick={() => window.open(`/client-profile/${notif.clientId}`, '_blank')}
+                              >
                                 View Client Profile
                               </button>
                             </>
@@ -384,7 +385,10 @@ const Notifications = () => {
                           
                           {userProfile?.accountType === "client" && (
                             <>
-                              <button className="notification-btn notification-btn--profile">
+                              <button 
+                                className="notification-btn notification-btn--profile"
+                                onClick={() => window.open(`/service/${notif.serviceId}`, '_blank')}
+                              >
                                 View Freelancer Profile
                               </button>
                               <button 

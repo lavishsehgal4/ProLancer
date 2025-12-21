@@ -334,7 +334,6 @@ async function updateFreelancerService(userId, title, updates) {
   }
 }
 
-async function deleteFreelancerService(userId, title) {}
 
 /**
  * Delete a service
@@ -369,12 +368,75 @@ async function deleteFreelancerService(userId, serviceId) {
   }
 }
 
+/**
+ * Update service average rating and review count
+ */
+async function updateServiceRating(serviceId, newStars) {
+  if (!serviceId || newStars < 1 || newStars > 5) {
+    return {
+      success: false,
+      message: "Invalid serviceId or rating",
+    };
+  }
+
+  try {
+    const objectId = new mongoose.Types.ObjectId(serviceId);
+
+    // 1️⃣ Find freelancer containing this service
+    const freelancer = await Freelancer.findOne(
+      { "services._id": objectId },
+      { "services.$": 1 } // only matched service
+    );
+
+    if (!freelancer || !freelancer.services.length) {
+      return {
+        success: false,
+        message: "Service not found",
+      };
+    }
+
+    const service = freelancer.services[0];
+
+    const oldTotal = service.totalReviews || 0;
+    const oldAvg = service.averageRating || 0;
+
+    const newTotal = oldTotal + 1;
+    const newAvg =
+      (oldAvg * oldTotal + newStars) / newTotal;
+
+    // 2️⃣ Update embedded service
+    await Freelancer.updateOne(
+      { "services._id": objectId },
+      {
+        $set: {
+          "services.$.averageRating": Number(newAvg.toFixed(2)),
+          "services.$.totalReviews": newTotal,
+        },
+      }
+    );
+
+    return {
+      success: true,
+      data: {
+        averageRating: Number(newAvg.toFixed(2)),
+        totalReviews: newTotal,
+      },
+    };
+  } catch (err) {
+    return {
+      success: false,
+      message: "Failed to update service rating",
+      error: err.message,
+    };
+  }
+}
+
 module.exports = {
   getFreelancerProfile,
   addNameAndUser,
   updateUserProfile,
   createFreelancerService,
   updateFreelancerService,
-
+  updateServiceRating,
   deleteFreelancerService,
 };

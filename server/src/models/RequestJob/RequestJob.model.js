@@ -40,6 +40,7 @@ async function getJobRequests(filter = {}) {
     // Map results to only required fields
     const cleanJobs = jobs.map((req) => ({
       _id: req._id,
+      clientId:req.clientId,
       jobId: req._id, // alias
       serviceId: req.serviceId,
       projectTitle: req.projectTitle,

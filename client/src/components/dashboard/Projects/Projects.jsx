@@ -227,7 +227,7 @@ const Projects = () => {
     }
   };
 
-  const handleOpenProject = async (projectId) => {
+  const handleOpenProject = async (projectId, serviceId = null) => {
     setActionLoading(prev => new Set(prev).add(projectId));
     try {
       // Check if repository exists
@@ -235,7 +235,8 @@ const Projects = () => {
       
       if (repoResponse.success && repoResponse.data?.exists) {
         // Repository exists, navigate to workspace
-        navigate(`/project/${projectId}`);
+        const url = serviceId ? `/project/${projectId}?serviceId=${serviceId}` : `/project/${projectId}`;
+        navigate(url);
       } else {
         // No repository created yet
         if (userProfile?.accountType === "client") {
@@ -248,7 +249,8 @@ const Projects = () => {
           });
         } else {
           // Freelancer can go to setup page
-          navigate(`/project/${projectId}`);
+          const url = serviceId ? `/project/${projectId}?serviceId=${serviceId}` : `/project/${projectId}`;
+          navigate(url);
         }
       }
     } catch (error) {
@@ -334,7 +336,7 @@ const Projects = () => {
                 onClick={() => setActiveStatus(tab.key)}
                 style={{
                   '--tab-color': tab.color,
-                  backgroundColor: activeStatus === tab.key ? tab.color : 'transparent',
+                  backgroundColor: activeStatus === tab.key ? tab.color : undefined,
                   color: activeStatus === tab.key ? 'white' : tab.color,
                   borderColor: tab.color
                 }}
@@ -443,16 +445,16 @@ const Projects = () => {
                               {project.status === "accepted" && (
                                 <button
                                   className="project-btn project-btn--open"
-                                  onClick={() => handleOpenProject(projectId)}
+                                  onClick={() => handleOpenProject(projectId, project.serviceId)}
                                   disabled={isLoading}
                                 >
                                   {isLoading ? <Loader2 size={16} className="btn-spinner" /> : "Open Project"}
                                 </button>
                               )}
-                              <button className="project-btn project-btn--schedule">
-                                Schedule Meeting
-                              </button>
-                              <button className="project-btn project-btn--profile">
+                              <button 
+                                className="project-btn project-btn--profile"
+                                onClick={() => window.open(`/client-profile/${project.clientId}`, '_blank')}
+                              >
                                 View Client Profile
                               </button>
                             </>
@@ -463,17 +465,17 @@ const Projects = () => {
                               {project.status === "accepted" && (
                                 <button
                                   className="project-btn project-btn--open"
-                                  onClick={() => handleOpenProject(projectId)}
+                                  onClick={() => handleOpenProject(projectId, project.serviceId)}
                                   disabled={isLoading}
                                 >
                                   {isLoading ? <Loader2 size={16} className="btn-spinner" /> : "Open Project"}
                                 </button>
                               )}
-                              <button className="project-btn project-btn--profile">
+                              <button 
+                                className="project-btn project-btn--profile"
+                                onClick={() => window.open(`/service/${project.serviceId}`, '_blank')}
+                              >
                                 View Freelancer Profile
-                              </button>
-                              <button className="project-btn project-btn--schedule">
-                                Schedule Meeting
                               </button>
                             </>
                           )}

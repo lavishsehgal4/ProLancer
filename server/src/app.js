@@ -12,6 +12,7 @@ const sseRouter = require("./routes/sse/events.router");
 const workspaceRouter = require("./routes/workspace/workspace.router");
 const fileRouter=require("./routes/workspace/file.router");
 const chatRouter=require("./chat/chat.router");
+const commentRouter=require("./routes/comments/comments.router");
 const app = express();
 
 app.use(
@@ -36,5 +37,6 @@ app.use("/events", sseRouter);
 app.use("/workspace", workspaceRouter);
 app.use("/files", fileRouter);
 app.use("/chat", chatRouter);
+app.use("/",commentRouter);
 
 module.exports = app;

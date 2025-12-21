@@ -1,4 +1,6 @@
 const { getClientData, upsertClientData } = require("../../models/CLIENT/client.model");
+const {getPublicClientByUserId}=require('../../models/CLIENT/client.model');
+const {getUserDataById}=require('../../models/USER/user.model')
 
 async function httpGetClientData(req, res) {
   try {
@@ -57,4 +59,47 @@ async function httpUpsertClientData(req, res) {
   }
 }
 
-module.exports = { httpGetClientData, httpUpsertClientData };
+async function httpGetPublicClientView(req, res) {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "userId is required",
+      });
+    }
+
+    // 1️⃣ Fetch public client/company data
+    const clientRes = await getPublicClientByUserId(userId);
+    if (!clientRes.success) {
+      return res.status(404).json(clientRes);
+    }
+
+    // 2️⃣ Fetch user data (ONLY name + country)
+    const userRes = await getUserDataById(userId);
+    if (!userRes.success) {
+      return res.status(404).json(userRes);
+    }
+
+    const user = userRes.data;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        name: `${user.firstName} ${user.lastName}`.trim(),
+        country: user.country || "",
+        company: clientRes.data,
+      },
+    });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+}
+
+module.exports = { httpGetClientData, httpUpsertClientData,httpGetPublicClientView };

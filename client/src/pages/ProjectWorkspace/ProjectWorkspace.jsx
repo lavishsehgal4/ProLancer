@@ -13,7 +13,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Github,
   CheckCircle,
@@ -36,7 +36,8 @@ import {
   X,
   Image,
   FileArchive,
-  File
+  File,
+  UserPlus
 } from "lucide-react";
 import { 
   createGithubRepository, 
@@ -47,7 +48,8 @@ import {
   deleteTask as deleteTaskAPI,
   uploadFile,
   getFiles,
-  deleteFile as deleteFileAPI
+  deleteFile as deleteFileAPI,
+  addCollaborator
 } from "../../services/api/workspaceApi";
 import { getUserProfile } from "../../services/api/userApi";
 import NotificationPopup from "../../components/common/NotificationPopup/NotificationPopup";
@@ -57,6 +59,8 @@ import "./ProjectWorkspace.css";
 const ProjectWorkspace = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const serviceId = searchParams.get('serviceId');
   
   // Project data
   const [project, setProject] = useState(null);
@@ -83,6 +87,7 @@ const ProjectWorkspace = () => {
   
   // UI state
   const [showChat, setShowChat] = useState(false);
+  const [collaboratorLoading, setCollaboratorLoading] = useState(false);
   const [notification, setNotification] = useState({
     isVisible: false,
     type: "info",
@@ -214,6 +219,39 @@ const ProjectWorkspace = () => {
       setRepoError("Failed to create repository. Please try again.");
     } finally {
       setRepoLoading(false);
+    }
+  };
+
+  const handleAddCollaborator = async () => {
+    setCollaboratorLoading(true);
+    try {
+      const response = await addCollaborator(projectId);
+      
+      if (response.success) {
+        setNotification({
+          isVisible: true,
+          type: "success",
+          title: "Collaborator Added!",
+          message: response.message || "Client has been added as a collaborator to the repository",
+        });
+      } else {
+        setNotification({
+          isVisible: true,
+          type: "error",
+          title: "Error",
+          message: response.message || "Failed to add collaborator",
+        });
+      }
+    } catch (error) {
+      console.error("Error adding collaborator:", error);
+      setNotification({
+        isVisible: true,
+        type: "error",
+        title: "Error",
+        message: "Failed to add collaborator. Please try again.",
+      });
+    } finally {
+      setCollaboratorLoading(false);
     }
   };
 
@@ -636,7 +674,10 @@ const ProjectWorkspace = () => {
             </div>
           </div>
           <div className="header-right-exact">
-            <button className="profile-btn-exact">
+            <button 
+              className="profile-btn-exact"
+              onClick={() => serviceId ? window.open(`/service/${serviceId}`, '_blank') : alert('Service information not available')}
+            >
               <User size={16} />
               See Freelancer Profile
             </button>
@@ -651,6 +692,18 @@ const ProjectWorkspace = () => {
           Open GitHub Repository
           <ExternalLink size={14} />
         </button>
+        
+        {/* Add as Collaborator Button - Only for Clients */}
+        {userProfile?.accountType === "client" && (
+          <button 
+            className="collaborator-btn-exact" 
+            onClick={handleAddCollaborator}
+            disabled={collaboratorLoading}
+          >
+            <UserPlus size={16} />
+            {collaboratorLoading ? "Adding..." : "Add as Collaborator"}
+          </button>
+        )}
       </div>
 
       {/* Main Content - Three Columns */}

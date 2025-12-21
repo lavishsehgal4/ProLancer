@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Star, Edit, MessageCircle, User, Award, Briefcase, TrendingUp } from "lucide-react";
+import { Star, Edit, MessageCircle, User, Award, Briefcase, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { getToken } from "../../utils/auth/token";
 import { getServiceDetails } from "../../services/api/categoriesApi";
+import { submitReview, getServiceReviews } from "../../services/api/commentsApi";
 import OrderRequestModal from "../../components/order/OrderRequestModal/OrderRequestModal";
 import "./ServiceDetail.css";
 
@@ -16,11 +17,31 @@ const ServiceDetail = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [showOrderModal, setShowOrderModal] = useState(false);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  
+  // Reviews state
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsError, setReviewsError] = useState(null);
+  const [reviewsPagination, setReviewsPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 5,
+    totalPages: 0
+  });
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     fetchServiceDetails();
     checkOwnership();
   }, [serviceId]);
+
+  useEffect(() => {
+    if (serviceId) {
+      fetchReviews();
+    }
+  }, [serviceId, reviewsPagination.page]);
 
   const fetchServiceDetails = async () => {
     try {
@@ -88,23 +109,102 @@ const ServiceDetail = () => {
     alert("Edit service functionality will be implemented in the dashboard");
   };
 
+  const fetchReviews = async () => {
+    try {
+      setReviewsLoading(true);
+      setReviewsError(null);
+      
+      console.log("Fetching reviews for service:", serviceId, "page:", reviewsPagination.page);
+      
+      const response = await getServiceReviews(serviceId, reviewsPagination.page, reviewsPagination.limit);
+      console.log("Reviews response:", response);
+
+      if (response.success) {
+        setReviews(response.data);
+        setReviewsPagination(prev => ({
+          ...prev,
+          ...response.pagination
+        }));
+      } else {
+        setReviewsError(response.message || "Failed to load reviews");
+      }
+    } catch (err) {
+      console.error("Error fetching reviews:", err);
+      setReviewsError("Failed to load reviews");
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
   const handleSubmitReview = async (e) => {
     e.preventDefault();
 
     if (!currentUser) {
       alert("Please login to submit a review");
+      navigate("/login");
       return;
     }
 
-    // For now, we'll show a placeholder message since review API will be implemented later
-    alert("Review functionality will be implemented soon!");
-    
-    // TODO: Implement review submission when review API is ready
-    // const formData = new FormData(e.target);
-    // const reviewData = {
-    //   rating: parseInt(formData.get('rating')),
-    //   comment: formData.get('comment')
-    // };
+    if (selectedRating === 0) {
+      alert("Please select a rating");
+      return;
+    }
+
+    const formData = new FormData(e.target);
+    const reviewData = {
+      rating: selectedRating,
+      comment: formData.get('comment')
+    };
+
+    if (!reviewData.comment.trim()) {
+      alert("Please write a comment");
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      console.log("Submitting review:", reviewData);
+      
+      const response = await submitReview(serviceId, reviewData);
+      console.log("Submit review response:", response);
+
+      if (response.success) {
+        alert("Review submitted successfully!");
+        
+        // Reset form
+        setSelectedRating(0);
+        e.target.reset();
+        
+        // Refresh reviews and service details
+        await fetchReviews();
+        await fetchServiceDetails();
+      } else {
+        alert(response.message || "Failed to submit review. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      alert("Failed to submit review. Please try again.");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= reviewsPagination.totalPages) {
+      setReviewsPagination(prev => ({
+        ...prev,
+        page: newPage
+      }));
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   if (loading) {
@@ -247,37 +347,161 @@ const ServiceDetail = () => {
             <p className="service-detail__description-text">{service.description}</p>
           </div>
 
-          {/* Reviews Section - Placeholder for future implementation */}
+          {/* Reviews Section */}
           <div className="service-detail__reviews">
             <h3 className="service-detail__section-title">
-              Reviews ({totalReviews})
+              Reviews ({reviewsPagination.total})
             </h3>
 
-            {totalReviews > 0 ? (
-              <div className="service-detail__reviews-placeholder">
-                <p className="service-detail__reviews-placeholder-text">
-                  This service has {totalReviews} reviews. Review details will be implemented soon.
-                </p>
+            {reviewsLoading ? (
+              <div className="service-detail__reviews-loading">
+                <p>Loading reviews...</p>
               </div>
+            ) : reviewsError ? (
+              <div className="service-detail__reviews-error">
+                <p>Error loading reviews: {reviewsError}</p>
+                <button 
+                  onClick={fetchReviews}
+                  className="service-detail__retry-btn"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : reviews.length > 0 ? (
+              <>
+                <div className="service-detail__reviews-list">
+                  {reviews.map((review) => (
+                    <div key={review._id} className="service-detail__review">
+                      <div className="service-detail__review-header">
+                        <div className="service-detail__reviewer">
+                          <div className="service-detail__reviewer-avatar">
+                            {review.client?.profilePicture ? (
+                              <img 
+                                src={review.client.profilePicture} 
+                                alt={review.client.name}
+                                className="service-detail__reviewer-image"
+                              />
+                            ) : (
+                              <User size={24} />
+                            )}
+                          </div>
+                          <div className="service-detail__reviewer-info">
+                            <span className="service-detail__reviewer-name">
+                              {review.client?.name || "Anonymous"}
+                            </span>
+                            <span className="service-detail__review-date">
+                              {formatDate(review.createdAt)}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="service-detail__review-rating">
+                          {[...Array(5)].map((_, index) => (
+                            <Star
+                              key={index}
+                              size={16}
+                              className={`star ${index < review.stars ? "star--filled" : "star--empty"}`}
+                              fill={index < review.stars ? "#FFB800" : "none"}
+                              stroke={index < review.stars ? "#FFB800" : "#D1D5DB"}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="service-detail__review-message">{review.message}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {reviewsPagination.totalPages > 1 && (
+                  <div className="service-detail__reviews-pagination">
+                    <button
+                      onClick={() => handlePageChange(reviewsPagination.page - 1)}
+                      disabled={reviewsPagination.page === 1}
+                      className="service-detail__pagination-btn"
+                    >
+                      <ChevronLeft size={16} />
+                      Previous
+                    </button>
+                    
+                    <span className="service-detail__pagination-info">
+                      Page {reviewsPagination.page} of {reviewsPagination.totalPages}
+                    </span>
+                    
+                    <button
+                      onClick={() => handlePageChange(reviewsPagination.page + 1)}
+                      disabled={reviewsPagination.page === reviewsPagination.totalPages}
+                      className="service-detail__pagination-btn"
+                    >
+                      Next
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
-              <p className="service-detail__no-reviews">No reviews yet</p>
+              <p className="service-detail__no-reviews">No reviews yet. Be the first to review!</p>
             )}
 
-            {/* Add Review Form - Placeholder for future implementation */}
+            {/* Add Review Form */}
             {!isOwner && currentUser && (
               <div className="service-detail__add-review">
                 <h4 className="service-detail__add-review-title">Leave a Review</h4>
-                <div className="service-detail__review-placeholder">
-                  <p>Review submission will be available soon!</p>
+                <form className="service-detail__review-form" onSubmit={handleSubmitReview}>
+                  <div className="service-detail__rating-input">
+                    <label className="service-detail__rating-label">Rating:</label>
+                    <div className="service-detail__star-rating">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <label 
+                          key={star} 
+                          className="service-detail__star-label"
+                          onMouseEnter={() => setHoverRating(star)}
+                          onMouseLeave={() => setHoverRating(0)}
+                        >
+                          <input
+                            type="radio"
+                            name="rating"
+                            value={star}
+                            className="service-detail__star-input"
+                            checked={selectedRating === star}
+                            onChange={() => setSelectedRating(star)}
+                            required
+                            disabled={submittingReview}
+                          />
+                          <Star
+                            size={24}
+                            className="service-detail__star-icon"
+                            fill={star <= (hoverRating || selectedRating) ? "#fbbf24" : "none"}
+                            stroke={star <= (hoverRating || selectedRating) ? "#fbbf24" : "#D1D5DB"}
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="service-detail__comment-input">
+                    <label htmlFor="comment" className="service-detail__comment-label">
+                      Your Review:
+                    </label>
+                    <textarea
+                      id="comment"
+                      name="comment"
+                      rows="4"
+                      className="service-detail__comment-textarea"
+                      placeholder="Share your experience working with this freelancer..."
+                      required
+                      disabled={submittingReview}
+                    />
+                  </div>
+                  
                   <button 
-                    type="button" 
-                    className="service-detail__submit-review-btn service-detail__submit-review-btn--disabled"
-                    disabled
+                    type="submit" 
+                    className="service-detail__submit-review-btn"
+                    disabled={submittingReview}
                   >
                     <MessageCircle size={16} />
-                    Submit Review (Coming Soon)
+                    {submittingReview ? "Submitting..." : "Submit Review"}
                   </button>
-                </div>
+                </form>
               </div>
             )}
           </div>

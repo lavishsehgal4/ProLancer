@@ -1,5 +1,5 @@
 const Client = require("./client.mongo");
-
+const mongoose=require('mongoose');
 async function getClientData(userId) {
   try {
     const client = await Client.findOne({ userId }).select(
@@ -65,5 +65,52 @@ async function upsertClientData(userId, data) {
   }
 }
 
+async function getPublicClientByUserId(userId) {
+  if (!userId) {
+    return {
+      success: false,
+      message: "userId is required",
+    };
+  }
 
-module.exports = { getClientData ,upsertClientData};
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return {
+      success: false,
+      message: "Invalid userId",
+    };
+  }
+
+  try {
+    const client = await Client.findOne(
+      { userId },
+      {
+        _id: 0,              // hide internal mongo id
+        userId: 0,           // hide user reference
+        totalSpent: 0,       // ❌ sensitive, not public
+        createdAt: 0,
+        updatedAt: 0,
+      }
+    ).lean();
+
+    if (!client) {
+      return {
+        success: false,
+        message: "Client not found",
+      };
+    }
+
+    return {
+      success: true,
+      data: client,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      message: "Failed to fetch client data",
+      error: err.message,
+    };
+  }
+}
+
+
+module.exports = { getClientData ,upsertClientData,getPublicClientByUserId};

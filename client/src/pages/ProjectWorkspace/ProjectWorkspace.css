@@ -1586,3 +1586,57 @@ s Sidebar Toggle Button */
     height: 45px;
   }
 }
+/* Collaborator Button */
+.collaborator-btn-exact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  margin-left: 12px;
+}
+
+.collaborator-btn-exact:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.collaborator-btn-exact:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.collaborator-btn-exact:active {
+  transform: translateY(0);
+}
+
+/* Update GitHub section to flex layout */
+.github-section-exact {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+/* Responsive design for collaborator button */
+@media (max-width: 768px) {
+  .github-section-exact {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .collaborator-btn-exact {
+    margin-left: 0;
+    justify-content: center;
+  }
+}

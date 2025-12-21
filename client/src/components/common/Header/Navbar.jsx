@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Bell } from "lucide-react";
+import { Bell, Code, Smartphone, Palette, Server, Cloud, Database, Wrench, TestTube } from "lucide-react";
 import { isAuthenticated } from "../../../utils/auth/token";
 import { useSSE } from "../../../contexts/SSEContext";
 import "./Navbar.css";
@@ -18,6 +18,18 @@ const Navbar = () => {
 
   // State to track which dropdown is currently open (for mobile click behavior)
   const [activeDropdown, setActiveDropdown] = useState(null);
+
+  // Categories for Hire Freelancer dropdown
+  const categories = [
+    { icon: Code, title: "Web Development", slug: "web-development" },
+    { icon: Smartphone, title: "Mobile App Development", slug: "mobile-app-development" },
+    { icon: Palette, title: "UI/UX Design", slug: "ui-ux-design" },
+    { icon: Server, title: "Backend Development", slug: "backend-development" },
+    { icon: Cloud, title: "DevOps & Cloud", slug: "devops-cloud" },
+    { icon: Database, title: "Database Management", slug: "database-management" },
+    { icon: Wrench, title: "API Development", slug: "api-development" },
+    { icon: TestTube, title: "Software Testing", slug: "software-testing" },
+  ];
 
   // Check authentication status on component mount and when it changes
   useEffect(() => {
@@ -94,13 +106,27 @@ const Navbar = () => {
                 ▼
               </span>
             </span>
-            {/* Dropdown Menu - Empty for now, add links later */}
-            <ul className="navbar__dropdown-menu">
-              {/* Add your dropdown items here later */}
+            {/* Dropdown Menu with Categories */}
+            <ul className="navbar__dropdown-menu navbar__dropdown-menu--categories">
+              {categories.map((category, index) => {
+                const IconComponent = category.icon;
+                return (
+                  <li key={index}>
+                    <Link 
+                      to={`/categories/${category.slug}`} 
+                      className="navbar__dropdown-link navbar__dropdown-link--category"
+                    >
+                      <IconComponent size={16} className="navbar__dropdown-icon" />
+                      <span>{category.title}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+              <li className="navbar__dropdown-divider"></li>
               <li>
-                <a href="#" className="navbar__dropdown-link">
-                  Coming Soon...
-                </a>
+                <Link to="/" className="navbar__dropdown-link navbar__dropdown-link--view-all">
+                  <span>View All Categories</span>
+                </Link>
               </li>
             </ul>
           </li>
@@ -120,13 +146,23 @@ const Navbar = () => {
                 ▼
               </span>
             </span>
-            {/* Dropdown Menu - Empty for now, add links later */}
+            {/* Dropdown Menu with Work Options */}
             <ul className="navbar__dropdown-menu">
-              {/* Add your dropdown items here later */}
               <li>
-                <a href="#" className="navbar__dropdown-link">
-                  Coming Soon...
-                </a>
+                <Link to="/guide/freelancer" className="navbar__dropdown-link">
+                  Freelancer Guide
+                </Link>
+              </li>
+              <li>
+                <Link to="/signup/freelancer" className="navbar__dropdown-link">
+                  Join as Freelancer
+                </Link>
+              </li>
+              <li className="navbar__dropdown-divider"></li>
+              <li>
+                <Link to="/dashboard" className="navbar__dropdown-link">
+                  My Projects
+                </Link>
               </li>
             </ul>
           </li>
@@ -157,12 +193,7 @@ const Navbar = () => {
             </ul>
           </li>
 
-          {/* Pricing - Regular Link (No Dropdown) */}
-          <li className="navbar__item">
-            <Link to="/pricing" className="navbar__link">
-              Pricing
-            </Link>
-          </li>
+
 
           {/* Sign Up Button - Only visible in mobile menu */}
           <li className="navbar__item navbar__item--mobile-only">
