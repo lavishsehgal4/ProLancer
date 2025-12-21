@@ -17,7 +17,6 @@ import {
   TestTube,
 } from "lucide-react";
 import heroImage from "../assets/images/Gemini_Generated_Image_k66m3pk66m3pk66m.png";
-import backgroundLine from "../assets/images/backgroundline.png";
 import StepCard from "../components/common/StepCard/StepCard";
 import CategoryCard from "../components/common/CategoryCard/CategoryCard";
 import {

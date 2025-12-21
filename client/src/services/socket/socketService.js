@@ -1,4 +1,5 @@
 import { io } from "socket.io-client";
+import { SOCKET_URL } from "../../config/api";
 
 class SocketService {
   socket = null;
@@ -18,10 +19,10 @@ class SocketService {
       this.disconnect();
     }
 
-    console.log("🔌 [SocketService] Creating new socket connection to http://localhost:8000");
+    console.log(`🔌 [SocketService] Creating new socket connection to ${SOCKET_URL}`);
     
     this.currentJobId = jobId;
-    this.socket = io("http://localhost:8000", {
+    this.socket = io(SOCKET_URL, {
       auth: { token, jobId },
       reconnection: true,
       reconnectionAttempts: 5,

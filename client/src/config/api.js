@@ -2,13 +2,25 @@
  * API Configuration
  *
  * This file contains all API-related configuration:
- * - Base URL for backend API
+ * - Base URL for backend API (from environment variables)
  * - API endpoint paths
  */
 
-// Base URL for the backend API
-// Change this to your backend server URL (e.g., 'http://localhost:8000' for local development)
-export const API_BASE_URL = "http://localhost:8000";
+// Base URL for the backend API from environment variables
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+
+// Socket URL for real-time communication
+export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:8000";
+
+// SSE URL for server-sent events
+export const SSE_URL = import.meta.env.VITE_SSE_URL || "http://localhost:8000";
+
+// App configuration
+export const APP_CONFIG = {
+  NAME: import.meta.env.VITE_APP_NAME || "ProLancer",
+  VERSION: import.meta.env.VITE_APP_VERSION || "1.0.0",
+  NODE_ENV: import.meta.env.VITE_NODE_ENV || "development",
+};
 
 // API endpoint paths
 export const API_ENDPOINTS = {

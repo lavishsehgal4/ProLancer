@@ -4,6 +4,7 @@
  */
 
 import { getToken } from "../../utils/auth/token";
+import { SSE_URL } from "../../config/api";
 
 class SSEService {
   constructor() {
@@ -31,8 +32,7 @@ class SSEService {
 
     try {
       // Create EventSource with token as query parameter since EventSource doesn't support custom headers
-      const baseUrl = 'http://localhost:8000';
-      const url = `${baseUrl}/events?token=${encodeURIComponent(token)}`;
+      const url = `${SSE_URL}/events?token=${encodeURIComponent(token)}`;
       
       this.eventSource = new EventSource(url);
       
