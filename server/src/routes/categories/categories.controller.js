@@ -40,7 +40,10 @@ async function httpGetCategoriesWithPagingAndFilter(req, res) {
 async function httpGetFreelancerFromServiceId(req,res) {
     try {
         const serviceId=req.params.serviceId;
-        console.log(serviceId);
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(serviceId);
+    }
         const response=await getFreelancerInfoFromServiceId(serviceId);
         if(response.success===false){
             throw new Error(response.message);

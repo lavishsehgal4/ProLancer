@@ -22,15 +22,12 @@ async function httpUploadFile(req, res) {
         message: "Job not found",
       });
     }
-    console.log("hello");
-    console.log("hello");
-    console.log("hello");
-    console.log("hello");
-    console.log(jobRes);
-    console.log("hi");
-    console.log("hi");
-    console.log("hi");
-    console.log("hi");
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("hello");
+      console.log(jobRes);
+      console.log("hi");
+    }
     // Validate file
     if (!req.file) {
       return res.status(400).json({
@@ -38,12 +35,18 @@ async function httpUploadFile(req, res) {
         message: "No file uploaded",
       });
     }
-    console.log("habibibi");
-    console.log(req.file);
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("habibibi");
+      console.log(req.file);
+    }
     // Upload to Cloudinary
     const cloudRes = await uploadFile(req.file.path);
-    console.log("bulabula");
-    console.log(cloudRes);
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("bulabula");
+      console.log(cloudRes);
+    }
     if (!cloudRes.success) {
       return res.status(500).json({
         success: false,

@@ -38,7 +38,10 @@ async function httpSignUpUser(req, res) {
     if (!response.success) {
       return res.status(400).json(response);
     }
-    console.log(response);
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(response);
+    }
     // Extract userId & email immediately
     const userId = response.userObj._id.toString();
     const email = response.userObj.email;
@@ -58,7 +61,7 @@ async function httpSignUpUser(req, res) {
     // ------------------------------------------------------
     // ⭐ 3️⃣ BUILD VERIFICATION URL
     // ------------------------------------------------------
-    const verificationUrl = `http://localhost:8000/api/user/verify-email?token=${token}`;
+    const verificationUrl = `${process.env.BACKEND_URL || 'http://localhost:8000'}/api/user/verify-email?token=${token}`;
 
     // ------------------------------------------------------
     // ⭐ 4️⃣ SEND VERIFICATION EMAIL

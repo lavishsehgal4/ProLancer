@@ -78,7 +78,10 @@ async function httpVerifyEmail(req, res) {
 async function httpResendVerification(req, res) {
   try {
     const { email } = req.body;
-    console.log(email);
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(email);
+    }
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -107,8 +110,8 @@ async function httpResendVerification(req, res) {
     // Create new token
     const token = await createVerificationToken(user.userId);
 
-    // Build URL (localhost for now)
-    const verificationUrl = `http://localhost:8000/api/user/verify-email?token=${token}`;
+    // Build verification URL using environment variable
+    const verificationUrl = `${process.env.BACKEND_URL || 'http://localhost:8000'}/api/user/verify-email?token=${token}`;
 
     // Send email again
     await sendVerificationEmail(email, verificationUrl);
@@ -138,7 +141,7 @@ async function httpForgotPassword(req, res) {
 
     const token = await createResetPasswordToken(user.userId);
 
-    const resetUrl = `http://localhost:5173/reset-password?token=${token}`;
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
 
     await sendPasswordResetEmail(email, resetUrl);
 
@@ -165,7 +168,10 @@ async function httpResetPassword(req, res) {
 
     // 2) Get userId from token document
     const userId = tokenData.tokenDoc.userId;
-      console.log(userId);
+      // Debug logging (remove in production)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(userId);
+      }
     // 3) Confirm user exists
     const userRes = await getUserDataById(userId);
     

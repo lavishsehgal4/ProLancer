@@ -1,18 +1,20 @@
 const mongoose = require("mongoose");
-const MONGO_URI = "mongodb://localhost:27017/FreelancingDB";
+require("dotenv").config();
+
+const MONGO_URI = process.env.MONGO_URI;
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    // await user.syncIndexes();
-    // console.log("indexes synced");
-    await console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    if (!MONGO_URI) {
+      throw new Error("MONGO_URI not found in environment variables");
+    }
+
+    const conn = await mongoose.connect(MONGO_URI);
+
+    console.log(`✅ MongoDB Atlas Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error("❌ MongoDB connection failed:", error.message);
-    process.exit(1); // stop the server if DB fails
+    process.exit(1);
   }
 };
 

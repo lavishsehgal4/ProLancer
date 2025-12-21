@@ -17,7 +17,10 @@ function verifyToken(req, res, next) {
 
     // 2. Verify token
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log(decoded);
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(decoded);
+    }
 
     // 3. Attach user details to req object
     req.user = decoded;

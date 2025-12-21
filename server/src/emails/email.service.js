@@ -31,8 +31,11 @@ async function sendVerificationEmail(toEmail, verificationUrl) {
     let html = loadTemplate("verification.html");
     html = html.replace(/{{\s*VERIFICATION_URL\s*}}/g, verificationUrl);
 
-    console.log("URL:", verificationUrl);
-console.log("HTML after replace:", html);
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("URL:", verificationUrl);
+      console.log("HTML after replace:", html);
+    }
 
     const mailOptions = {
       from: FROM_EMAIL,

@@ -10,7 +10,10 @@ async function googleLoginController(req, res) {
     }
 
     const user = req.user;
-    console.log(user);
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(user);
+    }
     const token = generateToken({
       userId: user._id,
       email: user.email,
