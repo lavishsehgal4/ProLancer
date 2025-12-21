@@ -17,6 +17,7 @@ import {
   TestTube,
 } from "lucide-react";
 import heroImage from "../assets/images/Gemini_Generated_Image_k66m3pk66m3pk66m.png";
+import backgroundLine from "../assets/images/backgroundline.png";
 import StepCard from "../components/common/StepCard/StepCard";
 import CategoryCard from "../components/common/CategoryCard/CategoryCard";
 import {
@@ -281,6 +282,187 @@ const Home = () => {
             {benefits.map((benefit, index) => (
               <BenefitCard key={index} benefit={benefit} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Client Reviews Section */}
+      <section className="client-reviews-section">
+        <div className="client-reviews-section__container">
+          {/* Section Header */}
+          <div className="client-reviews-section__header">
+            <h2 className="client-reviews-section__heading">Real results from clients</h2>
+          </div>
+
+          {/* Reviews Grid */}
+          <div className="client-reviews-section__grid">
+            {/* Review 1 - AI Services */}
+            <div className="review-card">
+              <div className="review-card__category">
+                <span className="review-card__category-icon">🤖</span>
+                <span className="review-card__category-text">AI SERVICES</span>
+              </div>
+              <div className="review-card__content">
+                <p className="review-card__text">
+                  "Rick is a fantastic AI/ML engineer with specialization in LLMs, delivering end-to-end solutions. He understood our requirements and started the work. Ultimately, he delivered a working solution. Looking forward to working with him again."
+                </p>
+                <div className="review-card__rating">
+                  <span className="review-card__stars">⭐⭐⭐⭐⭐</span>
+                </div>
+              </div>
+              <div className="review-card__footer">
+                <div className="review-card__client">
+                  <div className="review-card__avatar">
+                    <div className="review-card__avatar-placeholder"></div>
+                  </div>
+                  <div className="review-card__client-info">
+                    <span className="review-card__client-name">Work done by Rajesh K.</span>
+                    <span className="review-card__client-title">LARAVEL expert system development</span>
+                    <span className="review-card__date">Mar 18, 2024</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Review 2 - Got a IT */}
+            <div className="review-card">
+              <div className="review-card__category">
+                <span className="review-card__category-icon">💻</span>
+                <span className="review-card__category-text">GOT A IT</span>
+              </div>
+              <div className="review-card__content">
+                <p className="review-card__text">
+                  "Sania came in well-backed up in technical knowledge from our demanding developer. She was able to understand the requirements and knowledge and experience are exceptional."
+                </p>
+                <div className="review-card__rating">
+                  <span className="review-card__stars">⭐⭐⭐⭐⭐</span>
+                </div>
+              </div>
+              <div className="review-card__footer">
+                <div className="review-card__client">
+                  <div className="review-card__avatar">
+                    <div className="review-card__avatar-placeholder"></div>
+                  </div>
+                  <div className="review-card__client-info">
+                    <span className="review-card__client-name">Work done by Sania R.</span>
+                    <span className="review-card__client-title">Full Stack Developer</span>
+                    <span className="review-card__date">Apr 2, 2024</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Review 3 - Design & Creative */}
+            <div className="review-card">
+              <div className="review-card__category">
+                <span className="review-card__category-icon">🎨</span>
+                <span className="review-card__category-text">DESIGN & CREATIVE</span>
+              </div>
+              <div className="review-card__content">
+                <p className="review-card__text">
+                  "Ezreal did an amazing job setting my website—fast turnaround, great attention to detail, and excellent communication. The site looks awesome and delivers high-quality work. Extremely highly recommend him!"
+                </p>
+                <div className="review-card__rating">
+                  <span className="review-card__stars">⭐⭐⭐⭐⭐</span>
+                </div>
+              </div>
+              <div className="review-card__footer">
+                <div className="review-card__client">
+                  <div className="review-card__avatar">
+                    <div className="review-card__avatar-placeholder"></div>
+                  </div>
+                  <div className="review-card__client-info">
+                    <span className="review-card__client-name">Work done by Ezreal S.</span>
+                    <span className="review-card__client-title">Shopify and Woo commerce expert</span>
+                    <span className="review-card__date">Sep 14, 2024</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Review 4 - Sales & Marketing */}
+            <div className="review-card">
+              <div className="review-card__category">
+                <span className="review-card__category-icon">📊</span>
+                <span className="review-card__category-text">SALES & MARKETING</span>
+              </div>
+              <div className="review-card__content">
+                <p className="review-card__text">
+                  "We hired working with Javier and his team. They are very professional and know what they are doing. Very responsive and actually care about the project. Their communication skills are very methodical and thoughtful about how to approach each project. They are very knowledgeable and creative. We will definitely work with them again."
+                </p>
+                <div className="review-card__rating">
+                  <span className="review-card__stars">⭐⭐⭐⭐⭐</span>
+                </div>
+              </div>
+              <div className="review-card__footer">
+                <div className="review-card__client">
+                  <div className="review-card__avatar">
+                    <div className="review-card__avatar-placeholder"></div>
+                  </div>
+                  <div className="review-card__client-info">
+                    <span className="review-card__client-name">Work done by Javier J.</span>
+                    <span className="review-card__client-title">Social media expert and marketing</span>
+                    <span className="review-card__date">Nov 7, 2024</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Review 5 - Writing & Translation */}
+            <div className="review-card">
+              <div className="review-card__category">
+                <span className="review-card__category-icon">✍️</span>
+                <span className="review-card__category-text">WRITING & TRANSLATION</span>
+              </div>
+              <div className="review-card__content">
+                <p className="review-card__text">
+                  "Michael is very detailed and highly professional. Understood the assignment, followed instructions, and was also able to work in flexible timelines. He was able to come up with something outside the box, but still on brand. Would definitely hire him again!"
+                </p>
+                <div className="review-card__rating">
+                  <span className="review-card__stars">⭐⭐⭐⭐⭐</span>
+                </div>
+              </div>
+              <div className="review-card__footer">
+                <div className="review-card__client">
+                  <div className="review-card__avatar">
+                    <div className="review-card__avatar-placeholder"></div>
+                  </div>
+                  <div className="review-card__client-info">
+                    <span className="review-card__client-name">Work done by Michael L.</span>
+                    <span className="review-card__client-title">Content writer and business brand expert</span>
+                    <span className="review-card__date">Jan 15, 2024</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Review 6 - Admin & Customer Support */}
+            <div className="review-card">
+              <div className="review-card__category">
+                <span className="review-card__category-icon">🎧</span>
+                <span className="review-card__category-text">ADMIN & CUSTOMER SUPPORT</span>
+              </div>
+              <div className="review-card__content">
+                <p className="review-card__text">
+                  "Ahmed was a great asset to our team. He brought a fresh eye to inefficiencies, applied process rigor, and expertly configured our CRM. He was professional, detail-oriented, and moving forward. His insights and structured approach have had a lasting positive workflow."
+                </p>
+                <div className="review-card__rating">
+                  <span className="review-card__stars">⭐⭐⭐⭐⭐</span>
+                </div>
+              </div>
+              <div className="review-card__footer">
+                <div className="review-card__client">
+                  <div className="review-card__avatar">
+                    <div className="review-card__avatar-placeholder"></div>
+                  </div>
+                  <div className="review-card__client-info">
+                    <span className="review-card__client-name">Work done by Ahmed S.</span>
+                    <span className="review-card__client-title">Technical Project Manager</span>
+                    <span className="review-card__date">Feb 8, 2024</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
