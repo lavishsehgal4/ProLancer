@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "./StepCard.css";
+import "./Stepcard.css";
 
 /**
  * StepCard Component
