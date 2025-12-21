@@ -1,11 +1,13 @@
-// Store connected clients: userId → response object
+// Store connected clients: userId (string) → response object
 const clients = new Map();
 
 function sseConnect(req, res) {
-const userId = req.user.userId;
+  const userId = req.user?.userId?.toString();
 
   if (!userId) {
-    return res.status(400).json({ success: false, message: "userId required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "userId required" });
   }
 
   // Required SSE headers
@@ -13,41 +15,30 @@ const userId = req.user.userId;
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
-  // Send initial event
+  res.flushHeaders?.();
+
+  // Initial handshake
   res.write(`data: connected\n\n`);
 
   // Save client connection
   clients.set(userId, res);
 
-  // Remove client on disconnect
+  // Cleanup on disconnect
   req.on("close", () => {
+    clients.delete(userId);
+  });
+
+  // Cleanup on stream error
+  res.on("error", () => {
     clients.delete(userId);
   });
 }
 
 function sendNotification(userId, payload) {
-  console.log(`[SSE] Attempting to send notification`, {
-    userId,
-    payload,
-  });
+  const client = clients.get(userId.toString());
+  if (!client) return;
 
-  const client = clients.get(userId);
-
-  if (!client) {
-    console.warn(`[SSE] No active client found`, { userId });
-    return;
-  }
-
-  try {
-    client.write(`data: ${JSON.stringify(payload)}\n\n`);
-    console.log(`[SSE] Notification sent successfully`, { userId });
-  } catch (err) {
-    console.error(`[SSE] Failed to send notification`, {
-      userId,
-      error: err.message,
-    });
-  }
+  client.write(`data: ${JSON.stringify(payload)}\n\n`);
 }
-
 
 module.exports = { sseConnect, sendNotification };
