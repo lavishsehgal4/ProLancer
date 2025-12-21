@@ -26,10 +26,28 @@ const userId = req.user.userId;
 }
 
 function sendNotification(userId, payload) {
+  console.log(`[SSE] Attempting to send notification`, {
+    userId,
+    payload,
+  });
+
   const client = clients.get(userId);
-  if (client) {
+
+  if (!client) {
+    console.warn(`[SSE] No active client found`, { userId });
+    return;
+  }
+
+  try {
     client.write(`data: ${JSON.stringify(payload)}\n\n`);
+    console.log(`[SSE] Notification sent successfully`, { userId });
+  } catch (err) {
+    console.error(`[SSE] Failed to send notification`, {
+      userId,
+      error: err.message,
+    });
   }
 }
+
 
 module.exports = { sseConnect, sendNotification };

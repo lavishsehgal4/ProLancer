@@ -4,6 +4,7 @@ class SocketService {
   socket = null;
   connected = false;
   messageHandler = null;
+  currentJobId = null;
 
   connect(jobId, token) {
     console.log("🚀 [SocketService] Starting connection...");
@@ -11,21 +12,21 @@ class SocketService {
     console.log("🔑 [SocketService] Token exists:", !!token);
     console.log("🔑 [SocketService] Token preview:", token ? token.substring(0, 20) + "..." : "null");
 
-    // prevent reconnect storm
-    if (this.socket && this.connected) {
-      console.log("⚠️ [SocketService] Already connected, returning existing socket");
-      return this.socket;
+    // Always disconnect existing socket to ensure fresh connection
+    if (this.socket) {
+      console.log("🔄 [SocketService] Disconnecting existing socket");
+      this.disconnect();
     }
 
     console.log("🔌 [SocketService] Creating new socket connection to http://localhost:8000");
     
+    this.currentJobId = jobId;
     this.socket = io("http://localhost:8000", {
       auth: { token, jobId },
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
       timeout: 10000,
-      forceNew: true
     });
 
     this.socket.on("connect", () => {
@@ -80,6 +81,7 @@ class SocketService {
       this.socket = null;
       this.connected = false;
       this.messageHandler = null;
+      this.currentJobId = null; // Reset job tracking
       console.log("✅ [SocketService] Socket disconnected and cleaned up");
     }
   }

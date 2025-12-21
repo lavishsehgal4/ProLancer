@@ -12,6 +12,7 @@ const ChatModal = ({ isOpen, onClose, jobId, clientName }) => {
   const [sending, setSending] = useState(false);
   const [connected, setConnected] = useState(false);
   const messagesEndRef = useRef(null);
+  const socketHandlersRef = useRef(null);
   
   // Get current user from localStorage using utility function
   const currentUser = getUser() || {};
@@ -27,7 +28,19 @@ const ChatModal = ({ isOpen, onClose, jobId, clientName }) => {
 
     return () => {
       console.log("🧹 [ChatModal] Cleanup - disconnecting socket");
+      
+      // Remove socket event listeners
+      if (socketHandlersRef.current && socketService.socket) {
+        const { handleConnect, handleDisconnect } = socketHandlersRef.current;
+        socketService.socket.off("connect", handleConnect);
+        socketService.socket.off("disconnect", handleDisconnect);
+        socketHandlersRef.current = null;
+      }
+      
+      // Remove message listeners
       socketService.offNewMessage();
+      
+      // Disconnect socket from server
       socketService.disconnect();
     };
   }, [isOpen, jobId]);
@@ -64,28 +77,29 @@ const ChatModal = ({ isOpen, onClose, jobId, clientName }) => {
         console.log("🔌 [ChatModal] Connecting to socket with jobId:", jobId, "userId:", user.userId);
         const socket = socketService.connect(jobId, token);
         
-        // Monitor connection status
-        const checkConnection = () => {
-          const isConnected = socketService.connected;
-          console.log("🔍 [ChatModal] Connection check - connected:", isConnected);
-          setConnected(isConnected);
+        // Use socket events instead of polling
+        const handleConnect = () => {
+          console.log("✅ [ChatModal] Socket connected");
+          setConnected(true);
+        };
+        
+        const handleDisconnect = () => {
+          console.log("⚠️ [ChatModal] Socket disconnected");
+          setConnected(false);
         };
 
-        // Check connection status periodically
-        const connectionInterval = setInterval(checkConnection, 1000);
+        socket.on("connect", handleConnect);
+        socket.on("disconnect", handleDisconnect);
         
-        // Initial check
-        checkConnection();
+        // Set initial state
+        setConnected(socket.connected);
 
         // Listen for new messages
         console.log("👂 [ChatModal] Setting up message listener");
         socketService.onNewMessage(handleNewMessage);
-
-        // Cleanup interval on unmount
-        return () => {
-          console.log("🧹 [ChatModal] Clearing connection interval");
-          clearInterval(connectionInterval);
-        };
+        
+        // Store handlers for cleanup
+        socketHandlersRef.current = { handleConnect, handleDisconnect };
       } else {
         console.error("❌ [ChatModal] Missing authentication data:", { 
           hasToken: !!token, 
