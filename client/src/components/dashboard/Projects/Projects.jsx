@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   Bell, 
   Clock, 
@@ -35,6 +36,8 @@ import NotificationPopup from "../../common/NotificationPopup/NotificationPopup"
 import "./Projects.css";
 
 const Projects = () => {
+  const navigate = useNavigate();
+  
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeStatus, setActiveStatus] = useState("accepted"); // Default to accepted
@@ -231,16 +234,31 @@ const Projects = () => {
       const repoResponse = await getGithubRepoStatus(projectId);
       
       if (repoResponse.success && repoResponse.data?.exists) {
-        // Repository exists, go to workspace
-        window.open(`/project/${projectId}`, '_blank');
+        // Repository exists, navigate to workspace
+        navigate(`/project/${projectId}`);
       } else {
-        // No repository, go to setup page
-        window.open(`/project/${projectId}`, '_blank');
+        // No repository created yet
+        if (userProfile?.accountType === "client") {
+          // Show message to client that workspace is not set up
+          setNotification({
+            isVisible: true,
+            type: "info",
+            title: "Workspace Not Ready",
+            message: "The workspace has not been set up by the freelancer yet. Please wait for the freelancer to create the project workspace.",
+          });
+        } else {
+          // Freelancer can go to setup page
+          navigate(`/project/${projectId}`);
+        }
       }
     } catch (error) {
       console.error("Error checking repository status:", error);
-      // If error checking repo status, still go to project page
-      window.open(`/project/${projectId}`, '_blank');
+      setNotification({
+        isVisible: true,
+        type: "warning",
+        title: "Error",
+        message: "Failed to check workspace status. Please try again.",
+      });
     } finally {
       setActionLoading(prev => {
         const newSet = new Set(prev);
@@ -442,6 +460,15 @@ const Projects = () => {
                           
                           {userProfile?.accountType === "client" && (
                             <>
+                              {project.status === "accepted" && (
+                                <button
+                                  className="project-btn project-btn--open"
+                                  onClick={() => handleOpenProject(projectId)}
+                                  disabled={isLoading}
+                                >
+                                  {isLoading ? <Loader2 size={16} className="btn-spinner" /> : "Open Project"}
+                                </button>
+                              )}
                               <button className="project-btn project-btn--profile">
                                 View Freelancer Profile
                               </button>

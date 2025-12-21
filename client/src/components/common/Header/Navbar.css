@@ -178,6 +178,18 @@
   border-color: #3a5a6a;
 }
 
+/* Dashboard Button - Blue Style to match the design */
+.navbar__button--dashboard {
+  background-color: #4a90e2;
+  color: #ffffff;
+  border: 2px solid #4a90e2;
+}
+
+.navbar__button--dashboard:hover {
+  background-color: #357abd;
+  border-color: #357abd;
+}
+
 /* Hide Sign Up in mobile menu by default */
 .navbar__item--mobile-only {
   display: none;

@@ -16,6 +16,7 @@ import {
   Wrench,
   TestTube,
 } from "lucide-react";
+import heroImage from "../assets/images/Gemini_Generated_Image_k66m3pk66m3pk66m.png";
 import StepCard from "../components/common/StepCard/StepCard";
 import CategoryCard from "../components/common/CategoryCard/CategoryCard";
 import {
@@ -180,7 +181,22 @@ const Home = () => {
     <div className="home">
       {/* Hero Section */}
       <section className="hero-section">
-        {/* Hero content will be added later */}
+        <div className="hero-section__container">
+          <div className="hero-section__content">
+            <div className="hero-section__text">
+              <h1 className="hero-section__title">
+                Hire Verified Freelancers.<br />
+                Get Work Done Faster.
+              </h1>
+              <p className="hero-section__description">
+                Post a job, review proposals, and hire with confidence — all in one place.
+              </p>
+              <button className="hero-section__cta-button">
+                Get Started
+              </button>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* How It Works Section */}

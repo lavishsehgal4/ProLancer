@@ -12,6 +12,7 @@
 body {
   font-family: "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
+  margin-top: 70px; /* Account for fixed navbar height */
 }
 
 /* You can add your global color variables here later */

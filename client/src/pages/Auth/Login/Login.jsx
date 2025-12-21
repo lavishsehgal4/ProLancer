@@ -15,7 +15,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { login, resendVerificationEmail } from "../../../services/api/authApi";
-import { saveToken } from "../../../utils/auth/token";
+import { saveToken, saveUser } from "../../../utils/auth/token";
 import NotificationPopup from "../../../components/common/NotificationPopup/NotificationPopup";
 import "./Login.css";
 
@@ -124,15 +124,31 @@ const Login = () => {
           saveToken(response.token);
         }
 
-        // Log user data received from login (optional - for debugging)
-        // Backend sends: userObj with firstName, lastName, accountType, email
-        if (response.userObj) {
-          console.log("User logged in:", {
+        // Save user data to localStorage for chat and other features
+        if (response.userObj && response.token) {
+          // Decode JWT token to get userId (JWT payload contains userId)
+          let userId = null;
+          try {
+            // JWT tokens have 3 parts separated by dots: header.payload.signature
+            // We only need the payload (middle part)
+            const tokenPayload = JSON.parse(atob(response.token.split('.')[1]));
+            userId = tokenPayload.userId;
+            console.log("🔓 [Login] Decoded userId from JWT:", userId);
+          } catch (error) {
+            console.error("❌ [Login] Failed to decode JWT token:", error);
+          }
+
+          const userData = {
+            userId: userId,
             firstName: response.userObj.firstName,
             lastName: response.userObj.lastName,
             email: response.userObj.email,
             accountType: response.userObj.accountType,
-          });
+            country: response.userObj.country
+          };
+
+          saveUser(userData);
+          console.log("✅ [Login] User logged in and data stored:", userData);
         }
 
         // Show success notification

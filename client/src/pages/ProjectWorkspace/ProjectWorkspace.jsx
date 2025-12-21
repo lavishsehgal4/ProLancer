@@ -51,6 +51,7 @@ import {
 } from "../../services/api/workspaceApi";
 import { getUserProfile } from "../../services/api/userApi";
 import NotificationPopup from "../../components/common/NotificationPopup/NotificationPopup";
+import ChatModal from "../../components/chat/ChatModal/ChatModal";
 import "./ProjectWorkspace.css";
 
 const ProjectWorkspace = () => {
@@ -493,6 +494,43 @@ const ProjectWorkspace = () => {
   }
 
   if (!isSetup) {
+    // If user is a client and workspace is not set up, show waiting message
+    if (userProfile?.accountType === "client") {
+      return (
+        <div className="project-workspace">
+          <NotificationPopup
+            isVisible={notification.isVisible}
+            type={notification.type}
+            title={notification.title}
+            message={notification.message}
+            onClose={() => setNotification({ ...notification, isVisible: false })}
+            autoClose={3000}
+          />
+          
+          <div className="setup-container">
+            <div className="setup-header">
+              <button className="back-btn" onClick={() => navigate(-1)}>
+                <ArrowLeft size={20} />
+                Back
+              </button>
+              <h1>Workspace Not Ready</h1>
+              <p>The freelancer hasn't set up the workspace for "{project?.title}" yet</p>
+            </div>
+
+            <div className="waiting-message">
+              <div className="waiting-icon">
+                <Clock size={48} />
+              </div>
+              <h3>Workspace Setup in Progress</h3>
+              <p>The freelancer is setting up the project workspace. You'll be able to access the workspace once it's ready.</p>
+              <p>You can check back later or contact the freelancer for updates.</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Show setup form for freelancers
     return (
       <div className="project-workspace">
         <NotificationPopup
@@ -642,10 +680,13 @@ const ProjectWorkspace = () => {
             ))
           )}
 
-          <button className="edit-tasks-btn-exact" onClick={() => setIsAddingTask(true)}>
-            <Edit3 size={16} />
-            Edit Tasks
-          </button>
+          {/* Edit Tasks Button - Only show for freelancers */}
+          {userProfile?.accountType === "freelancer" && (
+            <button className="edit-tasks-btn-exact" onClick={() => setIsAddingTask(true)}>
+              <Edit3 size={16} />
+              Edit Tasks
+            </button>
+          )}
 
           {/* Edit Modal */}
           {isAddingTask && (
@@ -659,36 +700,47 @@ const ProjectWorkspace = () => {
                 </div>
                 
                 <div className="modal-content">
-                  <div className="add-task-form">
-                    <input
-                      type="text"
-                      placeholder="Enter new task..."
-                      value={newTask}
-                      onChange={(e) => setNewTask(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && addTask()}
-                    />
-                    <button onClick={addTask} className="add-task-btn">
-                      <Plus size={16} />
-                      Add Task
-                    </button>
-                  </div>
+                  {/* Add Task Form - Only show for freelancers */}
+                  {userProfile?.accountType === "freelancer" && (
+                    <div className="add-task-form">
+                      <input
+                        type="text"
+                        placeholder="Enter new task..."
+                        value={newTask}
+                        onChange={(e) => setNewTask(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && addTask()}
+                      />
+                      <button onClick={addTask} className="add-task-btn">
+                        <Plus size={16} />
+                        Add Task
+                      </button>
+                    </div>
+                  )}
 
                   <div className="tasks-list-edit">
                     {tasks.map(task => (
                       <div key={task._id} className={`task-item-edit ${task.isCompleted ? 'completed' : ''}`}>
-                        <button 
-                          className="task-checkbox"
-                          onClick={() => toggleTask(task._id)}
-                        >
-                          {task.isCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
-                        </button>
+                        {userProfile?.accountType === "freelancer" ? (
+                          <button 
+                            className="task-checkbox"
+                            onClick={() => toggleTask(task._id)}
+                          >
+                            {task.isCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
+                          </button>
+                        ) : (
+                          <div className="task-checkbox-readonly">
+                            {task.isCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
+                          </div>
+                        )}
                         <span className="task-text">{task.title}</span>
-                        <button 
-                          className="delete-task"
-                          onClick={() => deleteTask(task._id)}
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                        {userProfile?.accountType === "freelancer" && (
+                          <button 
+                            className="delete-task"
+                            onClick={() => deleteTask(task._id)}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -834,13 +886,16 @@ const ProjectWorkspace = () => {
                     >
                       <Download size={16} />
                     </button>
-                    <button 
-                      className="delete-btn-sidebar"
-                      onClick={() => deleteFile(file.publicId, file.fileName)}
-                      title="Delete file"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {/* Delete button - Only show for freelancers */}
+                    {userProfile?.accountType === "freelancer" && (
+                      <button 
+                        className="delete-btn-sidebar"
+                        onClick={() => deleteFile(file.publicId, file.fileName)}
+                        title="Delete file"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -860,19 +915,14 @@ const ProjectWorkspace = () => {
         <MessageCircle size={20} />
       </button>
 
-      {/* Chat Modal (placeholder) */}
+      {/* Chat Modal */}
       {showChat && (
-        <div className="chat-modal">
-          <div className="chat-header">
-            <h3>Chat with {project?.clientName}</h3>
-            <button onClick={() => setShowChat(false)}>
-              <X size={20} />
-            </button>
-          </div>
-          <div className="chat-content">
-            <p>Chat functionality will be implemented here</p>
-          </div>
-        </div>
+        <ChatModal
+          isOpen={showChat}
+          onClose={() => setShowChat(false)}
+          jobId={projectId}
+          clientName={project?.clientName || "Client"}
+        />
       )}
     </div>
   );

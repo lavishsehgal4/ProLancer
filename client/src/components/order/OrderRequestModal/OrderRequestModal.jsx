@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { X, Send, Loader2 } from "lucide-react";
 import { createOrder } from "../../../services/api/orderApi";
 import NotificationPopup from "../../common/NotificationPopup/NotificationPopup";
@@ -15,6 +16,8 @@ import "./OrderRequestModal.css";
  */
 
 const OrderRequestModal = ({ isOpen, onClose, service, freelancerInfo }) => {
+    const navigate = useNavigate();
+    
     const [formData, setFormData] = useState({
         projectTitle: "",
         description: "",
@@ -155,13 +158,18 @@ const OrderRequestModal = ({ isOpen, onClose, service, freelancerInfo }) => {
         }
     };
 
-    // Handle status check button click (placeholder for now)
+    // Handle status check button click - navigate to notifications page
     const handleCheckStatus = () => {
-        console.log("Check status clicked - functionality to be implemented");
-        // Close notification after clicking
+        console.log("Navigating to notifications page to check request status");
+        
+        // Close notification popup
         setNotification({ ...notification, isVisible: false });
+        
         // Close modal
         onClose();
+        
+        // Navigate to notifications page
+        navigate("/notifications");
     };
 
     return (
