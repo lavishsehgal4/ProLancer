@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, Loader2 } from "lucide-react";
-import { saveToken } from "../../utils/auth/token";
+import { saveToken, saveUser } from "../../utils/auth/token";
 import "./AuthSuccess.css";
 
 /**
@@ -21,6 +21,20 @@ const AuthSuccess = () => {
       if (token) {
         // Store the JWT token using the proper utility function
         saveToken(token);
+        
+        // Decode JWT token to get user data
+        try {
+          const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+          const userData = {
+            userId: tokenPayload.userId,
+            email: tokenPayload.email,
+            accountType: tokenPayload.accountType
+          };
+          saveUser(userData);
+          console.log("✅ [OAuth] User logged in and data stored:", userData);
+        } catch (error) {
+          console.error("❌ [OAuth] Failed to decode JWT token:", error);
+        }
         
         // Redirect to dashboard after a short delay
         setTimeout(() => {
